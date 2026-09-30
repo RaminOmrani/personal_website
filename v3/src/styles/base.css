@@ -220,9 +220,10 @@ button {
 /* Nastaliq accent: set a size up (the script reads small) with room for its tall strokes. */
 .nas {
   display: inline-block;
-  /* padding gives the gradient room to reach the tall strokes; margins give it back to the line */
-  padding: 0.3em 0.08em 0.42em;
-  margin-block: -0.3em -0.42em;
+  /* Gradient text only paints inside the box, and Nastaliq's descenders and swashes reach far
+     below and beside it: generous padding gives them room, negative margins give it back. */
+  padding: 0.3em 0.28em 0.85em;
+  margin: -0.3em -0.22em -0.85em;
   font-family: var(--font-nas);
   font-weight: 700;
   font-size: 1em;
@@ -233,7 +234,6 @@ button {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  padding-inline: 0.06em;
 }
 
 /* ---------- type ---------- */
@@ -335,12 +335,13 @@ html.js .word-in.nas {
   animation: ink 1300ms var(--ease-in-out) both;
 }
 
+/* the resting state leaves room on every side, so no swash or descender is cut off */
 @keyframes ink {
   from {
-    clip-path: inset(-60% 0 -60% 100%);
+    clip-path: inset(-100% -40% -100% 100%);
   }
   to {
-    clip-path: inset(-60% 0 -60% 0);
+    clip-path: inset(-100% -40% -100% -40%);
   }
 }
 

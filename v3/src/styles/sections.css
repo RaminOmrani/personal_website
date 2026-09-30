@@ -1601,7 +1601,7 @@ html.js .namecard[data-in] .namecard-line {
 
 /* the word is written in, right to left, as the card arrives */
 html.js .namecard .namecard-word {
-  clip-path: inset(-60% 0 -60% 100%);
+  clip-path: inset(-100% -40% -100% 100%);
 }
 
 html.js .namecard[data-in] .namecard-word {

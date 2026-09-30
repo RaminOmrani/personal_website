@@ -43,21 +43,21 @@
 /* written in from the left, like ink */
 @keyframes ink-ltr {
   from {
-    clip-path: inset(-60% 100% -60% 0);
+    clip-path: inset(-100% 100% -100% -40%);
   }
   to {
-    clip-path: inset(-60% 0 -60% 0);
+    clip-path: inset(-100% -40% -100% -40%);
   }
 }
 
 @keyframes sign-ltr {
   from {
     opacity: 0;
-    clip-path: inset(0 100% 0 0);
+    clip-path: inset(-60% 100% -80% -30%);
   }
   to {
     opacity: 1;
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-60% -30% -80% -30%);
   }
 }
 
@@ -67,7 +67,7 @@
 }
 
 :root[dir='ltr'].js .namecard .namecard-word {
-  clip-path: inset(-60% 100% -60% 0);
+  clip-path: inset(-100% 100% -100% -40%);
 }
 
 :root[dir='ltr'] .person-sign {
