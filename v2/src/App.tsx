@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { MotionConfig } from 'motion/react';
 import { Toaster } from 'sonner';
 import { projects } from './data/projects';
+import { i18n, LangProvider, type Lang } from './i18n';
 import { useRevealOnScroll } from './lib';
 import { Header } from './components/Header';
 import { HeroShowcase } from './components/Hero';
@@ -61,34 +62,38 @@ function useProjectRoute() {
   return { slug, open, close };
 }
 
-export function App({ hero }: { hero?: ReactNode }) {
+/** The whole page, in one language. Each prerendered page (index.html, en.html) passes its own. */
+export function App({ lang = 'fa', hero }: { lang?: Lang; hero?: ReactNode }) {
   const { slug, open, close } = useProjectRoute();
   useRevealOnScroll();
+  const { t, dir } = i18n(lang);
 
   return (
-    <MotionConfig reducedMotion="user">
-      <a className="skip" href="#work">
-        رفتن به نمونه‌کارها
-      </a>
-      <div className="page" vaul-drawer-wrapper="">
-        <Header />
-        <main>
-          {hero ?? <HeroShowcase />}
-          <Clients />
-          <Work onOpen={open} />
-          <Services />
-          <Toolkit />
-          <Process />
-          <Stats />
-          <About />
-          <Faq />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
-      <MobileBar hidden={!!slug} />
-      <ProjectSheet slug={slug} onClose={close} onOpen={open} />
-      <Toaster dir="rtl" position="bottom-center" mobileOffset={{ bottom: 96 }} toastOptions={{ className: 'toast' }} />
-    </MotionConfig>
+    <LangProvider lang={lang}>
+      <MotionConfig reducedMotion="user">
+        <a className="skip" href="#work">
+          {t('رفتن به نمونه‌کارها', 'Skip to my work')}
+        </a>
+        <div className="page" vaul-drawer-wrapper="">
+          <Header />
+          <main>
+            {hero ?? <HeroShowcase />}
+            <Clients />
+            <Work onOpen={open} />
+            <Services />
+            <Toolkit />
+            <Process />
+            <Stats />
+            <About />
+            <Faq />
+            <Contact />
+          </main>
+          <Footer />
+        </div>
+        <MobileBar hidden={!!slug} />
+        <ProjectSheet slug={slug} onClose={close} onOpen={open} />
+        <Toaster dir={dir} position="bottom-center" mobileOffset={{ bottom: 96 }} toastOptions={{ className: 'toast' }} />
+      </MotionConfig>
+    </LangProvider>
   );
 }

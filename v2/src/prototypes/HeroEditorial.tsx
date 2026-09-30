@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { hero } from '../data/copy';
+import { hero, ui } from '../data/copy';
 import { projects } from '../data/projects';
 import { whatsappWith } from '../data/site';
+import { useLang } from '../i18n';
 import { Browser } from '../components/Devices';
 import { EASE_OUT } from '../components/Hero';
 import { Icon } from '../components/Icon';
@@ -45,14 +46,15 @@ function RotatingWord() {
 }
 
 export function HeroEditorial() {
-  const shots = projects.filter((p) => p.cover.desktop).map((p) => ({ src: p.cover.desktop!, url: p.link?.label, name: p.name, color: p.color }));
+  const { t } = useLang();
+  const shots = projects.filter((p) => p.cover.desktop).map((p) => ({ src: p.cover.desktop!, url: p.link?.label, name: t(p.name), color: p.color }));
   const strip = [...shots, ...shots];
   return (
     <section className="hero hero--ed" id="top">
       <div className="container ed">
         <p className="pill" data-enter style={{ '--i': 0 } as CSSProperties}>
           <span className="pulse" aria-hidden="true" />
-          {hero.badge}
+          {t(hero.badge)}
         </p>
         <h1 className="ed-title" data-enter style={{ '--i': 1 } as CSSProperties}>
           <span>سایت و اپلیکیشنِ</span>
@@ -60,15 +62,15 @@ export function HeroEditorial() {
           <span>شما را می‌سازم</span>
         </h1>
         <p className="ed-text" data-enter style={{ '--i': 2 } as CSSProperties}>
-          {hero.text}
+          {t(hero.text)}
         </p>
         <div className="hero-ctas ed-ctas" data-enter style={{ '--i': 3 } as CSSProperties}>
-          <a className="btn btn--brand btn--lg" href={whatsappWith(hero.primaryMessage)} target="_blank" rel="noopener">
+          <a className="btn btn--brand btn--lg" href={whatsappWith(t(ui.consultMessage))} target="_blank" rel="noopener">
             <Icon name="whatsapp" />
-            {hero.primary}
+            {t(hero.primary)}
           </a>
           <a className="btn btn--ghost btn--lg" href="#work">
-            {hero.secondary}
+            {t(hero.secondary)}
             <Icon name="arrow" size={18} />
           </a>
         </div>

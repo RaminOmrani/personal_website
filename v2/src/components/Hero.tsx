@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
 import { AnimatePresence, motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { hero } from '../data/copy';
+import { hero, ui } from '../data/copy';
 import { whatsappWith } from '../data/site';
+import { useLang } from '../i18n';
 import { Marked, useOnScreen } from '../lib';
 import { Browser, Phone } from './Devices';
 import { Icon } from './Icon';
@@ -12,33 +13,34 @@ export const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 const enter = (i: number) => ({ '--i': i }) as CSSProperties;
 
 export function HeroCopy() {
+  const { t } = useLang();
   return (
     <div className="hero-copy">
       <p className="pill" data-enter style={enter(0)}>
         <span className="pulse" aria-hidden="true" />
-        {hero.badge}
+        {t(hero.badge)}
       </p>
       <h1 className="hero-title" data-enter style={enter(1)}>
-        <Marked text={hero.title} />
+        <Marked text={t(hero.title)} />
       </h1>
       <p className="hero-text" data-enter style={enter(2)}>
-        {hero.text}
+        {t(hero.text)}
       </p>
       <div className="hero-ctas" data-enter style={enter(3)}>
-        <a className="btn btn--brand btn--lg" href={whatsappWith(hero.primaryMessage)} target="_blank" rel="noopener">
+        <a className="btn btn--brand btn--lg" href={whatsappWith(t(ui.consultMessage))} target="_blank" rel="noopener">
           <Icon name="whatsapp" />
-          {hero.primary}
+          {t(hero.primary)}
         </a>
         <a className="btn btn--ghost btn--lg" href="#work">
-          {hero.secondary}
+          {t(hero.secondary)}
           <Icon name="arrow" size={18} />
         </a>
       </div>
       <ul className="perks" data-enter style={enter(4)}>
         {hero.perks.map((p) => (
-          <li key={p}>
+          <li key={p.fa}>
             <Icon name="check" size={16} />
-            {p}
+            {t(p)}
           </li>
         ))}
       </ul>
@@ -48,6 +50,7 @@ export function HeroCopy() {
 
 /** Cycles through notifications of real features while the hero is on screen. */
 function Notifications({ active }: { active: boolean }) {
+  const { t } = useLang();
   const [i, setI] = useState(0);
   useEffect(() => {
     if (!active) return;
@@ -72,8 +75,8 @@ function Notifications({ active }: { active: boolean }) {
             <Icon name={n.icon} size={18} />
           </span>
           <span className="notif-text">
-            <strong>{n.title}</strong>
-            <small>{n.sub}</small>
+            <strong>{t(n.title)}</strong>
+            <small>{t(n.sub)}</small>
           </span>
         </motion.div>
       </AnimatePresence>
@@ -83,6 +86,7 @@ function Notifications({ active }: { active: boolean }) {
 
 /** Laptop + a phone you can grab and throw; both drift gently with the pointer. */
 export function ShowcaseStage() {
+  const { t } = useLang();
   const ref = useRef<HTMLDivElement>(null);
   const onScreen = useOnScreen(ref);
 
@@ -117,7 +121,7 @@ export function ShowcaseStage() {
     <div className="stage" ref={ref} onPointerMove={onMove} onPointerLeave={onLeave} data-enter style={enter(2)}>
       <div className="stage-glow" aria-hidden="true" />
       <motion.div className="stage-back" style={{ transform: back }}>
-        <Browser src="work/doping-video.jpg" alt="پنل دانش‌آموز دوپینگ شیمی، در حال تماشای درس" url="dopingshimi.ir/panel" eager />
+        <Browser src="work/doping-video.jpg" alt={t(hero.laptopAlt)} url="dopingshimi.ir/panel" eager />
       </motion.div>
       <motion.div className="stage-front" style={{ transform: front }}>
         <motion.div
@@ -128,9 +132,9 @@ export function ShowcaseStage() {
           dragTransition={{ bounceStiffness: 260, bounceDamping: 20 }}
           whileDrag={{ scale: 1.03 }}
           style={{ x: dragX, rotate }}
-          aria-label="اپلیکیشن کلینیک ذهن سبز"
+          aria-label={t(hero.phoneLabel)}
         >
-          <Phone src="work/zehnesabz-app-dashboard.jpg" alt="داشبورد اپلیکیشن کلینیک ذهن سبز" eager />
+          <Phone src="work/zehnesabz-app-dashboard.jpg" alt={t(hero.phoneAlt)} eager />
         </motion.div>
       </motion.div>
       <Notifications active={onScreen} />

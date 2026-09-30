@@ -1,11 +1,12 @@
 import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import { App } from './App';
+import type { Lang } from './i18n';
 
-export function render() {
+export function render(lang: Lang) {
   return renderToString(
     <StrictMode>
-      <App />
+      <App lang={lang} />
     </StrictMode>,
   );
 }

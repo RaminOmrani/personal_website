@@ -4,11 +4,14 @@ import '@fontsource-variable/vazirmatn';
 import '@fontsource-variable/geist';
 import './styles.css';
 import { App } from './App';
+import { readLang } from './i18n';
 
 const root = document.getElementById('root')!;
+// the language is part of the page (index.html = fa, en.html = en), never the URL
+const lang = readLang(root);
 const app = (
   <StrictMode>
-    <App />
+    <App lang={lang} />
   </StrictMode>
 );
 

@@ -52,10 +52,15 @@ const brands: Record<string, string> = {
 
 export type IconName = keyof typeof paths | keyof typeof brands;
 
-export function Icon({ name, size = 20, ...rest }: { name: IconName | string; size?: number } & SVGProps<SVGSVGElement>) {
+/** Glyphs that point along the reading direction; drawn for right-to-left and mirrored on left-to-right pages (CSS `.icon-dir`). */
+const directional = new Set(['arrow', 'chevron', 'external']);
+
+export function Icon({ name, size = 20, className, ...rest }: { name: IconName | string; size?: number } & SVGProps<SVGSVGElement>) {
   const brand = brands[name];
+  const cls = [directional.has(name) && 'icon-dir', className].filter(Boolean).join(' ') || undefined;
   return (
     <svg
+      className={cls}
       viewBox="0 0 24 24"
       width={size}
       height={size}

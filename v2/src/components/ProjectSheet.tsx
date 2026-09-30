@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Drawer } from 'vaul';
+import { ui } from '../data/copy';
 import { projects, type Project, type Screen } from '../data/projects';
 import { site, whatsappWith } from '../data/site';
+import { useLang } from '../i18n';
 import { Browser, Phone } from './Devices';
 import { Icon } from './Icon';
 import { MiliChat, TelegramChat } from './LiveDemos';
@@ -10,6 +12,7 @@ type Slide = { kind: 'screen'; screen: Screen } | { kind: 'live'; live: 'telegra
 
 /** Native scroll-snap carousel — the browser's own physics beat a hand-rolled one. */
 function Gallery({ slides, name }: { slides: Slide[]; name: string }) {
+  const { t } = useLang();
   const ref = useRef<HTMLDivElement>(null);
   const step = (dir: 1 | -1) => {
     const el = ref.current;
@@ -20,7 +23,7 @@ function Gallery({ slides, name }: { slides: Slide[]; name: string }) {
   };
   return (
     <div className="gallery-wrap">
-      <div className="gallery" ref={ref} tabIndex={0} role="region" aria-label={`تصاویر ${name}`}>
+      <div className="gallery" ref={ref} tabIndex={0} role="region" aria-label={t(`تصاویر ${name}`, `Screens from ${name}`)}>
         {slides.map((s, i) =>
           s.kind === 'live' ? (
             <figure className="shot shot--phone" key={`live-${i}`}>
@@ -40,10 +43,10 @@ function Gallery({ slides, name }: { slides: Slide[]; name: string }) {
         )}
       </div>
       <div className="gallery-nav">
-        <button type="button" className="icon-btn" onClick={() => step(-1)} aria-label="تصویر قبلی">
+        <button type="button" className="icon-btn" onClick={() => step(-1)} aria-label={t('تصویر قبلی', 'Previous screen')}>
           <Icon name="chevron" style={{ transform: 'scaleX(-1)' }} />
         </button>
-        <button type="button" className="icon-btn" onClick={() => step(1)} aria-label="تصویر بعدی">
+        <button type="button" className="icon-btn" onClick={() => step(1)} aria-label={t('تصویر بعدی', 'Next screen')}>
           <Icon name="chevron" />
         </button>
       </div>
@@ -51,12 +54,12 @@ function Gallery({ slides, name }: { slides: Slide[]; name: string }) {
   );
 }
 
-function CaseStudy({ p, onOpen }: { p: Project; onOpen: (slug: string) => void }) {
-  const next = projects[(projects.findIndex((x) => x.slug === p.slug) + 1) % projects.length];
+function CaseStudy({ p, next, onOpen }: { p: Project; next: Project; onOpen: (slug: string) => void }) {
+  const { t } = useLang();
   const slides: Slide[] = [
-    ...(p.live === 'telegram' ? [{ kind: 'live' as const, live: 'telegram' as const, caption: 'منوی اصلی ربات در تلگرام' }] : []),
+    ...(p.live === 'telegram' ? [{ kind: 'live' as const, live: 'telegram' as const, caption: t('منوی اصلی ربات در تلگرام', 'The bot’s main menu in Telegram') }] : []),
     ...p.screens.map((screen) => ({ kind: 'screen' as const, screen })),
-    ...(p.live === 'mili' ? [{ kind: 'live' as const, live: 'mili' as const, caption: 'دستیار هوشمند میلی' }] : []),
+    ...(p.live === 'mili' ? [{ kind: 'live' as const, live: 'mili' as const, caption: t('دستیار هوشمند میلی', 'Mili, the smart assistant') }] : []),
   ];
 
   return (
@@ -73,25 +76,27 @@ function CaseStudy({ p, onOpen }: { p: Project; onOpen: (slug: string) => void }
         </div>
         <div className="case-actions">
           {p.link && (
-            <a className="btn btn--ghost btn--sm" href={p.link.href} target="_blank" rel="noopener">
-              <span className="hide-sm">مشاهدهٔ نسخهٔ زنده</span>
+            <a className="btn btn--ghost btn--sm" href={p.link.href} target="_blank" rel="noopener" aria-label={t(`${p.name}: مشاهدهٔ نسخهٔ زنده`, `${p.name}: view the live site`)}>
+              <span className="hide-sm">{t('مشاهدهٔ نسخهٔ زنده', 'View live site')}</span>
               <Icon name="external" size={16} />
             </a>
           )}
-          <Drawer.Close className="icon-btn" aria-label="بستن">
+          <Drawer.Close className="icon-btn" aria-label={t('بستن', 'Close')}>
             <Icon name="close" />
           </Drawer.Close>
         </div>
       </header>
 
       <div className="case-hero">
-        {p.cover.desktop && <Browser src={p.cover.desktop} alt={`${p.name} — نسخهٔ دسکتاپ`} url={p.link?.label} className="case-browser" eager />}
+        {p.cover.desktop && (
+          <Browser src={p.cover.desktop} alt={`${p.name} — ${t('نسخهٔ دسکتاپ', 'desktop version')}`} url={p.link?.label} className="case-browser" eager />
+        )}
         {p.live === 'telegram' ? (
           <Phone className="case-phone">
             <TelegramChat />
           </Phone>
         ) : (
-          p.cover.phone && <Phone src={p.cover.phone} alt={`${p.name} — نسخهٔ موبایل`} className="case-phone" eager />
+          p.cover.phone && <Phone src={p.cover.phone} alt={`${p.name} — ${t('نسخهٔ موبایل', 'mobile version')}`} className="case-phone" eager />
         )}
       </div>
 
@@ -110,20 +115,20 @@ function CaseStudy({ p, onOpen }: { p: Project; onOpen: (slug: string) => void }
         <section>
           <h3>
             <span className="dot dot--warn" aria-hidden="true" />
-            مشکل چه بود؟
+            {t('مشکل چه بود؟', 'What was the problem?')}
           </h3>
           <p>{p.problem}</p>
         </section>
         <section>
           <h3>
             <span className="dot dot--ok" aria-hidden="true" />
-            چه ساختم؟
+            {t('چه ساختم؟', 'What I built')}
           </h3>
           <p>{p.solution}</p>
         </section>
       </div>
 
-      <h3 className="case-h">امکانات</h3>
+      <h3 className="case-h">{t('امکانات', 'What it does')}</h3>
       <ul className="case-features">
         {p.features.map((f) => (
           <li key={f.title}>
@@ -136,20 +141,22 @@ function CaseStudy({ p, onOpen }: { p: Project; onOpen: (slug: string) => void }
         ))}
       </ul>
 
-      <h3 className="case-h">صفحه‌ها و محیط {p.live === 'telegram' ? 'ربات' : 'برنامه'}</h3>
+      <h3 className="case-h">
+        {p.live === 'telegram' ? t('صفحه‌ها و محیط ربات', 'Inside the bot') : t('صفحه‌ها و محیط برنامه', 'Pages and screens')}
+      </h3>
       <Gallery slides={slides} name={p.name} />
 
       <dl className="case-meta">
         <div>
-          <dt>کارفرما</dt>
+          <dt>{t('کارفرما', 'Client')}</dt>
           <dd>{p.client}</dd>
         </div>
         <div>
-          <dt>کار من</dt>
+          <dt>{t('کار من', 'What I did')}</dt>
           <dd>{p.role}</dd>
         </div>
         <div className="case-meta-wide">
-          <dt>تکنولوژی‌ها</dt>
+          <dt>{t('تکنولوژی‌ها', 'Built with')}</dt>
           <dd>
             <ul className="chips chips--sm">
               {p.stack.map((s) => (
@@ -162,23 +169,28 @@ function CaseStudy({ p, onOpen }: { p: Project; onOpen: (slug: string) => void }
 
       <div className="case-cta">
         <div>
-          <strong>یک پروژهٔ شبیه این می‌خواهید؟</strong>
-          <p>بگویید برای چه کسب‌وکاری؛ مشاورهٔ اول رایگان است.</p>
+          <strong>{t('یک پروژهٔ شبیه این می‌خواهید؟', 'Want something like this?')}</strong>
+          <p>{t('بگویید برای چه کسب‌وکاری؛ مشاورهٔ اول رایگان است.', 'Tell me about your business — the first consultation is free.')}</p>
         </div>
         <div className="case-cta-actions">
-          <a className="btn btn--whatsapp" href={whatsappWith(`سلام رامین، پروژه‌ای شبیه «${p.name}» می‌خواهم.`)} target="_blank" rel="noopener">
+          <a
+            className="btn btn--whatsapp"
+            href={whatsappWith(t(`سلام رامین، پروژه‌ای شبیه «${p.name}» می‌خواهم.`, `Hi Ramin, I’d like a project like “${p.name}”.`))}
+            target="_blank"
+            rel="noopener"
+          >
             <Icon name="whatsapp" />
-            پیام در واتس‌اپ
+            {t(ui.messageWhatsapp)}
           </a>
           <a className="btn btn--ghost" href={site.phone.href}>
             <Icon name="call" size={18} />
-            تماس
+            {t(ui.call)}
           </a>
         </div>
       </div>
 
       <button type="button" className="case-next" onClick={() => onOpen(next.slug)}>
-        <span>پروژهٔ بعدی</span>
+        <span>{t('پروژهٔ بعدی', 'Next project')}</span>
         <strong>{next.name}</strong>
         <Icon name="arrow" />
       </button>
@@ -187,7 +199,9 @@ function CaseStudy({ p, onOpen }: { p: Project; onOpen: (slug: string) => void }
 }
 
 export function ProjectSheet({ slug, onClose, onOpen }: { slug: string | null; onClose: () => void; onOpen: (slug: string) => void }) {
-  const current = projects.find((p) => p.slug === slug) ?? null;
+  const { loc } = useLang();
+  const list = loc(projects);
+  const current = list.find((p) => p.slug === slug) ?? null;
   // keep the last project mounted while the sheet animates closed
   const [shown, setShown] = useState<Project | null>(current);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -197,6 +211,7 @@ export function ProjectSheet({ slug, onClose, onOpen }: { slug: string | null; o
       scrollRef.current?.scrollTo({ top: 0 });
     }
   }, [current]);
+  const next = shown && list[(list.findIndex((x) => x.slug === shown.slug) + 1) % list.length];
 
   return (
     <Drawer.Root open={!!current} onOpenChange={(o) => !o && onClose()} shouldScaleBackground>
@@ -205,7 +220,7 @@ export function ProjectSheet({ slug, onClose, onOpen }: { slug: string | null; o
         <Drawer.Content className="sheet sheet--project" aria-describedby={undefined}>
           <Drawer.Handle className="sheet-handle" />
           <div className="sheet-scroll" ref={scrollRef}>
-            {shown && <CaseStudy p={shown} onOpen={onOpen} />}
+            {shown && next && <CaseStudy p={shown} next={next} onOpen={onOpen} />}
           </div>
         </Drawer.Content>
       </Drawer.Portal>

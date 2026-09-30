@@ -3,6 +3,7 @@ import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
 import clsx from 'clsx';
 import { work } from '../data/copy';
 import { categories, projects, type Category, type Project } from '../data/projects';
+import { useLang } from '../i18n';
 import { Marked } from '../lib';
 import { Browser, Phone } from './Devices';
 import { EASE_OUT } from './Hero';
@@ -18,6 +19,7 @@ type Filter = Category | 'all';
  * selected tab, so background and text colour change together in one clip-path transition.
  */
 function FilterTabs({ value, onChange }: { value: Filter; onChange: (v: Filter) => void }) {
+  const { t } = useLang();
   const rowRef = useRef<HTMLDivElement>(null);
   const [clip, setClip] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -43,18 +45,18 @@ function FilterTabs({ value, onChange }: { value: Filter; onChange: (v: Filter) 
   }, []);
 
   return (
-    <div className="tabs" role="group" aria-label="دسته‌بندی نمونه‌کارها">
+    <div className="tabs" role="group" aria-label={t(work.filterLabel)}>
       <div className="tabs-row" ref={rowRef}>
         {categories.map((c) => (
           <button key={c.id} type="button" data-id={c.id} className="tab" aria-pressed={value === c.id} onClick={() => onChange(c.id)}>
-            {c.label}
+            {t(c.label)}
           </button>
         ))}
       </div>
       <div className="tabs-row tabs-row--active" aria-hidden="true" data-ready={ready || undefined} style={{ clipPath: clip ?? undefined, opacity: clip ? 1 : 0 }}>
         {categories.map((c) => (
           <span key={c.id} className="tab">
-            {c.label}
+            {t(c.label)}
           </span>
         ))}
       </div>
@@ -63,10 +65,11 @@ function FilterTabs({ value, onChange }: { value: Filter; onChange: (v: Filter) 
 }
 
 function CardVisual({ p }: { p: Project }) {
+  const { t } = useLang();
   if (p.live === 'telegram') {
     return (
       <div className="card-visual card-visual--bot">
-        {p.cover.desktop && <Browser src={p.cover.desktop} alt={`سایت ${p.name}`} url={p.link?.label} className="card-browser" />}
+        {p.cover.desktop && <Browser src={p.cover.desktop} alt={t(`سایت ${p.name}`, `${p.name} website`)} url={p.link?.label} className="card-browser" />}
         <Phone className="card-phone">
           <TelegramChat compact />
         </Phone>
@@ -75,14 +78,16 @@ function CardVisual({ p }: { p: Project }) {
   }
   return (
     <div className="card-visual">
-      {p.cover.desktop && <Browser src={p.cover.desktop} alt={`${p.name} — نسخهٔ دسکتاپ`} url={p.link?.label} className="card-browser" />}
-      {p.cover.phone && <Phone src={p.cover.phone} alt={`${p.name} — نسخهٔ موبایل`} className="card-phone" />}
+      {p.cover.desktop && <Browser src={p.cover.desktop} alt={`${p.name} — ${t('نسخهٔ دسکتاپ', 'desktop version')}`} url={p.link?.label} className="card-browser" />}
+      {p.cover.phone && <Phone src={p.cover.phone} alt={`${p.name} — ${t('نسخهٔ موبایل', 'mobile version')}`} className="card-phone" />}
     </div>
   );
 }
 
 function ProjectCard({ p, featured, onOpen }: { p: Project; featured: boolean; onOpen: (slug: string) => void }) {
-  const labels = categories.filter((c) => c.id !== 'all' && p.categories.includes(c.id as Category)).map((c) => c.label);
+  const { t } = useLang();
+  const labels = categories.filter((c) => c.id !== 'all' && p.categories.includes(c.id as Category)).map((c) => t(c.label));
+  const open = t(work.open);
   return (
     <motion.article
       layout="position"
@@ -114,35 +119,37 @@ function ProjectCard({ p, featured, onOpen }: { p: Project; featured: boolean; o
           </ul>
         )}
         <div className="card-foot">
-          <ul className="chips chips--sm" aria-label="دسته">
+          <ul className="chips chips--sm" aria-label={t(work.categoriesLabel)}>
             {labels.map((l) => (
               <li key={l}>{l}</li>
             ))}
           </ul>
           <span className="card-more">
-            {work.open}
+            {open}
             <Icon name="arrow" size={16} />
           </span>
         </div>
       </div>
       {/* The whole card is one button; it sits on top so every part of the card is clickable. */}
-      <button type="button" className="card-hit" onClick={() => onOpen(p.slug)} aria-label={`${p.name}: ${work.open}`} />
+      <button type="button" className="card-hit" onClick={() => onOpen(p.slug)} aria-label={`${p.name}: ${open}`} />
     </motion.article>
   );
 }
 
 export function Work({ onOpen }: { onOpen: (slug: string) => void }) {
+  const { t, loc } = useLang();
   const [filter, setFilter] = useState<Filter>('all');
-  const list = filter === 'all' ? projects : projects.filter((p) => p.categories.includes(filter));
+  const all = loc(projects);
+  const list = filter === 'all' ? all : all.filter((p) => p.categories.includes(filter));
   return (
     <section className="section" id="work">
       <div className="container">
         <header className="section-head" data-reveal>
-          <p className="eyebrow">{work.eyebrow}</p>
+          <p className="eyebrow">{t(work.eyebrow)}</p>
           <h2>
-            <Marked text={work.title} />
+            <Marked text={t(work.title)} />
           </h2>
-          <p className="section-text">{work.text}</p>
+          <p className="section-text">{t(work.text)}</p>
         </header>
         <div data-reveal>
           <FilterTabs value={filter} onChange={setFilter} />

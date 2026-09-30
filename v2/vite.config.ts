@@ -10,6 +10,8 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
+        // the English page: same app, same folder (so relative asset paths hold), its own <head>
+        en: resolve(import.meta.dirname, 'en.html'),
         prototypes: resolve(import.meta.dirname, 'prototypes.html'),
       },
     },
