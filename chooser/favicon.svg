@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="رامین عمرانی">
+<defs>
+<linearGradient id="ro-tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2356D6"/><stop offset=".55" stop-color="#1673C4"/><stop offset="1" stop-color="#0E9AA7"/></linearGradient>
+<linearGradient id="ro-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F8CF7A"/><stop offset="1" stop-color="#E0962F"/></linearGradient>
+<radialGradient id="ro-shine" cx=".28" cy=".18" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".32"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+</defs>
+<rect x="2" y="2" width="116" height="116" rx="32" fill="url(#ro-tile)"/>
+<rect x="2" y="2" width="116" height="116" rx="32" fill="url(#ro-shine)"/>
+<path d="M31 99 V60 C31 43 43 30 60 20 C77 30 89 43 89 60 V99" fill="none" stroke="url(#ro-gold)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 27.10L0 10.50Q8.40 7.20 13.40 4.10Q18.40 1 20.60-2.40Q22.80-5.80 22.80-9.90Q22.80-13.40 21.55-17.35Q20.30-21.30 17.70-27.60L33.40-36.10Q37.20-27.70 38.65-21.90Q40.10-16.10 40.10-10.80Q40.10 1.80 32.05 11.05Q24 20.30 8 27.10" fill="#fff" transform="translate(46.36 73.06) scale(0.6804)"/>
+</svg>
