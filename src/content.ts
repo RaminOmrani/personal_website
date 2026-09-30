@@ -42,6 +42,8 @@ export const site = {
     { label: 'GitHub', url: 'https://github.com/RaminOmrani' },
     { label: 'LinkedIn', url: 'https://www.linkedin.com/in/ramin-omrani' },
     { label: 'Google Scholar', url: 'https://scholar.google.com/citations?user=2BLkB4YAAAAJ' },
+    { label: 'Telegram', url: 'https://t.me/Daneshjoo_AI' },
+    { label: 'WhatsApp', url: 'https://wa.me/989365743458' },
   ],
 };
 

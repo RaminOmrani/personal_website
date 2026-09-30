@@ -1,0 +1,602 @@
+/* ==========================================================================
+   Ramin Omrani — v3 "Daylight cinema"
+   Layout: a pinned 3D film on a pearl ground, then airy sections of spatial glass.
+   One iridescent gradient (indigo → violet → rose → amber) is the only loud thing.
+   ========================================================================== */
+
+:root {
+  --pearl: #f4f3fa;
+  --pearl-2: #ebe9f5;
+  --surface: #ffffff;
+  --ink: #13121c;
+  --ink-2: #4a4960;
+  --ink-3: #74738a;
+  --line: rgba(19, 18, 28, 0.08);
+  --line-2: rgba(19, 18, 28, 0.15);
+
+  --indigo: #4c5bff;
+  --indigo-deep: #3441df;
+  --violet: #8b5cf6;
+  --rose: #ff5fa2;
+  --amber: #ffa24c;
+  --cyan: #22c3e6;
+  --ok: #16a34a;
+  --wa: #25d366;
+  --tg: #229ed9;
+  --iris: linear-gradient(100deg, var(--indigo) 0%, var(--violet) 36%, var(--rose) 70%, var(--amber) 100%);
+
+  --glass: rgba(255, 255, 255, 0.58);
+  --glass-strong: rgba(255, 255, 255, 0.78);
+  --glass-edge:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+    0 0 0 1px rgba(19, 18, 28, 0.05);
+  --shadow-float: 0 18px 48px -18px rgba(44, 32, 110, 0.28), 0 4px 12px -4px rgba(44, 32, 110, 0.08);
+  --shadow-deep: 0 40px 90px -30px rgba(44, 32, 110, 0.4), 0 10px 30px -12px rgba(44, 32, 110, 0.14);
+
+  --r-sm: 12px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --r-xl: 40px;
+
+  /* Emil Kowalski's curves */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --font: 'Estedad Variable', 'Readex Pro Variable', Tahoma, system-ui, sans-serif;
+  --font-display: 'Readex Pro Variable', 'Estedad Variable', Tahoma, system-ui, sans-serif;
+
+  --gutter: clamp(16px, 4vw, 48px);
+  --maxw: 1240px;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--pearl);
+}
+
+html.is-locked {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--pearl);
+  color: var(--ink);
+  font: 400 16px/1.9 var(--font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: clip;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2.5px solid var(--indigo);
+  outline-offset: 3px;
+}
+
+[dir='ltr'] {
+  unicode-bidi: isolate;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 200;
+  top: 12px;
+  inset-inline-start: 12px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  text-decoration: none;
+  translate: 0 -160%;
+  transition: translate 200ms var(--ease-out);
+}
+
+.skip-link:focus {
+  translate: 0 0;
+}
+
+.container {
+  width: min(var(--maxw), 100% - 2 * var(--gutter));
+  margin-inline: auto;
+}
+
+.hide-sm {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .hide-sm {
+    display: inline;
+  }
+}
+
+/* ---------- materials ---------- */
+
+/* Spatial glass: a bright top edge, a soft shadow, and the world blurred behind it. */
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: var(--glass-edge), var(--shadow-float);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* The iridescent word. Still by default: a looping gradient would repaint big text every frame. */
+.grad {
+  background: var(--iris);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+@keyframes iris {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+/* ---------- type ---------- */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.1rem, 1.2rem + 3.6vw, 4.4rem);
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+}
+
+.display--sm {
+  font-size: clamp(1.9rem, 1.2rem + 2.4vw, 3.2rem);
+}
+
+.display--xl {
+  font-size: clamp(2.3rem, 1.1rem + 5vw, 5.6rem);
+  line-height: 1.22;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  color: var(--indigo);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--iris);
+}
+
+.section {
+  position: relative;
+  padding-block: clamp(96px, 12vw, 168px);
+}
+
+.section-head {
+  max-width: 820px;
+}
+
+.section-head--center {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.section-text {
+  margin-top: 16px;
+  max-width: 40em;
+  color: var(--ink-2);
+  font-size: clamp(1.02rem, 0.97rem + 0.25vw, 1.18rem);
+}
+
+.section-head--center .section-text {
+  margin-inline: auto;
+}
+
+/* ---------- motion primitives ---------- */
+
+/* Entrances on load run in CSS, off the main thread, while React hydrates. */
+html.js [data-enter] {
+  animation: enter 900ms var(--ease-out) both;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+/* Headline words rise out of their own masks, one after another. */
+.word {
+  display: inline-block;
+  overflow: clip;
+  padding-block: 0.16em 0.2em;
+  margin-block: -0.16em -0.2em;
+  vertical-align: top;
+}
+
+.word-in {
+  display: inline-block;
+}
+
+html.js .word-in {
+  animation: rise 1000ms var(--ease-out) both;
+}
+
+/* the hero's hot words shimmer once, there and back, after they land */
+html.js .word-in.grad {
+  animation:
+    rise 1000ms var(--ease-out) both,
+    iris 3.2s ease-in-out 1.2s 2 alternate;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(70%);
+    filter: blur(8px);
+  }
+}
+
+/* Scroll reveals: a transition toggled by an IntersectionObserver. */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 800ms var(--ease-out),
+    transform 900ms var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 90ms);
+}
+
+html.js [data-reveal][data-in] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  --h: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  height: var(--h);
+  padding-inline: 22px;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  /* `scale` (not transform) so press feedback composes with the magnetic pull */
+  transition:
+    scale 160ms var(--ease-out),
+    background-color 200ms ease,
+    background-position 500ms var(--ease-out),
+    box-shadow 250ms ease,
+    color 200ms ease;
+}
+
+.btn:active {
+  scale: 0.97;
+}
+
+.btn--lg {
+  --h: 58px;
+  padding-inline: 28px;
+  font-size: 16px;
+}
+
+.btn--sm {
+  --h: 42px;
+  padding-inline: 16px;
+  font-size: 14px;
+}
+
+.btn--primary {
+  background: linear-gradient(100deg, var(--indigo) 0%, #6f5cff 45%, var(--violet) 70%, #c05cf6 100%);
+  background-size: 180% 100%;
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 12px 30px -12px rgba(76, 91, 255, 0.75);
+}
+
+.btn--glass {
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  color: var(--ink);
+  box-shadow: var(--glass-edge), 0 8px 24px -12px rgba(44, 32, 110, 0.25);
+}
+
+.btn--whatsapp {
+  background: var(--wa);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 12px 26px -12px rgba(37, 211, 102, 0.75);
+}
+
+.btn--telegram {
+  background: var(--tg);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 12px 26px -12px rgba(34, 158, 217, 0.7);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--glass-strong);
+  color: var(--ink);
+  box-shadow: var(--glass-edge);
+  text-decoration: none;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    scale 160ms var(--ease-out),
+    background-color 200ms ease;
+}
+
+.icon-btn:active {
+  scale: 0.95;
+}
+
+.icon-btn--sm {
+  width: 38px;
+  height: 38px;
+}
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--indigo);
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.link-arrow svg {
+  transition: translate 220ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--primary:hover {
+    background-position: 100% 0;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      0 16px 36px -12px rgba(139, 92, 246, 0.8);
+  }
+  .btn--glass:hover,
+  .icon-btn:hover {
+    background: #fff;
+  }
+  .btn--whatsapp:hover {
+    background: #1fc35d;
+  }
+  .btn--telegram:hover {
+    background: #1b8ec6;
+  }
+  .link-arrow:hover svg {
+    translate: -5px 0;
+  }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 16px 7px 14px;
+  border-radius: 999px;
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--glass-edge);
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.live-dot {
+  position: relative;
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.live-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--ok);
+  animation: ping 2.2s var(--ease-out) infinite;
+}
+
+@keyframes ping {
+  from {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tags li {
+  padding: 3px 11px;
+  border-radius: 999px;
+  background: var(--pearl);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.ticks {
+  display: grid;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.ticks li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.ticks svg,
+.proof svg,
+.step-get svg {
+  flex: none;
+  padding: 2px;
+  border-radius: 50%;
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--ok);
+  stroke-width: 2.6;
+}
+
+.logo-tile {
+  flex: none;
+  object-fit: contain;
+  padding: 5px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--line), 0 6px 14px -8px rgba(44, 32, 110, 0.3);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: var(--iris);
+  background-size: 160% 100%;
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 8px 18px -8px rgba(139, 92, 246, 0.8);
+}
+
+.brand-mark--sm {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  font-size: 18px;
+}

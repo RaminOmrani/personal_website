@@ -3,6 +3,7 @@
  */
 
 const PHONE_INTL = '989017021166';
+const WHATSAPP_INTL = '989365743458';
 
 export const site = {
   name: 'رامین عمرانی',
@@ -16,13 +17,10 @@ export const site = {
     display: '۰۹۰۱ ۷۰۲ ۱۱۶۶',
     href: `tel:+${PHONE_INTL}`,
   },
-  whatsapp: `https://wa.me/${PHONE_INTL}`,
-  /**
-   * TODO: اگر آیدی تلگرام دارید اینجا بگذارید، مثلاً 'https://t.me/ramin_omrani'.
-   * لینک شماره‌ای فقط وقتی کار می‌کند که در تنظیمات حریم خصوصی تلگرام،
-   * «چه کسی می‌تواند مرا با شماره پیدا کند» روی «همه» باشد.
-   */
-  telegram: `https://t.me/+${PHONE_INTL}`,
+  whatsapp: `https://wa.me/${WHATSAPP_INTL}`,
+  whatsappDisplay: '۰۹۳۶ ۵۷۴ ۳۴۵۸',
+  telegram: 'https://t.me/Daneshjoo_AI',
+  telegramHandle: '@Daneshjoo_AI',
   socials: [
     { label: 'GitHub', href: 'https://github.com/RaminOmrani' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/ramin-omrani' },

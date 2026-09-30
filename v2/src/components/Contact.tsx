@@ -16,8 +16,8 @@ async function copy(text: string, what: string) {
 function Channels() {
   const items = [
     { id: 'call', icon: 'call', label: contact.channels.call, value: site.phone.display, href: site.phone.href, copyValue: '0' + site.phone.href.slice(-10), ltr: true },
-    { id: 'wa', icon: 'whatsapp', label: contact.channels.whatsapp, value: 'شروع گفت‌وگو', href: whatsappWith('سلام رامین، برای یک پروژه پیام می‌دهم.'), external: true },
-    { id: 'tg', icon: 'telegram', label: contact.channels.telegram, value: 'پیام در تلگرام', href: site.telegram, external: true },
+    { id: 'wa', icon: 'whatsapp', label: contact.channels.whatsapp, value: site.whatsappDisplay, ltr: true, href: whatsappWith('سلام رامین، برای یک پروژه پیام می‌دهم.'), external: true },
+    { id: 'tg', icon: 'telegram', label: contact.channels.telegram, value: site.telegramHandle, ltr: true, href: site.telegram, external: true },
     { id: 'mail', icon: 'mail', label: contact.channels.email, value: site.email, href: `mailto:${site.email}`, copyValue: site.email, ltr: true },
   ];
   return (
