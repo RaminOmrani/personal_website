@@ -34,7 +34,6 @@ const src = {
   },
   project: {
     cta: l('یکی مثل این می‌خواهم', 'I want something like this'),
-    ctaHint: l('مشاورهٔ اول رایگان', 'Free first consultation'),
     notFound: l('این پروژه پیدا نشد.', 'That project wasn’t found.'),
     toWork: l('برگشت به نمونه‌کارها', 'Back to all projects'),
     year: l('سال', 'Year'),

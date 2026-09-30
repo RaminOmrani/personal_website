@@ -1,0 +1,55 @@
+{
+  "id": "/app/",
+  "name": "رامین عمرانی · طراحی سایت و اپلیکیشن",
+  "short_name": "رامین عمرانی",
+  "description": "اپلیکیشن رامین عمرانی، برنامه‌نویس فول‌استک و هوش مصنوعی در مشهد: نمونه‌کارهای واقعی، خدمات طراحی و ساخت سایت، اپلیکیشن موبایل، CRM، پنل مدیریت و ربات تلگرام، و تماس با یک لمس در واتس‌اپ، تلگرام یا تلفن برای مشاورهٔ رایگان.",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "theme_color": "#F6F4EF",
+  "background_color": "#F6F4EF",
+  "categories": ["business", "productivity"],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "launch_handler": { "client_mode": ["navigate-existing", "auto"] },
+  "icons": [
+    { "src": "icons/icon-48.png", "sizes": "48x48", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-72.png", "sizes": "72x72", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-256.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshots/home.jpg", "sizes": "1080x2340", "type": "image/jpeg", "form_factor": "narrow", "label": "صفحهٔ اول: معرفی رامین، آمار و پروژه‌های منتخب" },
+    { "src": "screenshots/project.jpg", "sizes": "1080x2340", "type": "image/jpeg", "form_factor": "narrow", "label": "داستان هر پروژه: مشکل، راه‌حل، تصویرها و امکانات" },
+    { "src": "screenshots/work.jpg", "sizes": "1080x2340", "type": "image/jpeg", "form_factor": "narrow", "label": "نمونه‌کارها با فیلتر سایت، اپلیکیشن، پنل و ربات" },
+    { "src": "screenshots/contact.jpg", "sizes": "1080x2340", "type": "image/jpeg", "form_factor": "narrow", "label": "تماس با یک لمس و پیام آماده برای واتس‌اپ" },
+    { "src": "screenshots/wide.jpg", "sizes": "1280x800", "type": "image/jpeg", "form_factor": "wide", "label": "نمونه‌کارها روی صفحهٔ بزرگ" }
+  ],
+  "shortcuts": [
+    {
+      "name": "نمونه‌کارها",
+      "short_name": "نمونه‌کارها",
+      "description": "پروژه‌های واقعی رامین عمرانی",
+      "url": "./#/work",
+      "icons": [{ "src": "icons/shortcut-work.png", "sizes": "96x96", "type": "image/png", "purpose": "any" }]
+    },
+    {
+      "name": "تماس",
+      "short_name": "تماس",
+      "description": "تماس، واتس‌اپ و تلگرام",
+      "url": "./#/contact",
+      "icons": [{ "src": "icons/shortcut-contact.png", "sizes": "96x96", "type": "image/png", "purpose": "any" }]
+    }
+  ]
+}

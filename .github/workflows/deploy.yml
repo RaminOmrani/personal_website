@@ -27,6 +27,7 @@ jobs:
             package-lock.json
             v2/package-lock.json
             v3/package-lock.json
+            app/package-lock.json
       # the chooser at /, and the three versions at /v1/, /v2/ and /v3/, assembled into ./site
       - run: node scripts/build-site.mjs
       - uses: actions/configure-pages@v5

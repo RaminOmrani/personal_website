@@ -153,7 +153,7 @@ export function Project({ slug, active }: { slug: string; active: boolean }) {
           <h2 className="block-title">{caseStudy.role}</h2>
           <p className="role">{p.role}</p>
           <h2 className="block-title">{caseStudy.stack}</h2>
-          <ul className="stack">
+          <ul className="tech">
             {p.stack.map((s) => (
               <li key={s} dir="auto">
                 {s}
@@ -161,6 +161,16 @@ export function Project({ slug, active }: { slug: string; active: boolean }) {
             ))}
           </ul>
         </section>
+
+        <div className="cta-card">
+          <span className="avatar">
+            <img src="me/me-face.webp" alt="" width={80} height={80} />
+          </span>
+          <div>
+            <strong>{caseStudy.ctaTitle}</strong>
+            <p>{caseStudy.ctaText}</p>
+          </div>
+        </div>
 
         <Link to={`/work/${next.slug}`} className="next-card" style={{ '--tint': next.tint } as CSSProperties}>
           <img className="logo-tile" src={next.logo} alt="" width={44} height={44} />
@@ -173,10 +183,6 @@ export function Project({ slug, active }: { slug: string; active: boolean }) {
       </article>
 
       <div className="cta-bar">
-        <span className="cta-text">
-          <strong>{caseStudy.ctaTitle}</strong>
-          <small>{t.project.ctaHint}</small>
-        </span>
         <a className="btn btn--wa" href={whatsappWith(caseStudy.ctaMessage(p.name))} target="_blank" rel="noopener">
           <Icon name="whatsapp" size={20} />
           {t.project.cta}

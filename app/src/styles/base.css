@@ -1,0 +1,556 @@
+/* ==========================================================================
+   Ramin Omrani, the app. v3's identity (Persian tilework: lapis, turquoise and saffron gold
+   on ivory), set for a phone: one screen at a time, a bar on top, tabs below.
+   ========================================================================== */
+
+:root {
+  --pearl: #f6f4ef;
+  --pearl-2: #eeebe3;
+  --surface: #ffffff;
+  --ink: #0f1b2d;
+  --ink-2: #43506a;
+  --ink-3: #6b7690;
+  --line: rgba(15, 27, 45, 0.08);
+  --line-2: rgba(15, 27, 45, 0.14);
+
+  --lapis: #1f52d6;
+  --lapis-deep: #173fa8;
+  --lapis-soft: rgba(31, 82, 214, 0.1);
+  --turq: #0e9aa7;
+  --turq-soft: #dff3f1;
+  --saffron: #e9a23b;
+  --gold: #f3c46e;
+  --ok: #16a34a;
+  --wa: #25d366;
+  /* WhatsApp's green, deepened so white text on it stays readable */
+  --wa-btn: #139a4f;
+  --tg: #229ed9;
+  --tile: linear-gradient(100deg, var(--lapis) 0%, #1673c4 48%, var(--turq) 100%);
+  --gilt: linear-gradient(180deg, #f8cf7a, #e0962f);
+
+  --glass: rgba(246, 244, 239, 0.78);
+  --shadow-card: 0 0 0 1px var(--line), 0 10px 28px -18px rgba(15, 27, 45, 0.3);
+  --shadow-float: 0 18px 48px -18px rgba(15, 27, 45, 0.28), 0 4px 12px -4px rgba(15, 27, 45, 0.08);
+
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 24px;
+  --r-xl: 30px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --font: 'Vazirmatn', 'Estedad', Tahoma, system-ui, sans-serif;
+  --font-display: 'Estedad', 'Vazirmatn', Tahoma, system-ui, sans-serif;
+  --font-nas: 'Nastaliq', 'Noto Nastaliq Urdu', serif;
+
+  --gutter: 16px;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --bar-h: 56px;
+  --tab-h: 64px;
+  /* which way "forward" is: right to left in Persian */
+  --dir: -1;
+  color-scheme: light;
+}
+
+:root[dir='ltr'] {
+  --dir: 1;
+}
+
+:root:lang(en) {
+  --font: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Vazirmatn', sans-serif;
+  --font-display: 'Bricolage', 'Instrument Sans', system-ui, sans-serif;
+  --font-nas: 'Instrument Serif', Georgia, serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--pearl);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* no tap flash (every control has its own :active), no pull-to-refresh or page bounce */
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--pearl);
+  color: var(--ink);
+  font: 400 16px/1.85 var(--font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root:lang(en) body {
+  line-height: 1.55;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+/* inputs at 16px, so a phone never zooms into them */
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+/* controls are not text: taps fire at once, a long press never selects their label */
+a,
+button,
+[role='button'],
+.chip,
+.tab {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+img {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+:focus-visible {
+  outline: 2.5px solid var(--lapis);
+  outline-offset: 2px;
+}
+
+[dir='ltr'] {
+  unicode-bidi: isolate;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.noscript {
+  margin: 40px 16px;
+  font: 16px/1.8 Tahoma, sans-serif;
+  text-align: center;
+}
+
+/* v3 draws directional icons for right-to-left; English mirrors them */
+:root[dir='ltr'] .icon-dir {
+  scale: -1 1;
+}
+
+.flip {
+  transform: scaleX(-1);
+}
+
+/* ---------- type ---------- */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.85rem;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+
+.display--sm {
+  font-size: 1.5rem;
+}
+
+:root:lang(en) .display {
+  font-weight: 750;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: var(--lapis);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 18px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--gilt);
+}
+
+:root:lang(en) .eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lead {
+  margin-top: 10px;
+  color: var(--ink-2);
+  font-size: 15.5px;
+}
+
+/* the accent word: lapis into turquoise */
+.grad {
+  background: var(--tile);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* the calligraphic accent: Nastaliq in Persian, an italic serif in English */
+.nas {
+  display: inline-block;
+  padding: 0.3em 0.08em 0.42em;
+  margin-block: -0.3em -0.42em;
+  font-family: var(--font-nas);
+  font-weight: 700;
+  line-height: 1;
+  background: var(--tile);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+:root:lang(en) .nas {
+  padding: 0.02em 0.12em 0.08em 0.02em;
+  margin-block: -0.02em -0.08em;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  font-synthesis: none;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  --h: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--h);
+  padding: 0 20px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    transform 140ms var(--ease-out),
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn svg {
+  flex: none;
+}
+
+.btn--sm {
+  --h: 44px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
+.btn--primary {
+  background: linear-gradient(100deg, var(--lapis-deep) 0%, var(--lapis) 45%, #1673c4 100%);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 10px 24px -12px rgba(31, 82, 214, 0.8);
+}
+
+.btn--wa {
+  background: var(--wa-btn);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 22px -12px rgba(19, 154, 79, 0.85);
+}
+
+.btn--wa:active {
+  background: #10864a;
+}
+
+.btn--tg {
+  background: #1b87c9;
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 22px -12px rgba(34, 158, 217, 0.8);
+}
+
+.btn--soft {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-card);
+}
+
+.btn--soft:active {
+  background: var(--pearl-2);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  color: var(--ink);
+  transition:
+    transform 140ms var(--ease-out),
+    background-color 160ms ease;
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+  background: rgba(15, 27, 45, 0.07);
+}
+
+.icon-btn--sm {
+  width: 44px;
+  height: 44px;
+  background: var(--pearl-2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--primary:hover {
+    filter: brightness(1.06);
+  }
+  .btn--wa:hover {
+    background: #11894a;
+  }
+  .btn--soft:hover {
+    background: #fbfaf7;
+  }
+  .icon-btn:hover {
+    background: rgba(15, 27, 45, 0.06);
+  }
+}
+
+/* ---------- small atoms ---------- */
+
+.live-dot {
+  position: relative;
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.live-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--ok);
+  animation: ping 2.2s var(--ease-out) infinite;
+}
+
+@keyframes ping {
+  from {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+.logo-tile {
+  flex: none;
+  object-fit: contain;
+  padding: 5px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 6px 14px -8px rgba(15, 27, 45, 0.3);
+}
+
+.logo-mark {
+  flex: none;
+  filter: drop-shadow(0 5px 10px rgba(31, 82, 214, 0.25));
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tags li {
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.ticks {
+  display: grid;
+  gap: 8px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.ticks li,
+.step-get {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.ticks svg,
+.step-get svg {
+  flex: none;
+  margin-top: 2px;
+  padding: 2px;
+  border-radius: 50%;
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--ok);
+  stroke-width: 2.6;
+}
+
+/* a picture over a soft tile, fading in when it arrives */
+.img {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--pearl-2);
+}
+
+.img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.img[data-loaded] img {
+  opacity: 1;
+}
+
+/* Ramin in the arch */
+.arch {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 400 / 520;
+  /* the head may step out over the top; the shoulders stay inside the arch's sides */
+  clip-path: inset(-40% 5% 0 5%);
+}
+
+.arch-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.arch-img {
+  position: absolute;
+  inset-inline-start: 50%;
+  top: var(--photo-top, -3%);
+  width: var(--photo-w, 170%);
+  max-width: none;
+  translate: -50% 0;
+}
+
+:root[dir='rtl'] .arch-img {
+  translate: 50% 0;
+}
+
+/* reduced motion: no looping pings; screen changes become short cross-fades (shell.css) */
+@media (prefers-reduced-motion: reduce) {
+  .live-dot::after {
+    animation: none;
+  }
+  .img img {
+    transition: none;
+  }
+}
