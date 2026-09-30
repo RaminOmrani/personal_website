@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import clsx from 'clsx';
-import { about, faq, marquee, process, services, stats } from '../data/copy';
+import { about, faq, marquee, process, promise, services, stats } from '../data/copy';
 import { fa, site, whatsappWith } from '../data/site';
 import { gsap, ScrollTrigger } from '../lib/scroll';
 import { useReducedMotion } from '../lib/hooks';
@@ -9,6 +9,7 @@ import { Browser, Phone } from '../ui/Frames';
 import { Icon } from '../ui/Icon';
 import { Mili } from '../ui/Mili';
 import { Grad } from '../ui/Text';
+import { ArchPortrait } from '../ui/Arch';
 
 type Service = (typeof services.items)[number];
 
@@ -248,14 +249,44 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   );
 }
 
+/** A short personal promise, sealed with a hand on the heart. */
+export function Pledge() {
+  return (
+    <section className="section promise" aria-labelledby="promise-title">
+      <div className="container promise-grid">
+        <ArchPortrait src="me/me-promise.webp" alt="رامین عمرانی، دست روی قلب" width={348} height={526} className="promise-portrait" />
+        <div className="promise-copy" data-reveal>
+          <p className="eyebrow">{promise.eyebrow}</p>
+          <h2 id="promise-title" className="promise-title">
+            <span className="nas">{promise.title}</span>
+          </h2>
+          <ul className="promise-list">
+            {promise.items.map((it, i) => (
+              <li key={it.title} data-reveal style={{ '--d': i + 1 } as CSSProperties}>
+                <span className="promise-icon">
+                  <Icon name={it.icon} size={22} />
+                </span>
+                <div>
+                  <strong>{it.title}</strong>
+                  <p>{it.text}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function About() {
   return (
     <section className="section about" id="about">
       <div className="container about-grid">
         <div className="profile glass" data-reveal>
-          <div className="profile-mark" aria-hidden="true">
-            <span>ر</span>
-          </div>
+          <ArchPortrait src="me/me-think.webp" alt="رامین عمرانی" width={544} height={482} className="profile-portrait">
+            <figcaption className="profile-quote">{about.quote}</figcaption>
+          </ArchPortrait>
           <strong className="profile-name">{site.name}</strong>
           <span className="profile-role">برنامه‌نویس فول‌استک و هوش مصنوعی</span>
           <p className="profile-now">
@@ -319,6 +350,9 @@ export function Faq() {
             <Icon name="whatsapp" />
             سؤال در واتس‌اپ
           </a>
+          <ArchPortrait src="me/me-desk.webp" alt="" width={436} height={482} className="faq-portrait">
+            <figcaption>سؤال‌هایتان را خودم جواب می‌دهم، نه ربات و نه واسطه.</figcaption>
+          </ArchPortrait>
         </header>
         <ul className="faq-list glass" data-reveal>
           {faq.items.map((f, i) => {

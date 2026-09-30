@@ -134,7 +134,7 @@
   background:
     radial-gradient(80% 90% at 80% 10%, color-mix(in srgb, var(--brand) 24%, transparent), transparent 70%),
     var(--tint);
-  box-shadow: 0 0 0 1px rgba(19, 18, 28, 0.05), var(--shadow-float);
+  box-shadow: 0 0 0 1px rgba(15, 27, 45, 0.05), var(--shadow-float);
   perspective: 1400px;
 }
 
@@ -775,8 +775,8 @@ button.tg-btn:active {
 
 @media (prefers-contrast: more) {
   :root {
-    --line: rgba(19, 18, 28, 0.3);
-    --line-2: rgba(19, 18, 28, 0.5);
+    --line: rgba(15, 27, 45, 0.3);
+    --line-2: rgba(15, 27, 45, 0.5);
     --ink-2: #2d2c3d;
     --ink-3: #4a4960;
     --glass: rgba(255, 255, 255, 0.95);

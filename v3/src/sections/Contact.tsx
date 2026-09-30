@@ -8,6 +8,7 @@ import { auroraFragment } from '../three/shaders';
 import { Icon } from '../ui/Icon';
 import { toast } from '../ui/Toast';
 import { Grad } from '../ui/Text';
+import { Logo } from '../ui/Logo';
 
 /** The same daylight aurora as the film, on a tiny raw-WebGL canvas that only runs while visible. */
 function AuroraCanvas() {
@@ -41,10 +42,10 @@ function AuroraCanvas() {
       const v = parseInt(hex.slice(1), 16);
       gl.uniform3f(U(n), ((v >> 16) & 255) / 255, ((v >> 8) & 255) / 255, (v & 255) / 255);
     };
-    set3('uBase', '#F4F3FA');
-    set3('uC1', '#7C95FF');
-    set3('uC2', '#FF9ACB');
-    set3('uC3', '#86F0CF');
+    set3('uBase', '#F6F4EF');
+    set3('uC1', '#7EA0F0');
+    set3('uC2', '#F4C47C');
+    set3('uC3', '#72D5CA');
     gl.uniform1f(U('uIntensity'), 1.05);
     gl.uniform2f(U('uPointer'), 0, 0);
 
@@ -143,8 +144,8 @@ function ChatBrief() {
   return (
     <div className="chat glass" data-reveal>
       <div className="chat-head">
-        <span className="brand-mark brand-mark--sm" aria-hidden="true">
-          ر
+        <span className="avatar">
+          <img src="me/me-face.webp" alt="" width={80} height={80} />
         </span>
         <div>
           <strong>{site.name}</strong>
@@ -159,15 +160,20 @@ function ChatBrief() {
       <div className="chat-body" ref={body} data-lenis-prevent aria-live="polite">
         <AnimatePresence initial={false}>
           {lines.map((l) => (
-            <motion.p
+            <motion.div
               key={l.id}
-              className={l.me ? 'bubble bubble--me' : 'bubble'}
+              className={l.me ? 'line line--me' : 'line'}
               initial={{ opacity: 0, transform: 'translateY(10px) scale(0.97)' }}
               animate={{ opacity: 1, transform: 'translateY(0px) scale(1)' }}
               transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
             >
-              {l.text}
-            </motion.p>
+              {!l.me && (
+                <span className="avatar avatar--sm" aria-hidden="true">
+                  <img src="me/me-face.webp" alt="" width={68} height={68} />
+                </span>
+              )}
+              <p className={l.me ? 'bubble bubble--me' : 'bubble'}>{l.text}</p>
+            </motion.div>
           ))}
         </AnimatePresence>
         {typing && (
@@ -281,6 +287,7 @@ export function Contact() {
     <section className="contact" id="contact">
       <AuroraCanvas />
       <div className="container contact-inner">
+        <img className="contact-portrait" src="me/me-side.webp" alt="" width={302} height={501} loading="lazy" data-reveal />
         <header className="section-head section-head--center" data-reveal>
           <p className="eyebrow">{contact.eyebrow}</p>
           <h2 className="display display--xl">
@@ -302,13 +309,13 @@ export function Footer() {
     <footer className="footer">
       <div className="container footer-inner">
         <div className="footer-brand">
-          <span className="brand-mark" aria-hidden="true">
-            ر
+          <Logo size={48} latin />
+          <p>
+            {site.role} · {site.city}
+          </p>
+          <span className="footer-sign" aria-hidden="true">
+            {site.name}
           </span>
-          <div>
-            <strong>{site.name}</strong>
-            <p>{site.role} · {site.city}</p>
-          </div>
         </div>
         <nav className="footer-nav" aria-label="لینک‌های پایین صفحه">
           {nav.map((n) => (

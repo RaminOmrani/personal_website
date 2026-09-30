@@ -1,7 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
+import '@fontsource-variable/vazirmatn';
 import '@fontsource-variable/estedad';
-import '@fontsource-variable/readex-pro';
+import '@fontsource-variable/noto-nastaliq-urdu';
 import './styles/index.css';
 import { App } from './App';
 

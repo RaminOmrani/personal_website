@@ -175,9 +175,14 @@ export function CaseStudy({ p, onClose, onOpen }: { p: Project; onClose: () => v
         </dl>
 
         <section className="case-cta">
-          <div>
-            <h2>یک پروژهٔ شبیه این می‌خواهید؟</h2>
-            <p>بگویید برای چه کسب‌وکاری؛ مشاورهٔ اول رایگان است.</p>
+          <div className="case-cta-who">
+            <span className="avatar">
+              <img src="me/me-face.webp" alt="" width={80} height={80} />
+            </span>
+            <div>
+              <h2>یک پروژهٔ شبیه این می‌خواهید؟</h2>
+              <p>بگویید برای چه کسب‌وکاری؛ مشاورهٔ اول رایگان است و خودم جواب می‌دهم.</p>
+            </div>
           </div>
           <div className="case-cta-actions">
             <a className="btn btn--whatsapp btn--lg" href={whatsappWith(`سلام رامین، پروژه‌ای شبیه «${p.name}» می‌خواهم.`)} target="_blank" rel="noopener">

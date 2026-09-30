@@ -8,7 +8,7 @@ import { Film } from './sections/Film';
 import { Dock, Header } from './sections/Chrome';
 import { Work } from './sections/Work';
 import { CaseStudy } from './sections/CaseStudy';
-import { About, Faq, Marquee, Process, Services } from './sections/Sections';
+import { About, Faq, Marquee, Pledge, Process, Services } from './sections/Sections';
 import { Contact, Footer } from './sections/Contact';
 import { Toaster } from './ui/Toast';
 
@@ -219,6 +219,7 @@ export function App() {
         <Services />
         <Marquee />
         <Process />
+        <Pledge />
         <About />
         <Faq />
         <Contact />

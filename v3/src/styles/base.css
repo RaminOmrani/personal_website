@@ -1,38 +1,42 @@
 /* ==========================================================================
    Ramin Omrani — v3 "Daylight cinema"
-   Layout: a pinned 3D film on a pearl ground, then airy sections of spatial glass.
-   One iridescent gradient (indigo → violet → rose → amber) is the only loud thing.
+   Layout: a pinned 3D film on an ivory ground, then airy sections of spatial glass.
+   Colour comes from Persian tilework: lapis lazuli, turquoise and a touch of saffron gold;
+   the Persian arch (طاق) of the logo frames photos. Nastaliq appears only as an accent.
    ========================================================================== */
 
 :root {
-  --pearl: #f4f3fa;
-  --pearl-2: #ebe9f5;
+  /* ground and ink: warm ivory, deep lapis-navy text */
+  --pearl: #f6f4ef;
+  --pearl-2: #eeebe3;
   --surface: #ffffff;
-  --ink: #13121c;
-  --ink-2: #4a4960;
-  --ink-3: #74738a;
-  --line: rgba(19, 18, 28, 0.08);
-  --line-2: rgba(19, 18, 28, 0.15);
+  --ink: #0f1b2d;
+  --ink-2: #43506a;
+  --ink-3: #6b7690;
+  --line: rgba(15, 27, 45, 0.08);
+  --line-2: rgba(15, 27, 45, 0.15);
 
-  --indigo: #4c5bff;
-  --indigo-deep: #3441df;
-  --violet: #8b5cf6;
-  --rose: #ff5fa2;
-  --amber: #ffa24c;
-  --cyan: #22c3e6;
+  /* Persian tile colours: lapis lazuli, turquoise, saffron gold */
+  --lapis: #1f52d6;
+  --lapis-deep: #173fa8;
+  --turq: #0e9aa7;
+  --turq-soft: #dff3f1;
+  --saffron: #e9a23b;
+  --gold: #f3c46e;
   --ok: #16a34a;
   --wa: #25d366;
   --tg: #229ed9;
-  --iris: linear-gradient(100deg, var(--indigo) 0%, var(--violet) 36%, var(--rose) 70%, var(--amber) 100%);
+  --tile: linear-gradient(100deg, var(--lapis) 0%, #1673c4 48%, var(--turq) 100%);
+  --gilt: linear-gradient(180deg, #f8cf7a, #e0962f);
 
-  --glass: rgba(255, 255, 255, 0.58);
-  --glass-strong: rgba(255, 255, 255, 0.78);
+  --glass: rgba(255, 255, 255, 0.6);
+  --glass-strong: rgba(255, 255, 255, 0.8);
   --glass-edge:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
     inset 0 0 0 1px rgba(255, 255, 255, 0.55),
-    0 0 0 1px rgba(19, 18, 28, 0.05);
-  --shadow-float: 0 18px 48px -18px rgba(44, 32, 110, 0.28), 0 4px 12px -4px rgba(44, 32, 110, 0.08);
-  --shadow-deep: 0 40px 90px -30px rgba(44, 32, 110, 0.4), 0 10px 30px -12px rgba(44, 32, 110, 0.14);
+    0 0 0 1px rgba(15, 27, 45, 0.05);
+  --shadow-float: 0 18px 48px -18px rgba(15, 27, 45, 0.24), 0 4px 12px -4px rgba(15, 27, 45, 0.07);
+  --shadow-deep: 0 40px 90px -30px rgba(15, 27, 45, 0.36), 0 10px 30px -12px rgba(15, 27, 45, 0.12);
 
   --r-sm: 12px;
   --r-md: 20px;
@@ -44,8 +48,11 @@
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
-  --font: 'Estedad Variable', 'Readex Pro Variable', Tahoma, system-ui, sans-serif;
-  --font-display: 'Readex Pro Variable', 'Estedad Variable', Tahoma, system-ui, sans-serif;
+  /* The pairing top Persian products use (IRANSans / Yekan Bakh class), in free equivalents:
+     Estedad for headlines, Vazirmatn for reading, Nastaliq for a few accents only. */
+  --font: 'Vazirmatn Variable', 'Estedad Variable', Tahoma, system-ui, sans-serif;
+  --font-display: 'Estedad Variable', 'Vazirmatn Variable', Tahoma, system-ui, sans-serif;
+  --font-nas: 'Noto Nastaliq Urdu Variable', 'Noto Nastaliq Urdu', serif;
 
   --gutter: clamp(16px, 4vw, 48px);
   --maxw: 1240px;
@@ -122,7 +129,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2.5px solid var(--indigo);
+  outline: 2.5px solid var(--lapis);
   outline-offset: 3px;
 }
 
@@ -190,9 +197,9 @@ button {
   }
 }
 
-/* The iridescent word. Still by default: a looping gradient would repaint big text every frame. */
+/* The accent word: lapis into turquoise. Still by default: a looping gradient would repaint big text every frame. */
 .grad {
-  background: var(--iris);
+  background: var(--tile);
   background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -201,7 +208,7 @@ button {
   box-decoration-break: clone;
 }
 
-@keyframes iris {
+@keyframes sheen {
   from {
     background-position: 0% 50%;
   }
@@ -210,11 +217,30 @@ button {
   }
 }
 
+/* Nastaliq accent: set a size up (the script reads small) with room for its tall strokes. */
+.nas {
+  display: inline-block;
+  /* padding gives the gradient room to reach the tall strokes; margins give it back to the line */
+  padding: 0.3em 0.08em 0.42em;
+  margin-block: -0.3em -0.42em;
+  font-family: var(--font-nas);
+  font-weight: 700;
+  font-size: 1em;
+  line-height: 1;
+  letter-spacing: 0;
+  background: var(--tile);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-inline: 0.06em;
+}
+
 /* ---------- type ---------- */
 
 .display {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-size: clamp(2.1rem, 1.2rem + 3.6vw, 4.4rem);
   line-height: 1.3;
   letter-spacing: -0.005em;
@@ -234,7 +260,7 @@ button {
   align-items: center;
   gap: 10px;
   margin-bottom: 14px;
-  color: var(--indigo);
+  color: var(--lapis);
   font-family: var(--font-display);
   font-size: 15px;
   font-weight: 600;
@@ -244,9 +270,9 @@ button {
 .eyebrow::before {
   content: '';
   width: 22px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--iris);
+  height: 3px;
+  border-radius: 3px;
+  background: var(--gilt);
 }
 
 .section {
@@ -297,6 +323,27 @@ html.js [data-enter] {
   vertical-align: top;
 }
 
+/* Nastaliq is not masked: it is written in, right to left, like ink */
+.word--nas {
+  overflow: visible;
+  vertical-align: baseline;
+  padding: 0;
+  margin: 0;
+}
+
+html.js .word-in.nas {
+  animation: ink 1300ms var(--ease-in-out) both;
+}
+
+@keyframes ink {
+  from {
+    clip-path: inset(-60% 0 -60% 100%);
+  }
+  to {
+    clip-path: inset(-60% 0 -60% 0);
+  }
+}
+
 .word-in {
   display: inline-block;
 }
@@ -309,7 +356,7 @@ html.js .word-in {
 html.js .word-in.grad {
   animation:
     rise 1000ms var(--ease-out) both,
-    iris 3.2s ease-in-out 1.2s 2 alternate;
+    sheen 3.2s ease-in-out 1.2s 2 alternate;
 }
 
 @keyframes rise {
@@ -381,12 +428,12 @@ html.js [data-reveal][data-in] {
 }
 
 .btn--primary {
-  background: linear-gradient(100deg, var(--indigo) 0%, #6f5cff 45%, var(--violet) 70%, #c05cf6 100%);
+  background: linear-gradient(100deg, var(--lapis-deep) 0%, var(--lapis) 40%, #1673c4 75%, var(--turq) 100%);
   background-size: 180% 100%;
   color: #fff;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    0 12px 30px -12px rgba(76, 91, 255, 0.75);
+    0 12px 30px -12px rgba(31, 82, 214, 0.75);
 }
 
 .btn--glass {
@@ -394,7 +441,7 @@ html.js [data-reveal][data-in] {
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   backdrop-filter: blur(16px) saturate(180%);
   color: var(--ink);
-  box-shadow: var(--glass-edge), 0 8px 24px -12px rgba(44, 32, 110, 0.25);
+  box-shadow: var(--glass-edge), 0 8px 24px -12px rgba(15, 27, 45, 0.25);
 }
 
 .btn--whatsapp {
@@ -450,7 +497,7 @@ html.js [data-reveal][data-in] {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--indigo);
+  color: var(--lapis);
   font-weight: 700;
   font-size: 15px;
   text-decoration: none;
@@ -465,7 +512,7 @@ html.js [data-reveal][data-in] {
     background-position: 100% 0;
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.35),
-      0 16px 36px -12px rgba(139, 92, 246, 0.8);
+      0 16px 36px -12px rgba(14, 154, 167, 0.8);
   }
   .btn--glass:hover,
   .icon-btn:hover {
@@ -572,31 +619,64 @@ html.js [data-reveal][data-in] {
   padding: 5px;
   border-radius: 14px;
   background: #fff;
-  box-shadow: 0 0 0 1px var(--line), 0 6px 14px -8px rgba(44, 32, 110, 0.3);
+  box-shadow: 0 0 0 1px var(--line), 0 6px 14px -8px rgba(15, 27, 45, 0.3);
 }
 
-.brand-mark {
-  display: grid;
-  place-items: center;
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mark {
+  flex: none;
+  filter: drop-shadow(0 6px 12px rgba(31, 82, 214, 0.28));
+}
+
+.logo-words {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.logo-words strong {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.logo-words small {
+  color: var(--ink-3);
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+}
+
+/* the chat and story avatars: Ramin's face in a round frame */
+.avatar {
   flex: none;
   width: 40px;
   height: 40px;
-  border-radius: 13px;
-  background: var(--iris);
-  background-size: 160% 100%;
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--tile);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    0 8px 18px -8px rgba(139, 92, 246, 0.8);
+    0 0 0 2px #fff,
+    0 0 0 3.5px var(--gold),
+    0 6px 14px -6px rgba(15, 27, 45, 0.4);
 }
 
-.brand-mark--sm {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  font-size: 18px;
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 8%;
+  scale: 1.05;
+}
+
+.avatar--sm {
+  width: 34px;
+  height: 34px;
 }

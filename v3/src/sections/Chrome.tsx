@@ -4,6 +4,7 @@ import { nav } from '../data/copy';
 import { site, whatsappWith } from '../data/site';
 import { lockScroll, scrollToTarget } from '../lib/scroll';
 import { Icon } from '../ui/Icon';
+import { Logo } from '../ui/Logo';
 
 const go = (href: string) => (e: React.MouseEvent) => {
   e.preventDefault();
@@ -35,10 +36,7 @@ export function Header() {
       <header className="header" data-solid={solid || undefined}>
         <div className="header-pill glass">
           <a className="brand" href="#top" onClick={go('#top')} aria-label={`${site.name}، بازگشت به ابتدا`}>
-            <span className="brand-mark" aria-hidden="true">
-              ر
-            </span>
-            <span className="brand-name">{site.name}</span>
+            <Logo size={42} />
           </a>
           <nav className="header-nav" aria-label="بخش‌های سایت">
             {nav.map((n) => (

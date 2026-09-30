@@ -32,6 +32,9 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
   const appHead = useRef<HTMLDivElement>(null);
   const callouts = useRef<(HTMLElement | null)[]>([]);
   const bar = useRef<HTMLSpanElement>(null);
+  const person = useRef<HTMLDivElement>(null);
+  const personStage = useRef<HTMLDivElement>(null);
+  const chips = useRef<(HTMLElement | null)[]>([]);
   const chapterDots = useRef<(HTMLElement | null)[]>([]);
 
   const mounted = useMounted();
@@ -82,9 +85,17 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
   useEffect(() => {
     if (gl === false) return;
     let last = -1;
+    const ptr = { x: 0, y: 0 };
+    let lastPtr = '';
     const apply = (p: number) => {
       const out = range(p, ...beats.heroOut);
       show(heroEl.current, 1 - out, reduced ? 0 : -out * 70);
+      const pe = person.current;
+      if (pe) {
+        pe.style.opacity = (1 - out).toFixed(3);
+        pe.style.visibility = out > 0.995 ? 'hidden' : 'visible';
+        pe.style.transform = reduced ? 'none' : `translate3d(0, ${(out * 90).toFixed(1)}px, 0) scale(${(1 - out * 0.05).toFixed(4)})`;
+      }
       show(cue.current, 1 - range(p, 0, 0.025));
 
       const sitesGate = range(p, 0.235, 0.275) * (1 - range(p, 0.595, 0.625));
@@ -108,8 +119,22 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
       const chapter = p < 0.2 ? 0 : p < 0.63 ? 1 : 2;
       chapterDots.current.forEach((el, i) => el?.toggleAttribute('data-on', i === chapter));
     };
+    // the portrait and its chips drift against the pointer at different depths
+    const parallax = (dt: number) => {
+      if (reduced) return;
+      ptr.x = damp(ptr.x, film.pointerX, 3, dt);
+      ptr.y = damp(ptr.y, film.pointerY, 3, dt);
+      const key = `${ptr.x.toFixed(3)},${ptr.y.toFixed(3)}`;
+      if (key === lastPtr) return;
+      lastPtr = key;
+      if (personStage.current) personStage.current.style.transform = `translate3d(${(ptr.x * -12).toFixed(1)}px, ${(ptr.y * -6).toFixed(1)}px, 0)`;
+      chips.current.forEach((el, i) => {
+        if (el) el.style.transform = `translate3d(${(ptr.x * (18 + i * 10)).toFixed(1)}px, ${(ptr.y * (10 + i * 6)).toFixed(1)}px, 0)`;
+      });
+    };
     const tick = (_: number, dtMs: number) => {
       const dt = Math.min(dtMs / 1000, 0.1);
+      parallax(dt);
       film.p = reduced ? film.target : damp(film.p, film.target, 5, dt);
       if (Math.abs(film.p - last) < 0.00002) return;
       last = film.p;
@@ -133,6 +158,51 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
             </Suspense>
           </div>
         )}
+
+        <div className="person" ref={person}>
+          <div className="person-stage" ref={personStage}>
+            <svg className="person-arch" viewBox="0 0 400 560" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="pa-fill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="#1f52d6" stopOpacity=".92" />
+                  <stop offset=".6" stopColor="#1673c4" stopOpacity=".82" />
+                  <stop offset="1" stopColor="#0e9aa7" stopOpacity=".7" />
+                </linearGradient>
+                <linearGradient id="pa-gold" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="#f8cf7a" />
+                  <stop offset="1" stopColor="#e0962f" />
+                </linearGradient>
+                <radialGradient id="pa-shine" cx=".35" cy=".2" r=".8">
+                  <stop offset="0" stopColor="#fff" stopOpacity=".38" />
+                  <stop offset=".55" stopColor="#fff" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+              <path className="arch-fill" d="M24 560 V236 C24 140 104 70 200 14 C296 70 376 140 376 236 V560 Z" fill="url(#pa-fill)" />
+              <path d="M24 560 V236 C24 140 104 70 200 14 C296 70 376 140 376 236 V560 Z" fill="url(#pa-shine)" />
+              <path className="arch-line" d="M24 560 V236 C24 140 104 70 200 14 C296 70 376 140 376 236 V560" fill="none" stroke="url(#pa-gold)" strokeWidth="5" pathLength={1} vectorEffect="non-scaling-stroke" />
+            </svg>
+            <img className="person-img" src="me/me-hero.webp" alt="رامین عمرانی" width={522} height={1008} fetchPriority="high" />
+            <span className="person-sweep" aria-hidden="true" style={{ maskImage: 'url(me/me-hero.webp)', WebkitMaskImage: 'url(me/me-hero.webp)' }} />
+            <span className="person-sign" aria-hidden="true">
+              {hero.signature}
+            </span>
+            <ul className="person-chips" aria-label="دربارهٔ رامین">
+              {hero.chips.map((c, i) => (
+                <li
+                  key={c}
+                  className="person-chip glass"
+                  style={{ animationDelay: `${1500 + i * 140}ms` }}
+                  ref={(el) => {
+                    chips.current[i] = el;
+                  }}
+                >
+                  <Icon name={['trophy', 'code', 'bolt'][i]} size={15} />
+                  {c}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         <div className="film-ui">
           <div className="hero-copy" ref={heroEl}>

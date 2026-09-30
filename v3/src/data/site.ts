@@ -7,6 +7,8 @@ export const site = {
   role: 'طراحی و ساخت سایت، اپلیکیشن و ربات',
   city: 'مشهد',
   url: 'https://raminomrani.github.io/personal_website/v3/',
+  /** پیشنهاد دامنه: raminomrani.ir (اصلی، برای اعتماد و سرعت در ایران) و omrani.dev (بین‌المللی). */
+  domain: 'raminomrani.ir',
   email: 'ramin.omrani.95@gmail.com',
   phone: { display: '۰۹۰۱ ۷۰۲ ۱۱۶۶', plain: '09017021166', href: 'tel:+989017021166' },
   whatsapp: { display: '۰۹۳۶ ۵۷۴ ۳۴۵۸', plain: '09365743458', href: 'https://wa.me/989365743458' },

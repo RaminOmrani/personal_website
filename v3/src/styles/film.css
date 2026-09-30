@@ -104,7 +104,7 @@
   display: flex;
   flex-direction: column;
   padding: calc(84px + env(safe-area-inset-top, 0px)) var(--gutter) calc(24px + env(safe-area-inset-bottom, 0px));
-  background: rgba(244, 243, 250, 0.82);
+  background: rgba(246, 244, 239, 0.82);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   backdrop-filter: blur(28px) saturate(180%);
   overscroll-behavior: contain;
@@ -175,9 +175,9 @@
   inset: 0;
   z-index: -2;
   background:
-    radial-gradient(45% 55% at 18% 30%, rgba(124, 149, 255, 0.55), transparent 70%),
-    radial-gradient(40% 50% at 85% 75%, rgba(255, 154, 203, 0.5), transparent 70%),
-    radial-gradient(35% 40% at 60% 8%, rgba(183, 155, 255, 0.45), transparent 70%),
+    radial-gradient(45% 55% at 18% 30%, rgba(99, 140, 235, 0.55), transparent 70%),
+    radial-gradient(40% 50% at 85% 75%, rgba(245, 199, 126, 0.5), transparent 70%),
+    radial-gradient(35% 40% at 60% 8%, rgba(111, 214, 203, 0.45), transparent 70%),
     var(--pearl);
 }
 
@@ -204,7 +204,7 @@
   inset: auto 0 0;
   height: 14svh;
   z-index: -1;
-  background: linear-gradient(transparent, rgba(244, 243, 250, 0.9));
+  background: linear-gradient(transparent, rgba(246, 244, 239, 0.9));
   pointer-events: none;
 }
 
@@ -315,6 +315,7 @@
 }
 
 .film-cue {
+  display: none !important;
   position: absolute;
   bottom: calc(76px + env(safe-area-inset-bottom, 0px));
   left: 50%;
@@ -395,7 +396,7 @@ html.js .film:not(.film--static) :is(.chapter-tag--sites, .cap, .app-head, .call
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--iris);
+  background: var(--tile);
 }
 
 .chapter-tag--sites {
@@ -442,7 +443,7 @@ html.js .film:not(.film--static) :is(.chapter-tag--sites, .cap, .app-head, .call
 .cap-index {
   padding: 2px 9px;
   border-radius: 999px;
-  background: var(--iris);
+  background: var(--tile);
   color: #fff;
   font-family: var(--font-display);
   font-size: 12px;
@@ -513,7 +514,7 @@ html.js .film:not(.film--static) :is(.chapter-tag--sites, .cap, .app-head, .call
   width: 48px;
   height: 48px;
   border-radius: 15px;
-  background: var(--iris);
+  background: var(--tile);
   color: #fff;
   font-family: var(--font-display);
   font-weight: 700;
@@ -609,13 +610,13 @@ html.js .film:not(.film--static) :is(.chapter-tag--sites, .cap, .app-head, .call
   height: 3px;
   overflow: hidden;
   border-radius: 3px;
-  background: rgba(19, 18, 28, 0.1);
+  background: rgba(15, 27, 45, 0.1);
 }
 
 .film-bar span {
   position: absolute;
   inset: 0;
-  background: var(--iris);
+  background: var(--tile);
   transform-origin: right;
   transform: scaleX(0);
 }
@@ -750,5 +751,261 @@ html.js .film:not(.film--static) :is(.chapter-tag--sites, .cap, .app-head, .call
 @media (min-width: 760px) {
   .dock {
     display: none;
+  }
+}
+
+/* ---------- the portrait: Ramin inside a gold Persian arch ---------- */
+
+.person {
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  inset-inline-end: max(calc(var(--gutter) + 4vw), (100% - var(--maxw)) / 2 + 6%);
+  width: min(34vw, 480px);
+  height: min(80svh, 780px);
+  pointer-events: none;
+  transform-origin: 50% 100%;
+}
+
+.person-stage {
+  position: absolute;
+  inset: 0;
+}
+
+/* the arch sits behind; the head breaks out of its top, like a magazine cover */
+.person-arch {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 88%;
+  height: 87%;
+  translate: -50% 0;
+  overflow: visible;
+  filter: drop-shadow(0 30px 50px rgba(15, 27, 45, 0.25));
+}
+
+.person-img {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  translate: -50% 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
+  filter: drop-shadow(0 18px 36px rgba(15, 27, 45, 0.3));
+}
+
+/* a single pass of light across the figure, clipped to his silhouette */
+.person-sweep {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: 100%;
+  aspect-ratio: 522 / 1008;
+  translate: -50% 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.55) 48%, rgba(255, 226, 170, 0.45) 52%, transparent 62%) no-repeat;
+  background-size: 300% 100%;
+  background-position: 120% 0;
+  /* the mask image is set inline (relative to the page, so it works under any base path) */
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.person-sign {
+  position: absolute;
+  bottom: 8%;
+  inset-inline-end: 4%;
+  font-family: var(--font-nas);
+  font-weight: 700;
+  font-size: clamp(2rem, 1.2rem + 2.2vw, 3.4rem);
+  line-height: 1.6;
+  color: #fff;
+  text-shadow: 0 4px 24px rgba(15, 27, 45, 0.55);
+  white-space: nowrap;
+  rotate: -6deg;
+}
+
+.person-chips {
+  position: absolute;
+  inset: 0;
+}
+
+.person-chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.person-chip svg {
+  color: var(--saffron);
+}
+
+.person-chip:nth-child(1) {
+  top: 20%;
+  inset-inline-start: -6%;
+}
+
+.person-chip:nth-child(2) {
+  top: 44%;
+  inset-inline-end: -6%;
+}
+
+.person-chip:nth-child(3) {
+  top: 70%;
+  inset-inline-end: -4%;
+}
+
+/* entrance: focus pull on the figure, the arch drawn in gold, one sweep of light, chips drift in */
+html.js .person-img {
+  animation: focus-in 1400ms var(--ease-out) 150ms both;
+}
+
+html.js .arch-fill {
+  animation: fade 1200ms ease 100ms both;
+}
+
+.arch-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+html.js .arch-line {
+  animation: draw 1800ms var(--ease-in-out) 250ms both;
+}
+
+html.js .person-sweep {
+  animation: sweep 1700ms var(--ease-in-out) 1300ms both;
+}
+
+html.js .person-sign {
+  animation: sign 1400ms var(--ease-out) 1100ms both;
+}
+
+html.js .person-chip {
+  animation: chip-in 800ms var(--ease-out) both;
+}
+
+@keyframes focus-in {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(1.04);
+    filter: blur(10px) drop-shadow(0 18px 36px rgba(15, 27, 45, 0));
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes sweep {
+  0% {
+    opacity: 0;
+    background-position: 120% 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    background-position: -20% 0;
+  }
+}
+
+/* the signature is revealed right to left, as it is written */
+@keyframes sign {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+    scale: 0.96;
+  }
+}
+
+/* keep the headline readable over the 3D stage: a soft ivory pool behind the copy */
+.hero-copy {
+  isolation: isolate;
+}
+
+.hero-copy::before {
+  content: '';
+  position: absolute;
+  inset: 4% -14% 4% -26%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(246, 244, 239, 0.92), rgba(246, 244, 239, 0.6) 55%, rgba(246, 244, 239, 0));
+  pointer-events: none;
+}
+
+@media (max-width: 999px) {
+  .person {
+    inset-inline: 0;
+    margin-inline: auto;
+    width: min(80vw, 400px);
+    height: min(47svh, 520px);
+  }
+  .person-chip {
+    font-size: 12px;
+    padding: 6px 11px;
+  }
+  .person-chip:nth-child(1) {
+    top: 12%;
+    inset-inline-start: -2%;
+  }
+  .person-chip:nth-child(2) {
+    top: 34%;
+    inset-inline-end: -2%;
+  }
+  .person-chip:nth-child(3) {
+    display: none;
+  }
+  .person-sign {
+    inset-inline-end: 2%;
+    bottom: 7%;
+  }
+  .hero-copy::before {
+    inset: -10% -10% -6% -10%;
+  }
+}
+
+.film--static .film-still {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .person-img,
+  html.js .person-sign,
+  html.js .person-chip,
+  html.js .arch-fill,
+  html.js .arch-line {
+    animation: fade 500ms ease both;
+  }
+  html.js .person-sweep {
+    animation: none;
   }
 }
