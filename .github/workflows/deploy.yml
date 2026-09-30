@@ -23,8 +23,18 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            v2/package-lock.json
       - run: npm ci
       - run: npm run build
+      # v2 (the light, React redesign) is published next to v1, at /v2/
+      - name: Build v2
+        working-directory: v2
+        run: |
+          npm ci
+          npm run build
+      - run: cp -r v2/dist dist/v2
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

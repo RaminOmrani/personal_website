@@ -1,0 +1,265 @@
+/* Styles for the hero variants that only exist on the prototypes page. */
+
+/* ---------- گفت‌وگو (conversation) ---------- */
+
+.conv-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.conv-answer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding-inline: 18px 20px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px var(--line-2),
+    var(--shadow-sm);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.conv-answer svg {
+  color: var(--ink-3);
+  transition: color 180ms ease;
+}
+
+.conv-answer:active {
+  transform: scale(0.97);
+}
+
+.conv-answer[aria-checked='true'] {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 10px 22px -10px rgba(14, 17, 22, 0.6);
+}
+
+.conv-answer[aria-checked='true'] svg {
+  color: var(--marker);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .conv-answer[aria-checked='false']:hover {
+    box-shadow:
+      inset 0 0 0 1px rgba(14, 17, 22, 0.3),
+      var(--shadow-sm);
+  }
+}
+
+.conv-note {
+  display: grid;
+  min-height: 3.8em;
+  max-width: 34em;
+  color: var(--ink-2);
+  font-size: 1.08rem;
+}
+
+.conv-note p {
+  grid-area: 1 / 1;
+}
+
+.conv-stage {
+  display: grid;
+}
+
+/* on phones the preview sits right under the answers, so every tap visibly changes something */
+@media (max-width: 999px) {
+  .hero--conv .hero-grid {
+    gap: 22px;
+  }
+  .hero--conv .hero-copy {
+    display: contents;
+  }
+  .hero--conv .pill {
+    justify-self: start;
+    order: 1;
+  }
+  .hero--conv .hero-title {
+    order: 2;
+  }
+  .hero--conv .conv-answers {
+    order: 3;
+  }
+  .hero--conv .conv-stage {
+    order: 4;
+    width: min(100%, 520px);
+  }
+  .hero--conv .conv-note {
+    order: 5;
+  }
+  .hero--conv .hero-ctas {
+    order: 6;
+  }
+}
+
+.conv-layer {
+  grid-area: 1 / 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.conv-devices {
+  position: relative;
+  height: 100%;
+}
+
+.conv-browser {
+  position: absolute;
+  top: 6%;
+  inset-inline-end: 0;
+  width: 88%;
+}
+
+.conv-phone {
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 2%;
+  width: 32%;
+}
+
+.conv-devices--phones .conv-phone {
+  width: 40%;
+  inset-inline-start: 12%;
+  bottom: 2%;
+}
+
+.conv-devices--phones .conv-phone--back {
+  inset-inline-start: auto;
+  inset-inline-end: 10%;
+  bottom: 10%;
+  transform: rotate(4deg);
+}
+
+/* ---------- پوستر (editorial) ---------- */
+
+.hero--ed {
+  padding-bottom: clamp(40px, 6vh, 72px);
+}
+
+.ed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding-top: clamp(12px, 4vh, 48px);
+  text-align: center;
+}
+
+.ed-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: clamp(2.4rem, 1.2rem + 5.6vw, 5.6rem);
+  line-height: 1.3;
+}
+
+.ed-word {
+  display: grid;
+  justify-items: center;
+  min-height: 1.3em;
+}
+
+.ed-word > * {
+  grid-area: 1 / 1;
+}
+
+.ed-marker {
+  color: var(--accent);
+  background-size: 100% 100%;
+}
+
+html.js .ed-marker {
+  background-size: 100% 100%;
+  transition: none;
+}
+
+.ed-text {
+  max-width: 38em;
+  color: var(--ink-2);
+  font-size: clamp(1.02rem, 0.96rem + 0.32vw, 1.2rem);
+  line-height: 1.95;
+}
+
+.ed-ctas {
+  justify-content: center;
+}
+
+.ed-strip {
+  margin-top: clamp(40px, 7vh, 72px);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.ed-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  padding-block: 12px 28px;
+  animation: ed-marquee 70s linear infinite;
+}
+
+.ed-shot {
+  flex: none;
+  width: clamp(260px, 32vw, 420px);
+  margin: 0;
+}
+
+.ed-shot figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ed-shot figcaption span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* constant motion: linear; RTL, so the strip travels toward the reading direction's end */
+@keyframes ed-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(50% + 12px));
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ed-strip:hover .ed-track {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-track {
+    animation: none;
+  }
+  .ed-strip {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
