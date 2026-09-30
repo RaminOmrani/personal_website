@@ -454,6 +454,16 @@ function setupClock(env: PageEnv, timers: number[]): void {
 
 /* ───────────────────────────── Case studies ───────────────────────────── */
 
+/** History calls can throw inside sandboxed frames; the dialog must still work there. */
+function setHistory(mode: 'push' | 'replace', state: unknown, url: string): void {
+  try {
+    if (mode === 'push') history.pushState(state, '', url);
+    else history.replaceState(state, '', url);
+  } catch {
+    /* ignore */
+  }
+}
+
 type ViewTransitionDoc = Document & { startViewTransition?: (cb: () => void) => { finished: Promise<void>; ready: Promise<void> } };
 
 function setupCases(env: PageEnv, signal: AbortSignal): void {
@@ -508,7 +518,7 @@ function setupCases(env: PageEnv, signal: AbortSignal): void {
       reveal();
     }
     source = media;
-    if (push) history.pushState({ case: slug }, '', `#case/${slug}`);
+    if (push) setHistory('push', { case: slug }, `#case/${slug}`);
   };
 
   const hide = () => {
@@ -539,7 +549,7 @@ function setupCases(env: PageEnv, signal: AbortSignal): void {
     if (history.state?.case) history.back();
     else {
       hide();
-      if (location.hash.startsWith('#case/')) history.replaceState(null, '', location.pathname + location.search);
+      if (location.hash.startsWith('#case/')) setHistory('replace', null, location.pathname + location.search);
     }
   };
 
@@ -567,7 +577,7 @@ function setupCases(env: PageEnv, signal: AbortSignal): void {
         const slug = next.dataset.caseNext!;
         fill(slug);
         source = mediaFor(slug);
-        history.replaceState({ case: slug }, '', `#case/${slug}`);
+        setHistory('replace', { case: slug }, `#case/${slug}`);
         $<HTMLElement>('[data-case-close]', dialog)?.focus({ preventScroll: true });
         if (!env.reduced) gsap.from($('.case-inner', dialog), { opacity: 0, y: 60, duration: 0.9, ease: 'expo.out' });
       }

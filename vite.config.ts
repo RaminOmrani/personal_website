@@ -11,7 +11,7 @@ function prerender(): Plugin {
   return {
     name: 'prerender-portfolio',
     configResolved(config) {
-      dev = config.command === 'serve';
+      dev = config.command === 'serve' || process.env.VITE_SHOW_SAMPLES === '1';
     },
     buildStart() {
       if (dev) return;

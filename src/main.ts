@@ -25,7 +25,11 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 const root = document.documentElement;
 const app = document.getElementById('app')!;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const renderOptions: RenderOptions = { dev: import.meta.env.DEV, year: new Date().getFullYear() };
+const renderOptions: RenderOptions = {
+  // VITE_SHOW_SAMPLES=1 builds a shareable preview that labels placeholder content
+  dev: import.meta.env.DEV || import.meta.env.VITE_SHOW_SAMPLES === '1',
+  year: new Date().getFullYear(),
+};
 
 /* ───────────── Language ───────────── */
 
