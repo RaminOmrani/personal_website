@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <title>رامین عمرانی · طراحی سایت و اپلیکیشن</title>
+    <meta name="description" content="اپلیکیشن رامین عمرانی: نمونه‌کارها، خدمات و تماس مستقیم برای طراحی و ساخت سایت، اپلیکیشن موبایل، CRM، پنل مدیریت و ربات تلگرام." />
+    <meta name="theme-color" content="#F6F4EF" />
+    <meta name="color-scheme" content="light" />
+    <meta name="application-name" content="رامین عمرانی" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="رامین عمرانی" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="./icons/icon-48.png" sizes="48x48" type="image/png" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="canonical" href="https://raminomrani.ir/app/" />
+    <script>
+      // language before first paint: the choice the websites and the app share (ro:lang), Persian by default
+      (function (d) {
+        var lang = 'fa';
+        try {
+          if (localStorage.getItem('ro:lang') === 'en') lang = 'en';
+        } catch (e) {}
+        d.lang = lang;
+        d.dir = lang === 'en' ? 'ltr' : 'rtl';
+        d.classList.add('js');
+        if (lang === 'en') document.title = 'Ramin Omrani · Websites & apps';
+      })(document.documentElement);
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p class="noscript">برای دیدن این اپلیکیشن، جاوااسکریپت مرورگر را روشن کنید. · Please turn on JavaScript to use this app. <a href="../">raminomrani.ir</a></p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
