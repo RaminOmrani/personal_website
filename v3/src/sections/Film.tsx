@@ -181,7 +181,9 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
               <path d="M24 560 V236 C24 140 104 70 200 14 C296 70 376 140 376 236 V560 Z" fill="url(#pa-shine)" />
               <path className="arch-line" d="M24 560 V236 C24 140 104 70 200 14 C296 70 376 140 376 236 V560" fill="none" stroke="url(#pa-gold)" strokeWidth="5" pathLength={1} vectorEffect="non-scaling-stroke" />
             </svg>
-            <img className="person-img" src="me/me-hero.webp" alt="رامین عمرانی" width={522} height={1008} fetchPriority="high" />
+            <span className="person-fig">
+              <img className="person-img" src="me/me-hero.webp" alt="رامین عمرانی" width={522} height={1008} fetchPriority="high" />
+            </span>
             <span className="person-sweep" aria-hidden="true" style={{ maskImage: 'url(me/me-hero.webp)', WebkitMaskImage: 'url(me/me-hero.webp)' }} />
             <span className="person-sign" aria-hidden="true">
               {hero.signature}

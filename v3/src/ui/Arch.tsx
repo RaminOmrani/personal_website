@@ -9,13 +9,13 @@ import { gsap } from '../lib/scroll';
 export function ArchPortrait({ src, alt, width, height, className, children }: { src: string; alt: string; width: number; height: number; className?: string; children?: ReactNode }) {
   const id = useId().replace(/:/g, '');
   const fig = useRef<HTMLElement>(null);
-  const img = useRef<HTMLImageElement>(null);
+  const figure = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const el = fig.current;
-    const im = img.current;
-    if (!el || !im || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const tween = gsap.fromTo(im, { yPercent: 7 }, { yPercent: -3, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+    const lift = figure.current;
+    if (!el || !lift || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const tween = gsap.fromTo(lift, { yPercent: 8 }, { yPercent: -3.5, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
     return () => {
       tween.scrollTrigger?.kill();
       tween.kill();
@@ -44,7 +44,9 @@ export function ArchPortrait({ src, alt, width, height, className, children }: {
         <path d="M20 520 V220 C20 128 104 62 200 12 C296 62 380 128 380 220 V520 Z" fill={`url(#${id}s)`} />
         <path d="M44 520 V230 C44 150 116 94 200 50 C284 94 356 150 356 230 V520" fill="none" stroke={`url(#${id}g)`} strokeWidth="3" vectorEffect="non-scaling-stroke" opacity=".9" />
       </svg>
-      <img ref={img} className="arch-img" src={src} alt={alt} width={width} height={height} loading="lazy" decoding="async" />
+      <span className="arch-fig" ref={figure}>
+        <img className="arch-img" src={src} alt={alt} width={width} height={height} loading="lazy" decoding="async" />
+      </span>
       {children}
     </figure>
   );

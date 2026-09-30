@@ -784,6 +784,12 @@ html.js .film:not(.film--static) :is(.chapter-tag--sites, .cap, .app-head, .call
   filter: drop-shadow(0 30px 50px rgba(15, 27, 45, 0.25));
 }
 
+/* the shadow lives on a wrapper: on the image itself the fade mask would cut it off in a hard-edged box */
+.person-fig {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 18px 36px rgba(15, 27, 45, 0.3));
+}
 .person-img {
   position: absolute;
   bottom: 0;
@@ -794,7 +800,6 @@ html.js .film:not(.film--static) :is(.chapter-tag--sites, .cap, .app-head, .call
   translate: -50% 0;
   -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
-  filter: drop-shadow(0 18px 36px rgba(15, 27, 45, 0.3));
 }
 
 /* a single pass of light across the figure, clipped to his silhouette */
@@ -904,7 +909,7 @@ html.js .person-chip {
   from {
     opacity: 0;
     transform: translateY(40px) scale(1.04);
-    filter: blur(10px) drop-shadow(0 18px 36px rgba(15, 27, 45, 0));
+    filter: blur(10px);
   }
 }
 

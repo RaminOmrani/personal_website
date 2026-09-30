@@ -1444,19 +1444,26 @@
   filter: drop-shadow(0 24px 40px rgba(15, 27, 45, 0.22));
 }
 
+/* shadow on the wrapper, not the masked image, so it isn't clipped into a box */
+.arch-fig {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 14px 26px rgba(15, 27, 45, 0.28));
+  will-change: transform;
+}
+
 /* the figure is taller than the arch: the head steps out over the top edge */
 .arch-img {
   position: absolute;
   bottom: 0;
   left: 50%;
-  width: 92%;
+  /* as wide as the arch's straight sides (5%–95%), so a photo cropped flat lines up with the frame */
+  width: 90%;
   max-width: none;
   height: auto;
   translate: -50% 0;
   -webkit-mask-image: linear-gradient(to bottom, #000 90%, transparent);
   mask-image: linear-gradient(to bottom, #000 90%, transparent);
-  filter: drop-shadow(0 14px 26px rgba(15, 27, 45, 0.28));
-  will-change: transform;
 }
 
 .arch-portrait figcaption {
@@ -1590,10 +1597,17 @@
     top: -40px;
     inset-inline-end: -10px;
     width: 220px;
-    height: auto;
-    -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent);
-    mask-image: linear-gradient(to bottom, #000 80%, transparent);
     filter: drop-shadow(0 20px 30px rgba(15, 27, 45, 0.25));
+  }
+  /* the photo is cropped flat on its right: fade that edge along with the bottom */
+  .contact-portrait img {
+    display: block;
+    width: 100%;
+    height: auto;
+    -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent), linear-gradient(to left, transparent, #000 18%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to bottom, #000 80%, transparent), linear-gradient(to left, transparent, #000 18%);
+    mask-composite: intersect;
   }
 }
 
