@@ -227,33 +227,33 @@ export function Process() {
 function Counter({ value, suffix, lang }: { value: number; suffix: string; lang: Lang }) {
   const ref = useRef<HTMLSpanElement>(null);
   const reduced = useReducedMotion();
-  const fa = (n: number) => digits(n, lang);
+  const num = (n: number) => digits(n, lang);
   useEffect(() => {
     const el = ref.current;
     if (!el || reduced || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const r = el.getBoundingClientRect();
     if (r.top < innerHeight) return; // already on screen: keep the real number
     const obj = { v: 0 };
-    el.textContent = fa(0) + suffix;
+    el.textContent = num(0) + suffix;
     const tween = gsap.to(obj, {
       v: value,
       duration: 1.6,
       ease: 'expo.out',
       paused: true,
       onUpdate: () => {
-        el.textContent = fa(Math.round(obj.v)) + suffix;
+        el.textContent = num(Math.round(obj.v)) + suffix;
       },
     });
     const st = ScrollTrigger.create({ trigger: el, start: 'top 85%', once: true, onEnter: () => tween.play() });
     return () => {
       st.kill();
       tween.kill();
-      el.textContent = fa(value) + suffix;
+      el.textContent = num(value) + suffix;
     };
   }, [value, suffix, reduced, lang]);
   return (
-    <span ref={ref} aria-label={fa(value) + suffix}>
-      {fa(value) + suffix}
+    <span ref={ref} aria-label={num(value) + suffix}>
+      {num(value) + suffix}
     </span>
   );
 }

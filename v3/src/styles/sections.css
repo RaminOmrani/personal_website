@@ -903,7 +903,7 @@
   color: transparent;
 }
 
-.stat span {
+.stat > span {
   color: var(--ink-2);
   font-size: 14px;
   line-height: 1.7;

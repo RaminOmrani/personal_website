@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Component, Fragment, lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useCopy } from '../data/copy';
 import { whatsappWith } from '../data/site';
 import { digits, useLang } from '../i18n';
@@ -10,6 +10,24 @@ import { Icon } from '../ui/Icon';
 import { Grad, Words } from '../ui/Text';
 
 const Stage = lazy(() => import('../three/Stage'));
+
+/**
+ * If the 3D stage fails (a screenshot that won't load, a lost WebGL context, a chunk that
+ * didn't arrive), drop to the static film instead of taking the whole page down with it.
+ */
+class StageBoundary extends Component<{ onError: () => void; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: unknown) {
+    console.warn('3D stage failed; showing the static film instead.', error);
+    this.props.onError();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 const show = (el: HTMLElement | null, v: number, y = 0) => {
   if (!el) return;
@@ -46,6 +64,7 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
   const [active, setActive] = useState(true);
   const [ready, setReady] = useState(false);
   const onReady = useCallback(() => setReady(true), []);
+  const onStageError = useCallback(() => setGl(false), []);
 
   useEffect(() => setGl(hasWebGL()), []);
   useEffect(() => {
@@ -156,9 +175,11 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
         <div className="film-bg" aria-hidden="true" />
         {mounted && gl && (
           <div className="film-canvas" data-ready={ready || undefined}>
-            <Suspense fallback={null}>
-              <Stage active={active} onReady={onReady} mirror={lang === 'en'} />
-            </Suspense>
+            <StageBoundary onError={onStageError}>
+              <Suspense fallback={null}>
+                <Stage active={active} onReady={onReady} mirror={lang === 'en'} />
+              </Suspense>
+            </StageBoundary>
           </div>
         )}
 
@@ -217,9 +238,13 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
             </p>
             <h1 className="hero-title">
               {hero.lines.map((l, i) => (
-                <span className="line" key={l}>
-                  <Words text={l} start={180 + i * 180} />
-                </span>
+                // the space keeps the lines apart as text (screen readers, search), not only visually
+                <Fragment key={l}>
+                  {i > 0 && ' '}
+                  <span className="line">
+                    <Words text={l} start={180 + i * 180} />
+                  </span>
+                </Fragment>
               ))}
             </h1>
             <p className="hero-text" data-enter style={{ animationDelay: '720ms' }}>
