@@ -4,8 +4,9 @@
 //   /v2/     the light, simple version (v2/)
 //   /v3/     the bright 3D film version (v3/)
 //   /app/    the installable app (app/), when it exists
-// Usage: node scripts/build-site.mjs            (runs npm ci + build in every project)
-//        node scripts/build-site.mjs --no-install (skip npm ci when node_modules are fresh)
+// Usage: node scripts/build-site.mjs              (runs npm ci + build in every project)
+//        node scripts/build-site.mjs --no-install   (skip npm ci when node_modules are fresh)
+//        node scripts/build-site.mjs --package      (also make raminomrani-site.tar.gz for the VPS)
 import { execSync } from 'node:child_process';
 import { cpSync, existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -40,3 +41,15 @@ writeFileSync(resolve(out, 'CNAME'), 'raminomrani.ir\n');
 // Apache / cPanel hosts read this; Nginx and IIS use deploy/nginx and deploy/iis instead
 cpSync(resolve(root, 'deploy/apache/.htaccess'), resolve(out, '.htaccess'));
 console.log(`\n✓ site ready in ${out}`);
+
+// --package: one file to upload to the VPS, with the setup script (see DEPLOY.md)
+if (process.argv.includes('--package')) {
+  const pkg = resolve(root, 'raminomrani-site');
+  rmSync(pkg, { recursive: true, force: true });
+  cpSync(out, resolve(pkg, 'site'), { recursive: true });
+  cpSync(resolve(root, 'deploy/setup-server.sh'), resolve(pkg, 'setup-server.sh'));
+  cpSync(resolve(root, 'deploy/nginx/raminomrani.ir.conf'), resolve(pkg, 'raminomrani.ir.conf'));
+  execSync('tar -czf raminomrani-site.tar.gz raminomrani-site', { cwd: root, stdio: 'inherit' });
+  rmSync(pkg, { recursive: true, force: true });
+  console.log(`✓ package ready: ${resolve(root, 'raminomrani-site.tar.gz')}`);
+}

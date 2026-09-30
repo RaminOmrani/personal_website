@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+# Puts raminomrani.ir on an Ubuntu/Debian VPS: Nginx, the site files and free HTTPS.
+# Run it from the folder you extracted (it contains site/ and raminomrani.ir.conf):
+#
+#   sudo bash setup-server.sh            first install, and every later update
+#   sudo bash setup-server.sh --https    only (re)try the HTTPS certificate
+#
+# Safe to run again: later runs replace the site files and keep the Nginx/HTTPS setup.
+set -euo pipefail
+
+DOMAIN=raminomrani.ir
+ROOT=/var/www/$DOMAIN
+CONF=/etc/nginx/sites-available/$DOMAIN.conf
+HERE=$(cd "$(dirname "$0")" && pwd)
+
+say() { printf '\n\033[1;36m==> %s\033[0m\n' "$*"; }
+ok() { printf '\033[1;32m✓ %s\033[0m\n' "$*"; }
+warn() { printf '\033[1;33m! %s\033[0m\n' "$*"; }
+fail() { printf '\033[1;31m✗ %s\033[0m\n' "$*"; exit 1; }
+
+[ "$(id -u)" = 0 ] || fail "Run it with sudo:  sudo bash setup-server.sh"
+command -v apt-get >/dev/null || fail "This script is for Ubuntu/Debian (apt). Tell Claude which Linux the VPS runs."
+
+reload_nginx() {
+  systemctl reload nginx 2>/dev/null || systemctl restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || nginx
+}
+
+# Asks Let's Encrypt for a certificate once the domain really reaches this server.
+https() {
+  say "HTTPS"
+  # a one-off file proves that the domain points here and Nginx serves it
+  local token seen
+  token=$(head -c 12 /dev/urandom | od -An -tx1 | tr -d ' \n')
+  mkdir -p "$ROOT/.well-known"
+  echo "$token" >"$ROOT/.well-known/ro-check.txt"
+  seen=$(curl -s --max-time 10 "http://$DOMAIN/.well-known/ro-check.txt" || true)
+  rm -f "$ROOT/.well-known/ro-check.txt"
+  if [ "$seen" != "$token" ]; then
+    if [ -d "/etc/letsencrypt/live/$DOMAIN" ]; then
+      ok "A certificate already exists; certbot renews it by itself."
+      return
+    fi
+    warn "http://$DOMAIN does not reach this server yet."
+    echo "   The domain's A records (@ and www) must point to this server's IP, and DNS changes can take a few hours."
+    echo "   Check with:  getent hosts $DOMAIN      then run:  sudo bash setup-server.sh --https"
+    return
+  fi
+
+  # www goes on the certificate only if it points to the same place as the bare domain
+  local names=(-d "$DOMAIN") want="$DOMAIN" ip www
+  ip=$(getent ahostsv4 "$DOMAIN" | awk 'NR==1 {print $1}')
+  www=$(getent ahostsv4 "www.$DOMAIN" | awk 'NR==1 {print $1}' || true)
+  if [ -n "$www" ] && [ "$www" = "$ip" ]; then
+    names+=(-d "www.$DOMAIN")
+    want="$DOMAIN www.$DOMAIN"
+  else
+    warn "www.$DOMAIN does not point here (yet); the certificate covers $DOMAIN only. Add an A record for www and run --https again later."
+  fi
+
+  local cert="/etc/letsencrypt/live/$DOMAIN/cert.pem" missing=0 n
+  if [ -f "$cert" ]; then
+    for n in $want; do openssl x509 -in "$cert" -noout -text | grep -q "DNS:$n\b" || missing=1; done
+    if [ "$missing" = 0 ]; then
+      ok "The certificate already covers $want; certbot renews it by itself."
+      return
+    fi
+  fi
+
+  local mail=(--register-unsafely-without-email)
+  [ -n "${EMAIL:-}" ] && mail=(-m "$EMAIL" --no-eff-email)
+  if certbot --nginx --non-interactive --agree-tos --expand "${mail[@]}" "${names[@]}" --redirect; then
+    ok "HTTPS is on: https://$DOMAIN"
+  else
+    warn "certbot could not get a certificate. Send Claude the lines above."
+  fi
+}
+
+if [ "${1:-}" = "--https" ]; then
+  https
+  exit 0
+fi
+
+[ -f "$HERE/site/index.html" ] || fail "site/ is missing next to this script. Extract the whole package first."
+
+say "Installing Nginx and Certbot"
+export DEBIAN_FRONTEND=noninteractive
+apt-get update -y -q
+apt-get install -y -q nginx certbot python3-certbot-nginx curl openssl
+ok "Installed"
+
+# something else already on port 80 (Apache, a control panel...) would block Nginx
+if command -v ss >/dev/null && ss -ltnp 2>/dev/null | grep -E ':80\s' | grep -vq nginx; then
+  ss -ltnp | grep -E ':80\s' || true
+  fail "Another program is using port 80 (above). Stop it first, or ask Claude."
+fi
+
+say "Copying the site to $ROOT"
+mkdir -p "$ROOT"
+# replace everything except .well-known (the Android app's assetlinks.json lives there)
+find "$ROOT" -mindepth 1 -maxdepth 1 ! -name '.well-known' -exec rm -rf {} +
+cp -a "$HERE/site/." "$ROOT/"
+rm -f "$ROOT/.htaccess" "$ROOT/CNAME"
+chown -R www-data:www-data "$ROOT"
+find "$ROOT" -type d -exec chmod 755 {} +
+find "$ROOT" -type f -exec chmod 644 {} +
+ok "$(find "$ROOT" -type f | wc -l) files in place"
+
+if [ -f "$CONF" ]; then
+  say "Nginx is already set up for $DOMAIN (kept as it is)"
+else
+  say "Setting up Nginx for $DOMAIN"
+  sed "s#/var/www/raminomrani.ir#$ROOT#" "$HERE/raminomrani.ir.conf" >"$CONF"
+  ln -sf "$CONF" "/etc/nginx/sites-enabled/$DOMAIN.conf"
+  rm -f /etc/nginx/sites-enabled/default
+  if ! nginx -t 2>/tmp/ro-nginx-test.txt; then
+    if grep -q 'Address family not supported' /tmp/ro-nginx-test.txt; then
+      warn "No IPv6 on this server; listening on IPv4 only."
+      sed -i '/listen \[::\]:80;/d' "$CONF"
+    fi
+    nginx -t || fail "Nginx rejected the config (above). Send Claude these lines."
+  fi
+fi
+systemctl enable nginx >/dev/null 2>&1 || true
+reload_nginx
+ok "Nginx is serving the site"
+
+if command -v ufw >/dev/null && ufw status 2>/dev/null | grep -q 'Status: active'; then
+  ufw allow 'Nginx Full' >/dev/null && ok "Firewall: ports 80 and 443 open"
+fi
+
+https
+
+say "Done"
+echo "   Open https://$DOMAIN (or http:// until HTTPS is on)."
+echo "   To update the site later: extract a new package and run  sudo bash setup-server.sh  again."

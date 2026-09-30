@@ -48,29 +48,37 @@ npm run build:site
 
 ## ۴. راه‌اندازی روی سرور
 
-### گزینهٔ ۱: VPS لینوکس (Nginx)
+### گزینهٔ ۱: VPS لینوکس (Nginx) — با یک بسته و یک دستور
 
-روی سرور (با SSH):
+1. روی کامپیوتر خودتان بسته را بسازید. خروجی یک فایل است: `raminomrani-site.tar.gz`.
+   ```bash
+   npm run package:site
+   ```
+   داخل این فایل هم کل سایت هست و هم اسکریپت راه‌اندازی.
+2. فایل را روی سرور بفرستید:
+   - **از ویندوز:** با WinSCP، یا در PowerShell:
+     ```bash
+     scp raminomrani-site.tar.gz root@IP:/root/
+     ```
+3. روی سرور (با SSH) اجرا کنید:
+   ```bash
+   tar -xzf raminomrani-site.tar.gz && cd raminomrani-site && sudo bash setup-server.sh
+   ```
+   اسکریپت [`deploy/setup-server.sh`](deploy/setup-server.sh) این کارها را خودش انجام می‌دهد:
+   - Nginx و Certbot را نصب می‌کند.
+   - سایت را در `/var/www/raminomrani.ir` می‌گذارد.
+   - تنظیمات [`deploy/nginx/raminomrani.ir.conf`](deploy/nginx/raminomrani.ir.conf) را فعال می‌کند.
+   - اگر فایروال (ufw) روشن باشد، پورت‌های ۸۰ و ۴۴۳ را باز می‌کند.
+   - وقتی دامنه به سرور رسید، گواهی رایگان HTTPS را می‌گیرد. تمدیدش هم خودکار است.
+4. اگر دامنه هنوز به سرور نرسیده بود، اسکریپت خودش می‌گوید. چند ساعت بعد این را بزنید:
+   ```bash
+   sudo bash setup-server.sh --https
+   ```
+5. **برای به‌روزرسانی‌های بعدی** همین سه قدم را تکرار کنید. تنظیمات Nginx و HTTPS دست نمی‌خورند و فقط فایل‌های سایت عوض می‌شوند.
 
-```bash
-sudo apt update && sudo apt install -y nginx certbot python3-certbot-nginx
-sudo mkdir -p /var/www/raminomrani.ir
-```
-
-محتوای پوشهٔ `site` را در `/var/www/raminomrani.ir` آپلود کنید:
-- **از ویندوز:** با برنامهٔ WinSCP (کشیدن و رها کردن)، یا در PowerShell: `scp -r .\site\* root@IP:/var/www/raminomrani.ir/`
-- **از لینوکس یا مک:** `DEPLOY_TARGET=root@IP ./scripts/deploy.sh` (خودش می‌سازد و آپلود می‌کند)
-
-بعد فایل تنظیمات را روی سرور کپی و فعال کنید:
-
-```bash
-sudo cp raminomrani.ir.conf /etc/nginx/sites-available/
-sudo ln -s /etc/nginx/sites-available/raminomrani.ir.conf /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d raminomrani.ir -d www.raminomrani.ir
-```
-
-`certbot` خودش HTTPS را فعال می‌کند و هر سه ماه گواهی را تمدید می‌کند. بعد از چند روز که همه‌چیز درست کار کرد، خط `Strict-Transport-Security` را در فایل تنظیمات از حالت کامنت دربیاورید و دوباره `sudo systemctl reload nginx` بزنید.
+بعد از چند روز که همه‌چیز درست کار کرد، می‌توانید HSTS را روشن کنید:
+1. در `/etc/nginx/sites-available/raminomrani.ir.conf`، خط `Strict-Transport-Security` را از حالت کامنت دربیاورید.
+2. `sudo systemctl reload nginx` بزنید.
 
 ### گزینهٔ ۲: هاست cPanel
 
@@ -120,7 +128,7 @@ sudo certbot --nginx -d raminomrani.ir -d www.raminomrani.ir
 ## ۷. به‌روزرسانی‌های بعدی
 
 1. متن‌ها و پروژه‌ها را ویرایش کنید (فایل‌ها در README معرفی شده‌اند).
-2. `npm run build:site`
-3. پوشهٔ `site` را دوباره آپلود کنید (لینوکس: `DEPLOY_TARGET=root@IP ./scripts/deploy.sh`).
+2. `npm run package:site`
+3. `raminomrani-site.tar.gz` را روی سرور بفرستید و دوباره `sudo bash setup-server.sh` را اجرا کنید. سایت در چند ثانیه عوض می‌شود.
 
 </div>
