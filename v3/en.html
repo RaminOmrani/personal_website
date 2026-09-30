@@ -22,6 +22,30 @@
     <meta property="og:image" content="https://raminomrani.ir/v3/og.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <script>
+      // A fresh visit starts at the top, even inside hosts that restore the previous page's
+      // scroll position. Reloads, back/forward and #section links keep their usual behaviour,
+      // and the first scroll, tap or key press ends the hold.
+      (function () {
+        var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+        if (location.hash || (nav && nav.type !== 'navigate')) return;
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        var held = true;
+        var top = function () {
+          if (held) window.scrollTo(0, 0);
+        };
+        ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (t) {
+          addEventListener(t, function () { held = false; }, { once: true, passive: true });
+        });
+        addEventListener('DOMContentLoaded', top);
+        addEventListener('load', function () {
+          top();
+          setTimeout(top, 150);
+          setTimeout(top, 500);
+          setTimeout(function () { held = false; }, 900);
+        });
+      })();
+    </script>
+    <script>
       // lang/dir also set here, so the page stays left-to-right English even inside hosts that rewrite <html>
       (function (d) { d.classList.add('js'); d.lang = 'en'; d.dir = 'ltr'; })(document.documentElement);
     </script>

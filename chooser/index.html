@@ -41,6 +41,30 @@
         d.documentElement.dir = w.roLang === 'en' ? 'ltr' : 'rtl';
       })(window, document);
     </script>
+    <script>
+      // A fresh visit starts at the top, even inside hosts that restore the previous page's
+      // scroll position. Reloads, back/forward and #section links keep their usual behaviour,
+      // and the first scroll, tap or key press ends the hold.
+      (function () {
+        var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+        if (location.hash || (nav && nav.type !== 'navigate')) return;
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        var held = true;
+        var top = function () {
+          if (held) window.scrollTo(0, 0);
+        };
+        ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (t) {
+          addEventListener(t, function () { held = false; }, { once: true, passive: true });
+        });
+        addEventListener('DOMContentLoaded', top);
+        addEventListener('load', function () {
+          top();
+          setTimeout(top, 150);
+          setTimeout(top, 500);
+          setTimeout(function () { held = false; }, 900);
+        });
+      })();
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -476,18 +500,6 @@
         color: var(--fg-2);
         font-size: 14px;
       }
-      .remember {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-      }
-      .remember input {
-        width: 18px;
-        height: 18px;
-        margin: 0;
-        accent-color: #f3c46e;
-      }
       .note {
         margin: 0;
         color: var(--fg-3);
@@ -528,6 +540,9 @@
       html.js .versions li:nth-child(3) {
         animation-delay: 280ms;
       }
+      html.js .app {
+        animation: rise 900ms var(--ease-out) 360ms both;
+      }
       html.js .options {
         animation-delay: 420ms;
       }
@@ -536,6 +551,165 @@
           opacity: 0;
           transform: translateY(24px);
         }
+      }
+
+      /* ---------- "open this one directly next time?" ---------- */
+      .ask {
+        width: min(440px, calc(100vw - 32px));
+        max-height: calc(100dvh - 32px);
+        overflow: auto;
+        margin: auto;
+        padding: 0;
+        border: 0;
+        border-radius: 26px;
+        background: #15171d;
+        color: var(--fg);
+        box-shadow:
+          0 0 0 1px var(--line),
+          0 40px 80px -20px rgba(0, 0, 0, 0.8);
+        opacity: 1;
+        transform: none;
+        transition:
+          opacity 200ms var(--ease-out),
+          transform 240ms var(--ease-out),
+          overlay 240ms allow-discrete,
+          display 240ms allow-discrete;
+      }
+      .ask[open] {
+        @starting-style {
+          opacity: 0;
+          transform: scale(0.96) translateY(8px);
+        }
+      }
+      .ask:not([open]) {
+        opacity: 0;
+        transform: scale(0.98);
+        transition-duration: 140ms;
+      }
+      .ask::backdrop {
+        background: rgba(5, 6, 9, 0.62);
+        backdrop-filter: blur(6px);
+        transition:
+          background-color 240ms ease,
+          overlay 240ms allow-discrete,
+          display 240ms allow-discrete;
+      }
+      .ask[open]::backdrop {
+        @starting-style {
+          background-color: rgba(5, 6, 9, 0);
+        }
+      }
+      .ask-body {
+        padding: 26px 24px 22px;
+      }
+      .ask-thumb {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 7;
+        margin-bottom: 18px;
+        border-radius: 14px;
+        object-fit: cover;
+        object-position: top;
+        box-shadow: 0 0 0 1px var(--line);
+      }
+      .ask h2 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 900;
+        line-height: 1.6;
+      }
+      html:lang(en) .ask h2 {
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+      }
+      .ask p {
+        margin: 8px 0 0;
+        color: var(--fg-2);
+        font-size: 14.5px;
+      }
+      .ask-actions {
+        display: grid;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .ask-actions button {
+        height: 52px;
+        border: 0;
+        border-radius: 16px;
+        font: 800 15px/1 var(--font);
+        cursor: pointer;
+        transition:
+          transform 160ms var(--ease-out),
+          background-color 200ms ease;
+      }
+      .ask-actions button:active {
+        transform: scale(0.97);
+      }
+      .ask-yes {
+        background: #f3c46e;
+        color: #1b1405;
+      }
+      .ask-yes:hover {
+        background: #f7d38c;
+      }
+      .ask-no {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--fg);
+      }
+      .ask-no:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      /* ---------- the app ---------- */
+      .app {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-top: 16px;
+        padding: 16px 18px;
+        border-radius: 22px;
+        background:
+          radial-gradient(60% 120% at 100% 0%, rgba(31, 82, 214, 0.35), transparent 70%),
+          rgba(255, 255, 255, 0.04);
+        box-shadow: 0 0 0 1px var(--line);
+        text-decoration: none;
+        transition:
+          transform 300ms var(--ease-out),
+          box-shadow 300ms var(--ease-out);
+      }
+      .app:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 0 1px rgba(243, 196, 110, 0.5);
+      }
+      .app:active {
+        transform: scale(0.99);
+      }
+      .app img {
+        flex: none;
+        border-radius: 14px;
+      }
+      .app-text {
+        display: grid;
+        flex: 1;
+        min-width: 0;
+        line-height: 1.6;
+      }
+      .app-text strong {
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+      .app-text span {
+        color: var(--fg-2);
+        font-size: 13.5px;
+      }
+      .app-go {
+        flex: none;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 13.5px;
+        font-weight: 800;
       }
 
       @media (max-width: 959px) {
@@ -623,11 +797,31 @@
         </li>
       </ul>
 
+      <a class="app" href="app/">
+        <img src="logo.svg" alt="" width="52" height="52" />
+        <span class="app-text">
+          <strong data-t="app.title">اپلیکیشن رامین عمرانی</strong>
+          <span data-t="app.text">نمونه‌کارها و تماس، سریع و آفلاین؛ روی گوشی نصب می‌شود.</span>
+        </span>
+        <span class="app-go" data-t="app.go">باز کردن</span>
+      </a>
+
       <div class="options">
-        <label class="remember"><input type="checkbox" data-remember checked /> <span data-t="remember">دفعهٔ بعد مستقیم همین نسخه را باز کن</span></label>
         <p class="note" data-t="note">هر وقت خواستید، از پایین هر نسخه به اینجا برمی‌گردید.</p>
       </div>
     </main>
+
+    <dialog class="ask" aria-labelledby="ask-title" data-ask>
+      <div class="ask-body">
+        <img class="ask-thumb" src="" alt="" width="960" height="600" data-ask-thumb />
+        <h2 id="ask-title" data-ask-title></h2>
+        <p data-t="ask.text">اگر بله، دفعهٔ بعد که raminomrani.ir را باز کنید مستقیم همین نسخه می‌آید. هر وقت خواستید از پایین سایت عوضش کنید.</p>
+        <div class="ask-actions">
+          <button type="button" class="ask-yes" data-answer="yes" autofocus><span data-t="ask.yes">بله، مستقیم همین را باز کن</span></button>
+          <button type="button" class="ask-no" data-answer="no"><span data-t="ask.no">نه، هر بار بپرس</span></button>
+        </div>
+      </div>
+    </dialog>
 
     <footer class="contact">
       <a href="tel:+989017021166" data-t="call">تماس: ۰۹۰۱ ۷۰۲ ۱۱۶۶</a>
@@ -655,8 +849,13 @@
           newest: 'Newest',
           enter: 'Enter',
           last: 'Your last pick',
-          remember: 'Open this version directly next time',
           note: 'You can come back here any time from the footer of each version.',
+          'app.title': 'The Ramin Omrani app',
+          'app.text': 'Work and contact, fast and offline. Installs on your phone.',
+          'app.go': 'Open',
+          'ask.text': 'If yes, next time you open raminomrani.ir this version comes straight up. You can switch any time from the bottom of the site.',
+          'ask.yes': 'Yes, open this one directly',
+          'ask.no': 'No, ask me each time',
           call: 'Call: +98 901 702 1166',
           wa: 'WhatsApp: +98 936 574 3458',
         };
@@ -712,12 +911,36 @@
           store('ro:lang', next);
         });
 
-        var remember = d.querySelector('[data-remember]');
+        // After every pick, ask whether that version should open directly next time.
+        var ask = d.querySelector('[data-ask]');
+        var picked = null;
+        function go(remember) {
+          if (!picked) return;
+          store('ro:version', remember ? picked.getAttribute('data-v') : null);
+          store('ro:lang', window.roLang);
+          location.href = picked.href;
+        }
         d.querySelectorAll('[data-v]').forEach(function (a) {
-          a.addEventListener('click', function () {
-            store('ro:version', remember.checked ? a.getAttribute('data-v') : null);
-            store('ro:lang', window.roLang);
+          a.addEventListener('click', function (e) {
+            // a new tab or window keeps the plain link behaviour
+            if (!ask.showModal || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            picked = a;
+            var name = a.querySelector('[data-t$=".name"]').textContent;
+            d.querySelector('[data-ask-title]').textContent =
+              window.roLang === 'en' ? 'Open “' + name + '” directly next time?' : 'دفعهٔ بعد مستقیم «' + name + '» باز شود؟';
+            d.querySelector('[data-ask-thumb]').src = 'shots/' + a.getAttribute('data-v') + '.jpg';
+            ask.showModal();
           });
+        });
+        ask.addEventListener('click', function (e) {
+          var b = e.target.closest('[data-answer]');
+          if (b) {
+            ask.close();
+            go(b.getAttribute('data-answer') === 'yes');
+          } else if (e.target === ask) {
+            ask.close(); // a click on the backdrop just cancels
+          }
         });
       })();
     </script>
