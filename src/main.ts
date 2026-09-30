@@ -174,7 +174,7 @@ async function switchLang(e: MouseEvent): Promise<void> {
   const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
   root.animate(
     { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
-    { duration: 1100, easing: 'cubic-bezier(.76,0,.24,1)', pseudoElement: '::view-transition-new(root)' },
+    { duration: 900, easing: 'cubic-bezier(.76,0,.24,1)', pseudoElement: '::view-transition-new(root)' },
   );
   await vt.finished.catch(() => undefined);
   delete root.dataset.vt;

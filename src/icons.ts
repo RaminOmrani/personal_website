@@ -13,6 +13,8 @@ export const icons = {
   app: svg('<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/><path d="M9 7h6M9 10h4"/>', 56),
   design: svg('<path d="M12 3 4 7.5l8 4.5 8-4.5L12 3Z"/><path d="m4 12 8 4.5 8-4.5"/><path d="m4 16.5 8 4.5 8-4.5"/>', 56),
   shop: svg('<path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9L5 8Z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/>', 56),
+  bot: svg('<rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 7V4"/><circle cx="12" cy="3.2" r=".8"/><path d="M9 12h.01M15 12h.01"/><path d="M9.5 15.5c1.4 1 3.6 1 5 0"/><path d="M2 12v3M22 12v3"/>', 56),
+  chart: svg('<path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/><circle cx="19" cy="6" r="1.2"/>', 56),
   motion: svg('<ellipse cx="12" cy="12" rx="9.5" ry="4"/><ellipse cx="12" cy="12" rx="9.5" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="4" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.3"/>', 56),
 };
 

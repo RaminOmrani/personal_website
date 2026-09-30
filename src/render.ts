@@ -152,11 +152,11 @@ function heroSection(lang: Lang, o: RenderOptions): string {
 </section>`;
 }
 
-function aboutSection(lang: Lang, idx: number, o: RenderOptions): string {
+function aboutSection(lang: Lang, idx: number): string {
   const m = t(about.manifesto, lang);
   const stats = about.stats
     .map(
-      (s) => `<li class="stat" data-reveal>${sampleBadge(s.sample, lang, o.dev)}
+      (s) => `<li class="stat" data-reveal>
         <span class="stat-num" dir="ltr"><span data-count="${s.value}">${num(s.value, lang)}</span><span class="stat-suf">${esc(s.suffix)}</span></span>
         <span class="stat-label">${esc(t(s.label, lang))}</span></li>`,
     )
@@ -183,6 +183,7 @@ function servicesSection(lang: Lang, idx: number): string {
       (s, i) => `
     <li class="svc" style="--i:${i}">
       <article class="svc-card">
+        <span class="svc-dim" aria-hidden="true"></span>
         <div class="svc-top"><span class="svc-num">${pad(i + 1, lang)}</span><span class="svc-icon">${icons[s.icon as IconName]}</span></div>
         <h3 class="svc-title">${esc(t(s.title, lang))}</h3>
         <p class="svc-text">${esc(t(s.text, lang))}</p>
@@ -203,7 +204,7 @@ function workSection(lang: Lang, idx: number, o: RenderOptions): string {
     .map(
       (p, i) => `
       <a class="project" href="#case/${p.slug}" data-case="${p.slug}" data-cursor="view" data-cursor-label="${esc(t(ui.view, lang))}">
-        <div class="project-media">${projectArt(p, lang)}${sampleBadge(p.sample, lang, o.dev)}</div>
+        <div class="project-media">${projectArt(p, lang)}<span class="spot" aria-hidden="true"></span>${sampleBadge(p.sample, lang, o.dev)}</div>
         <div class="project-info">
           <span class="project-idx">${pad(i + 1, lang)}</span>
           <h3 class="project-title">${esc(t(p.title, lang))}</h3>
@@ -265,8 +266,12 @@ function journeySection(lang: Lang, idx: number, o: RenderOptions): string {
     .map(
       (j) => `
       <li class="jr" data-reveal>
-        <span class="jr-year">${num(j.year, lang)}</span>
-        <span class="jr-title">${esc(t(j.title, lang))}${sampleBadge(j.sample, lang, o.dev)}</span>
+        <span class="jr-year">${esc(t(j.year, lang))}</span>
+        <span class="jr-title">${
+          j.url
+            ? `<a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t(j.title, lang))}</a>`
+            : esc(t(j.title, lang))
+        }${sampleBadge(j.sample, lang, o.dev)}</span>
         <span class="jr-place">${esc(t(j.place, lang))}</span>
         <span class="jr-kind">${esc(t(journeyKinds[j.kind], lang))}</span>
       </li>`,
@@ -391,7 +396,7 @@ export function renderApp(lang: Lang, o: RenderOptions): string {
   const next = () => ++i;
   const body = [
     heroSection(lang, o),
-    aboutSection(lang, next(), o),
+    aboutSection(lang, next()),
     servicesSection(lang, next()),
     workSection(lang, next(), o),
     processSection(lang, next()),
@@ -468,7 +473,7 @@ export function renderHead(lang: Lang): { title: string; description: string; js
     jobTitle: plain(site.role.en),
     url: site.url,
     email: `mailto:${site.email}`,
-    address: { '@type': 'PostalAddress', addressLocality: 'Tehran', addressCountry: 'IR' },
+    address: { '@type': 'PostalAddress', addressLocality: site.city, addressCountry: 'IR' },
     sameAs: site.socials.map((s) => s.url),
     knowsAbout: tools.rows.flat(),
   });
@@ -478,7 +483,6 @@ export function renderHead(lang: Lang): { title: string; description: string; js
 /** Lists every placeholder item still flagged `sample: true`. */
 export function listSamples(): string[] {
   const out: string[] = [];
-  about.stats.forEach((s) => s.sample && out.push(`about.stats → ${s.label.en}`));
   work.projects.forEach((p) => p.sample && out.push(`work.projects → ${p.title.en}`));
   journey.items.forEach((j) => j.sample && out.push(`journey.items → ${j.title.en}`));
   testimonials.items.forEach((q) => q.sample && out.push(`testimonials.items → ${q.role.en} (hidden in production)`));

@@ -50,7 +50,7 @@ export async function runPreloader({ lang, reduced, ready, returning, onReveal }
   await new Promise<void>((resolve) => {
     gsap
       .timeline({ onComplete: resolve })
-      .to(chars, { yPercent: -120, duration: 0.7, stagger: 0.025, ease: 'power3.in' })
+      .to(chars, { yPercent: -120, duration: 0.7, stagger: 0.025, ease: 'power3.inOut' })
       .to(el.querySelectorAll('.pl-row, .pl-bar'), { autoAlpha: 0, duration: 0.4 }, 0)
       .call(onReveal, [], '-=0.15')
       .to(el, { clipPath: 'inset(0% 0% 100% 0%)', duration: 1.25, ease: 'expo.inOut' }, '-=0.3');

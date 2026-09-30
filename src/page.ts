@@ -87,14 +87,17 @@ function setupHud(env: PageEnv): void {
   });
 }
 
-function setupReveals(): void {
+function setupReveals(reduced: boolean): void {
   const items = $$('[data-reveal]');
-  gsap.set(items, { autoAlpha: 0, y: 44 });
+  // reduced motion keeps a soft fade but drops the movement
+  gsap.set(items, { autoAlpha: 0, y: reduced ? 0 : 32 });
   ScrollTrigger.batch(items, {
     start: 'top 90%',
     once: true,
-    onEnter: (batch) => gsap.to(batch, { autoAlpha: 1, y: 0, duration: 1.3, stagger: 0.09, ease: 'expo.out', overwrite: true }),
+    onEnter: (batch) =>
+      gsap.to(batch, { autoAlpha: 1, y: 0, duration: reduced ? 0.4 : 1.1, stagger: 0.06, ease: 'expo.out', overwrite: true }),
   });
+  if (reduced) return;
   $$('[data-split]').forEach((h) => {
     gsap.fromTo(
       $$('.w-i', h),
@@ -160,15 +163,9 @@ function setupServices(): void {
     const next = items[i + 1];
     const card = $('.svc-card', li);
     if (!next || !card) return;
-    gsap.to(card, {
-      scale: 0.9,
-      rotationX: 8,
-      transformOrigin: '50% 0%',
-      transformPerspective: 1400,
-      '--dim': 0.7,
-      ease: 'none',
-      scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 25%', scrub: true },
-    });
+    const st = { trigger: next, start: 'top bottom', end: 'top 25%', scrub: true };
+    gsap.to(card, { scale: 0.9, rotationX: 8, transformOrigin: '50% 0%', transformPerspective: 1400, ease: 'none', scrollTrigger: st });
+    gsap.to($('.svc-dim', card), { opacity: 0.7, ease: 'none', scrollTrigger: st });
   });
 }
 
@@ -230,6 +227,10 @@ function setupTilt(signal: AbortSignal, reduced: boolean): void {
     gsap.set(el, { transformPerspective: 900 });
     const rx = gsap.quickTo(el, 'rotationX', { duration: 0.7, ease: 'power3' });
     const ry = gsap.quickTo(el, 'rotationY', { duration: 0.7, ease: 'power3' });
+    // the glow follows the pointer through transforms only (no repaint)
+    const glow = $('.name-card-glow, .spot', el);
+    const gx = glow ? gsap.quickTo(glow, 'x', { duration: 0.5, ease: 'power3' }) : null;
+    const gy = glow ? gsap.quickTo(glow, 'y', { duration: 0.5, ease: 'power3' }) : null;
     el.addEventListener(
       'pointermove',
       (e) => {
@@ -238,8 +239,8 @@ function setupTilt(signal: AbortSignal, reduced: boolean): void {
         const py = (e.clientY - r.top) / r.height - 0.5;
         ry(px * amount);
         rx(-py * amount);
-        el.style.setProperty('--mx', `${(px + 0.5) * 100}%`);
-        el.style.setProperty('--my', `${(py + 0.5) * 100}%`);
+        gx?.(e.clientX - r.left);
+        gy?.(e.clientY - r.top);
       },
       { signal },
     );
@@ -274,15 +275,15 @@ function setupMenu(env: PageEnv, signal: AbortSignal) {
       gsap.set(menu, { autoAlpha: 1 });
       gsap
         .timeline()
-        .fromTo('.menu-bg', { clipPath: `circle(0% at ${origin})` }, { clipPath: `circle(150% at ${origin})`, duration: env.reduced ? 0 : 1.1, ease: 'expo.inOut' })
-        .fromTo($$('.menu-t, .menu-i', menu), { yPercent: 120 }, { yPercent: 0, duration: 1, stagger: 0.05, ease: 'expo.out' }, env.reduced ? 0 : 0.4)
-        .fromTo('.menu-foot', { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.8 }, env.reduced ? 0 : 0.7);
+        .fromTo('.menu-bg', { clipPath: `circle(0% at ${origin})` }, { clipPath: `circle(150% at ${origin})`, duration: env.reduced ? 0 : 0.7, ease: 'expo.inOut' })
+        .fromTo($$('.menu-t, .menu-i', menu), { yPercent: env.reduced ? 0 : 120 }, { yPercent: 0, duration: 0.7, stagger: 0.04, ease: 'expo.out' }, env.reduced ? 0 : 0.25)
+        .fromTo('.menu-foot', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, env.reduced ? 0 : 0.45);
       $('.menu-link', menu)?.focus({ preventScroll: true });
     } else {
       env.lenis?.start();
       gsap.to(menu, {
         autoAlpha: 0,
-        duration: 0.45,
+        duration: 0.25,
         onComplete: () => {
           menu.hidden = true;
         },
@@ -371,8 +372,8 @@ function setupQuotes(env: PageEnv, signal: AbortSignal, timers: number[]): void 
     busy = true;
     gsap
       .timeline({ onComplete: () => void (busy = false) })
-      .fromTo(from, { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: -30, duration: 0.45, ease: 'power2.in' })
-      .fromTo(to, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 1, ease: 'expo.out' });
+      .fromTo(from, { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: -16, duration: 0.25, ease: 'power2.out' })
+      .fromTo(to, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'expo.out' });
   };
   $('[data-quote-prev]', stage)?.addEventListener('click', () => show(i - 1), { signal });
   $('[data-quote-next]', stage)?.addEventListener('click', () => show(i + 1), { signal });
@@ -618,8 +619,8 @@ export function initPage(env: PageEnv): () => void {
     setupHud(env);
     setupStats(env);
     setupWork(env, mm);
+    setupReveals(env.reduced);
     if (!env.reduced) {
-      setupReveals();
       setupHeroScroll(rtl);
       setupManifesto();
       setupServices();
