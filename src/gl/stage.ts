@@ -17,7 +17,8 @@ export interface SceneState {
 /** Colour pair per shape — Persian turquoise, saffron, pomegranate, lapis & amethyst. */
 const PALETTE: [string, string][] = [
   ['#37f0cf', '#ffb23f'],
-  ['#37f0cf', '#8a6bff'],
+  // the portrait: turquoise shadows, warm light on the face
+  ['#2bd8c0', '#ffe0b5'],
   ['#ffb23f', '#ff4d5e'],
   ['#2b6bff', '#37f0cf'],
   ['#37f0cf', '#ffb23f'],
@@ -25,7 +26,8 @@ const PALETTE: [string, string][] = [
   ['#ffb23f', '#ff6f91'],
   ['#ffb23f', '#ff4d5e'],
 ];
-const SPIN = [0.07, 0.05, 0.12, 0.03, 0.16, 0.22, 0.1, 0.05];
+/** Spin per shape; 0 turns the shape to face the camera and holds it there (the portrait). */
+const SPIN = [0.07, 0, 0.12, 0.03, 0.16, 0.22, 0.1, 0.05];
 const SHAPES = 8;
 
 export class Stage {
@@ -44,6 +46,9 @@ export class Stage {
   private parallaxTarget = new THREE.Vector2();
   private velocityTarget = 0;
   private spinSpeed = { v: SPIN[0] };
+  private facing = false;
+  /** vertical offset of the portrait's slot from the viewport centre, in viewport heights */
+  private anchorY = 0;
   private state: Required<SceneState> = { s: 0, x: 0, o: 1, sc: 1 };
   private dir: 1 | -1 = 1;
   private count: number;
@@ -101,9 +106,15 @@ export class Stage {
     } catch {
       /* fall back to a cube */
     }
+    let face: Awaited<ReturnType<typeof shapes.portrait>> = null;
+    try {
+      face = await shapes.portrait(n, r, 'me/portrait.webp');
+    } catch {
+      /* fall back to the ring */
+    }
     const targets = [
       shapes.sphere(n, r),
-      shapes.torus(n, r),
+      face?.points ?? shapes.torus(n, r),
       glyph ?? shapes.cube(n, r),
       shapes.ocean(n, r),
       shapes.helix(n, r),
@@ -118,6 +129,7 @@ export class Stage {
     g.setAttribute('position', new THREE.BufferAttribute(targets[0], 3));
     for (let i = 1; i < SHAPES; i++) g.setAttribute(`aP${i}`, new THREE.BufferAttribute(targets[i], 3));
     g.setAttribute('aRandom', new THREE.BufferAttribute(random, 4));
+    g.setAttribute('aTone', new THREE.BufferAttribute(face?.tone ?? new Float32Array(n).fill(0.5), 1));
     this.geometry = g;
 
     this.material = new THREE.ShaderMaterial({
@@ -201,6 +213,14 @@ export class Stage {
     gsap.to(this.uniforms.uColorA.value, { r: ca.r, g: ca.g, b: ca.b, duration: d, ease: 'sine.inOut', overwrite: true });
     gsap.to(this.uniforms.uColorB.value, { r: cb.r, g: cb.g, b: cb.b, duration: d, ease: 'sine.inOut', overwrite: true });
     gsap.to(this.spinSpeed, { v: SPIN[next.s] ?? 0.08, duration: 2, overwrite: true });
+    // a shape that must be read (the portrait) turns to face the camera instead of spinning
+    this.facing = SPIN[next.s] === 0;
+    if (this.facing) {
+      const turn = Math.PI * 2;
+      gsap.to(this.spin.rotation, { y: Math.round(this.spin.rotation.y / turn) * turn, duration: this.reduced ? 0 : 2.2, ease: 'power3.inOut', overwrite: true });
+    } else {
+      gsap.killTweensOf(this.spin.rotation);
+    }
     this.applyState(this.reduced ? 0 : 2);
   }
 
@@ -212,7 +232,11 @@ export class Stage {
     const scale = this.state.sc * (wide ? 1 : 0.78);
     gsap.to(this.rig.position, { x, duration, ease: 'power3.inOut', overwrite: true });
     gsap.to(this.rig.scale, { x: scale, y: scale, z: scale, duration, ease: 'power3.inOut', overwrite: true });
-    gsap.to(this.uniforms.uOpacity, { value: this.state.o * (wide ? 1 : 0.7), duration, overwrite: true });
+    gsap.to(this.uniforms.uOpacity, { value: this.state.o * (wide || SPIN[this.state.s] === 0 ? 1 : 0.7), duration, overwrite: true });
+  }
+
+  anchor(offset: number): void {
+    this.anchorY = Math.max(-1.3, Math.min(1.3, offset));
   }
 
   pointer(clientX: number, clientY: number): void {
@@ -260,8 +284,13 @@ export class Stage {
     u.uVelocity.value += (this.velocityTarget - u.uVelocity.value) * Math.min(1, dt * 6);
     this.velocityTarget *= Math.pow(0.05, dt);
 
+    // on phones the portrait scrolls with its slot instead of sitting behind the text
+    const vh = 2 * Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2)) * this.camera.position.z;
+    const y = this.facing && this.width < 900 ? this.anchorY * vh : 0;
+    this.rig.position.y += (y - this.rig.position.y) * (this.reduced ? 1 : 1 - Math.pow(0.0005, dt));
+
     if (!this.reduced) {
-      this.spin.rotation.y += dt * (this.spinSpeed.v + Math.min(Math.abs(u.uVelocity.value), 4) * 0.05);
+      if (!this.facing) this.spin.rotation.y += dt * (this.spinSpeed.v + Math.min(Math.abs(u.uVelocity.value), 4) * 0.05);
       this.rig.rotation.x = this.parallax.y * -0.16;
       this.rig.rotation.y = this.parallax.x * 0.26;
       this.dustGroup.rotation.y += dt * 0.01;

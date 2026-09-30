@@ -67,6 +67,7 @@ attribute vec3 aP5;
 attribute vec3 aP6;
 attribute vec3 aP7;
 attribute vec4 aRandom;
+attribute float aTone;
 
 varying vec3 vColor;
 varying float vAlpha;
@@ -91,11 +92,18 @@ void main(){
   p = mix(p, aP6, stage(5.0));
   p = mix(p, aP7, stage(6.0));
 
+  // how much the portrait (shape 1) is on screen: it holds still and is lit by a scanning line
+  float pw = 1.0 - clamp(abs(uMorph - 1.0), 0.0, 1.0);
+  pw = pw * pw * (3.0 - 2.0 * pw);
+  float scanY = mod(uTime * 0.55, 5.4) - 2.7;
+  float scan = exp(-pow((p.y - scanY) * 9.0, 2.0)) * pw;
+  p.x += scan * 0.02 * sin(p.y * 60.0 + uTime * 9.0);
+
   // curl-like flow: stronger while morphing and while scrolling fast
   float between = sin(3.14159265 * fract(uMorph));
   vec3 q = p * 0.34 + vec3(0.0, uTime * 0.07, uTime * 0.045);
   vec3 flow = vec3(snoise(q), snoise(q + 17.31), snoise(q + 41.73));
-  float amp = 0.09 + between * 1.1 + min(abs(uVelocity), 4.0) * 0.16;
+  float amp = (0.09 + between * 1.1 + min(abs(uVelocity), 4.0) * 0.16) * mix(1.0, 0.18, pw);
   p += flow * amp;
 
   // intro: particles rush in from a deep scattered field
@@ -120,19 +128,22 @@ void main(){
   // size + fake depth of field (bokeh away from the focal plane)
   float depth = -mv.z;
   float coc = abs(depth - uFocus);
-  float bokeh = step(0.986, aRandom.x);
+  float bokeh = step(0.986, aRandom.x) * (1.0 - pw * 0.85);
   float size = uSize * (0.35 + aRandom.x * 0.9) * (1.0 + bokeh * 3.2);
   size *= 1.0 + coc * 0.16;
   gl_PointSize = size * uPixelRatio / depth;
 
   float n = snoise(p * 0.24 + uTime * 0.04);
   vec3 col = mix(uColorA, uColorB, smoothstep(-0.55, 0.6, n + (aRandom.y - 0.5) * 0.7));
-  col = mix(col, uColorC, step(0.955, aRandom.z) * 0.9);
-  col += force * 0.9;
+  col = mix(col, uColorC, step(0.955, aRandom.z) * 0.9 * (1.0 - pw));
+  // portrait: colour follows the photo's light, from turquoise shadow to warm skin
+  col = mix(col, mix(uColorA, uColorB, smoothstep(0.08, 0.8, aTone)), pw);
+  col += force * 0.9 + scan * 0.3;
   vColor = col;
 
   float twinkle = 0.62 + 0.38 * sin(uTime * (0.8 + aRandom.y * 2.4) + aRandom.z * 40.0);
   vAlpha = (0.28 + 0.72 * aRandom.y) * twinkle;
+  vAlpha = mix(vAlpha, (0.3 + 0.95 * aTone) * mix(twinkle, 1.0, 0.6), pw) + scan * 0.25;
   vAlpha /= 1.0 + coc * coc * 0.05;
   vAlpha *= 1.0 - bokeh * 0.72;
   vAlpha *= mix(0.35, 1.0, it);

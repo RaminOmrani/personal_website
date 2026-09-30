@@ -69,6 +69,15 @@ function setupScenes(env: PageEnv): void {
       onToggle: (self) => self.isActive && stage.goTo(cfg),
     });
   });
+  // the portrait rides along with its slot in the About section (the slot only has height on phones)
+  const anchor = $('[data-portrait-anchor]');
+  if (anchor) {
+    const follow = () => {
+      const r = anchor.getBoundingClientRect();
+      stage.anchor(r.height ? (innerHeight / 2 - (r.top + r.height / 2)) / innerHeight : 0);
+    };
+    ScrollTrigger.create({ trigger: anchor, start: 'top bottom', end: 'bottom top', onUpdate: follow, onToggle: follow, onRefresh: follow });
+  }
 }
 
 function setupHud(env: PageEnv): void {

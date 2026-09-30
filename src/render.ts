@@ -98,7 +98,7 @@ function header(lang: Lang): string {
   return `
 <header class="header" data-header>
   <a class="brand" href="#top" data-magnetic aria-label="${esc(t(site.name, lang))}">
-    <span class="brand-mark">${esc(site.monogram)}</span>
+    <span class="brand-mark"><img src="me/me-face.webp" alt="" width="44" height="44" decoding="async"></span>
     <span class="brand-name">${esc(t(site.name, lang))}<small>${esc(t(site.role, lang))}</small></span>
   </a>
   <nav class="nav" aria-label="${esc(t(ui.chooseSection, lang))}"><ul>${navItems}</ul></nav>
@@ -162,9 +162,10 @@ function aboutSection(lang: Lang, idx: number): string {
     )
     .join('');
   return `
-<section class="section about" id="about" ${gl({ s: 1, x: 0.22, o: 0.9 })} data-hud="${esc(t(about.label, lang))}">
+<section class="section about" id="about" ${gl({ s: 1, x: 0.27, o: 0.95 })} data-hud="${esc(t(about.label, lang))}">
   ${label(idx, t(about.label, lang), lang)}
   <p class="manifesto" data-manifesto>${accessible(m, words(m))}</p>
+  <div class="about-portrait" data-portrait-anchor aria-hidden="true"></div>
   <div class="about-grid">
     <div class="name-card" data-reveal data-tilt>
       <div class="name-card-glow" aria-hidden="true"></div>
@@ -385,6 +386,7 @@ function footer(lang: Lang, o: RenderOptions): string {
   <div class="footer-bottom">
     <p>© ${num(o.year, lang)} ${esc(t(site.name, lang))}. ${esc(t(ui.rights, lang))}</p>
     <p>${esc(t(ui.madeIn, lang))}</p>
+    <p><a class="footer-versions" href="../?choose" data-cursor="hover">${esc(t(ui.versions, lang))} ↗</a></p>
   </div>
 </footer>`;
 }

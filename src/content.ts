@@ -21,7 +21,7 @@ const l = (fa: string, en: string): L => ({ fa, en });
 export const site = {
   defaultLang: 'fa' as Lang,
   /** Final public URL (used for SEO / social previews). Change it after you buy a domain. */
-  url: 'https://raminomrani.github.io/personal_website/',
+  url: 'https://raminomrani.ir/v1/',
   name: l('رامین عمرانی', 'Ramin Omrani'),
   /** The two big lines in the hero. */
   heroName: { fa: ['رامین', 'عمرانی'], en: ['RAMIN', 'OMRANI'] },
@@ -631,6 +631,7 @@ export const ui = {
   backTop: l('بازگشت به بالا', 'Back to top'),
   rights: l('تمام حقوق محفوظ است.', 'All rights reserved.'),
   madeIn: l('طراحی و توسعه با عشق در مشهد', 'Designed & built with love in Mashhad'),
+  versions: l('نسخه‌های دیگر سایت', 'Other versions of this site'),
   sample: l('نمونه', 'Sample'),
   socials: l('شبکه‌های اجتماعی', 'Socials'),
   chooseSection: l('بخش‌ها', 'Sections'),

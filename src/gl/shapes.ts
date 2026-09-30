@@ -1,6 +1,6 @@
 /**
  * Target point clouds for the particle morph. Every function returns `count * 3` floats.
- * Order on the page: sphere → ring → </> glyph → ocean → helix → vortex → rings → galaxy.
+ * Order on the page: sphere → portrait (ring as fallback) → </> glyph → ocean → helix → vortex → rings → galaxy.
  */
 
 export type Rng = () => number;
@@ -59,6 +59,81 @@ export function torus(n: number, r: Rng, R = 2.55, tube = 0.5): Float32Array {
     out[i * 3 + 2] = t * Math.sin(v);
   }
   return rotate(out, 1.12, 0, 0.28);
+}
+
+/**
+ * Ramin's portrait as a stipple drawing: points land more densely where the photo is bright
+ * or has an edge, and the face gets more of them than the suit. Returns positions plus each
+ * point's brightness (0–1), which the shader uses for colour and alpha.
+ */
+export async function portrait(n: number, r: Rng, src: string, width = 3.7): Promise<{ points: Float32Array; tone: Float32Array } | null> {
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = src;
+  await img.decode();
+  const W = img.naturalWidth;
+  const H = img.naturalHeight;
+  const c = document.createElement('canvas');
+  c.width = W;
+  c.height = H;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  if (!ctx || !W || !H) return null;
+  ctx.drawImage(img, 0, 0);
+  const px = ctx.getImageData(0, 0, W, H).data;
+
+  const lum = new Float32Array(W * H);
+  for (let i = 0; i < W * H; i++) {
+    lum[i] = ((0.2126 * px[i * 4] + 0.7152 * px[i * 4 + 1] + 0.0722 * px[i * 4 + 2]) / 255) * (px[i * 4 + 3] / 255);
+  }
+  // weight = brightness + edges (sobel); the face gets extra, the body fades toward the bottom
+  const cdf = new Float64Array(W * H);
+  let sum = 0;
+  for (let y = 0; y < H; y++) {
+    const fall = (y / H < 0.45 ? 1.5 : 1) * (1 - 0.65 * smoothstep(0.35, 0.9, y / H));
+    for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      const a = px[i * 4 + 3] / 255;
+      let edge = 0;
+      if (x > 0 && y > 0 && x < W - 1 && y < H - 1) {
+        const gx = lum[i - W + 1] + 2 * lum[i + 1] + lum[i + W + 1] - lum[i - W - 1] - 2 * lum[i - 1] - lum[i + W - 1];
+        const gy = lum[i + W - 1] + 2 * lum[i + W] + lum[i + W + 1] - lum[i - W - 1] - 2 * lum[i - W] - lum[i - W + 1];
+        edge = Math.min(1, Math.hypot(gx, gy));
+      }
+      sum += a > 0.05 ? a * (0.06 + 1.4 * Math.pow(lum[i], 1.4) + 1.4 * edge) * fall : 0;
+      cdf[i] = sum;
+    }
+  }
+  if (sum <= 0) return null;
+
+  const points = new Float32Array(n * 3);
+  const tone = new Float32Array(n);
+  const s = width / W;
+  for (let k = 0; k < n; k++) {
+    // inverse-CDF sampling
+    const target = r() * sum;
+    let lo = 0;
+    let hi = cdf.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (cdf[mid] < target) lo = mid + 1;
+      else hi = mid;
+    }
+    const x = (lo % W) + r();
+    const y = Math.floor(lo / W) + r();
+    const t = lum[lo];
+    const across = (x - W / 2) / (W / 2);
+    points[k * 3] = (x - W / 2) * s;
+    points[k * 3 + 1] = -(y - H * 0.48) * s;
+    // gentle relief: a rounded body plus brighter areas nearer the camera
+    points[k * 3 + 2] = Math.sqrt(Math.max(0, 1 - across * across)) * 0.5 + (t - 0.4) * 0.3 + (r() - 0.5) * 0.04;
+    tone[k] = t;
+  }
+  return { points, tone };
+}
+
+function smoothstep(a: number, b: number, v: number): number {
+  const t = Math.min(1, Math.max(0, (v - a) / (b - a)));
+  return t * t * (3 - 2 * t);
 }
 
 /** Samples points from text drawn on a 2D canvas. */
