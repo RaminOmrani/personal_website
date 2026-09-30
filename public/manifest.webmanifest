@@ -1,0 +1,9 @@
+{
+  "name": "Ramin Omrani — Portfolio",
+  "short_name": "Ramin Omrani",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#060608",
+  "theme_color": "#060608",
+  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
