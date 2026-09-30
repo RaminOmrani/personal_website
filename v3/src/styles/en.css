@@ -1,0 +1,490 @@
+/* ==========================================================================
+   The English page (en.html: lang="en", dir="ltr").
+   Everything here is scoped to it, so the Persian page is untouched.
+
+   Type: Bricolage Grotesque for headlines (a confident grotesque with optical sizes,
+   the Latin counterpart of Estedad), Instrument Sans for reading, and Instrument Serif
+   italic where Persian uses Nastaliq: the same calligraphic accent, written in with ink.
+   Latin needs far less leading than Persian, and none of Nastaliq's headroom.
+   ========================================================================== */
+
+:root:lang(en) {
+  --font: 'Instrument Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Instrument Sans Variable', system-ui, sans-serif;
+  --font-nas: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+}
+
+:root:lang(en) body {
+  line-height: 1.6;
+}
+
+/* headings without their own leading would otherwise inherit the body's */
+:root:lang(en) :is(h1, h2, h3) {
+  line-height: 1.2;
+}
+
+/* ---------- the calligraphic accent: an italic serif instead of Nastaliq ---------- */
+
+:root:lang(en) :is(.nas, .person-sign, .namecard-word, .namecard-note, .profile-quote, .footer-sign) {
+  font-style: italic;
+  font-weight: 400;
+  font-synthesis: none;
+}
+
+:root:lang(en) .nas {
+  /* a little room for the italic's overhang, so the gradient reaches every stroke */
+  padding: 0.02em 0.12em 0.08em 0.02em;
+  margin-block: -0.02em -0.08em;
+  margin-inline-end: -0.06em;
+  font-size: 1.12em;
+  letter-spacing: -0.005em;
+}
+
+/* written in from the left, like ink */
+@keyframes ink-ltr {
+  from {
+    clip-path: inset(-60% 100% -60% 0);
+  }
+  to {
+    clip-path: inset(-60% 0 -60% 0);
+  }
+}
+
+@keyframes sign-ltr {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+:root[dir='ltr'] .word-in.nas,
+:root[dir='ltr'] .namecard[data-in] .namecard-word {
+  animation-name: ink-ltr;
+}
+
+:root[dir='ltr'].js .namecard .namecard-word {
+  clip-path: inset(-60% 100% -60% 0);
+}
+
+:root[dir='ltr'] .person-sign {
+  animation-name: sign-ltr;
+}
+
+/* ---------- type scale and leading ---------- */
+
+:root:lang(en) .display {
+  font-weight: 750;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+}
+
+:root:lang(en) .display--xl {
+  line-height: 1.02;
+}
+
+:root:lang(en) .eyebrow {
+  font-size: 12.5px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+:root:lang(en) .section-text {
+  line-height: 1.6;
+}
+
+:root:lang(en) .hero-title {
+  font-size: clamp(2.2rem, 0.8rem + 3.2vw, 4.3rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+
+:root:lang(en) .hero-text {
+  line-height: 1.6;
+}
+
+:root:lang(en) .pill {
+  line-height: 1.3;
+}
+
+:root:lang(en) .cap h2 {
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+:root:lang(en) .cap p {
+  line-height: 1.5;
+}
+
+:root:lang(en) .app-head h2 {
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+
+:root:lang(en) .app-head p {
+  line-height: 1.55;
+}
+
+:root:lang(en) .callout strong {
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+:root:lang(en) .callout span:last-child {
+  line-height: 1.45;
+}
+
+:root:lang(en) .chapter-tag,
+:root:lang(en) .film-chapters {
+  letter-spacing: 0.01em;
+}
+
+:root:lang(en) .card-head h3 {
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+:root:lang(en) .card-pitch {
+  line-height: 1.55;
+}
+
+:root:lang(en) .card-facts li {
+  line-height: 1.35;
+}
+
+:root:lang(en) .svc h3 {
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+:root:lang(en) .svc > p {
+  line-height: 1.6;
+}
+
+:root:lang(en) .marquee-item {
+  letter-spacing: -0.01em;
+}
+
+:root:lang(en) .step h3 {
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+:root:lang(en) .step > p {
+  line-height: 1.55;
+}
+
+:root:lang(en) .step .step-get {
+  line-height: 1.45;
+}
+
+:root:lang(en) .promise-title {
+  line-height: 1.05;
+  margin-block: 10px 26px;
+}
+
+:root:lang(en) .promise-list strong {
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+:root:lang(en) .promise-list p {
+  margin-top: 4px;
+  line-height: 1.55;
+}
+
+:root:lang(en) .about-p {
+  line-height: 1.7;
+}
+
+:root:lang(en) .profile-name {
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+:root:lang(en) .profile-role {
+  margin-top: -10px;
+}
+
+:root:lang(en) .profile .profile-quote {
+  font-size: 1.55rem;
+  line-height: 1.2;
+}
+
+:root:lang(en) .stat strong {
+  letter-spacing: -0.03em;
+}
+
+:root:lang(en) .stat span {
+  line-height: 1.45;
+}
+
+:root:lang(en) .faq-q {
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+
+:root:lang(en) .faq-a p {
+  line-height: 1.7;
+}
+
+:root:lang(en) .faq-me {
+  line-height: 1.5;
+}
+
+:root:lang(en) .bubble {
+  line-height: 1.5;
+}
+
+:root:lang(en) .case-title {
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+:root:lang(en) .case-lead,
+:root:lang(en) .case-story p {
+  line-height: 1.7;
+}
+
+:root:lang(en) .case-facts li {
+  line-height: 1.35;
+}
+
+:root:lang(en) .case-facts strong {
+  white-space: nowrap;
+}
+
+:root:lang(en) .case-story h2,
+:root:lang(en) .case-h,
+:root:lang(en) .case-cta h2 {
+  letter-spacing: -0.02em;
+}
+
+:root:lang(en) .features strong {
+  line-height: 1.3;
+}
+
+:root:lang(en) .features p {
+  line-height: 1.55;
+}
+
+:root:lang(en) .case-meta dd {
+  line-height: 1.6;
+}
+
+:root:lang(en) .case-next strong {
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+:root:lang(en) .menu-links a {
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+:root:lang(en) .arch-portrait figcaption,
+:root:lang(en) .toast {
+  line-height: 1.5;
+}
+
+:root:lang(en) .logo-words strong {
+  letter-spacing: -0.01em;
+}
+
+/* the name card: "Omrani" as a dictionary headword */
+:root:lang(en) .namecard-word {
+  margin-top: 0.08em;
+  margin-bottom: 0.12em;
+  line-height: 1.1;
+  font-size: clamp(3.4rem, 2.8rem + 2.6vw, 4.8rem);
+}
+
+:root:lang(en) .namecard-eyebrow {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 11.5px;
+}
+
+:root:lang(en) .namecard-phon {
+  margin-top: 0;
+}
+
+:root:lang(en) .namecard-defs {
+  line-height: 1.5;
+}
+
+:root:lang(en) .namecard-defs li::before {
+  content: counter(def) '.';
+}
+
+:root:lang(en) .namecard-note {
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+:root:lang(en) .person-sign {
+  line-height: 1.1;
+  font-size: clamp(2.3rem, 1.5rem + 2.2vw, 3.7rem);
+}
+
+:root:lang(en) .footer-sign {
+  font-size: 1.9rem;
+  line-height: 1.2;
+}
+
+/* ---------- mirroring for left to right ---------- */
+
+/* arrows, chevrons and the external-link mark point "forward" */
+:root[dir='ltr'] .icon-dir {
+  scale: -1 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :root[dir='ltr'] .link-arrow:hover svg,
+  :root[dir='ltr'] .card-inner:hover .card-more svg {
+    translate: 5px 0;
+  }
+  :root[dir='ltr'] .case-next:hover svg {
+    translate: 6px 0;
+  }
+}
+
+/* the dot leads the pill, so the start side keeps the wider padding */
+:root[dir='ltr'] .pill {
+  padding: 7px 14px 7px 16px;
+}
+
+/* the ivory pool behind the hero copy reaches toward the centre */
+:root[dir='ltr'] .hero-copy::before {
+  inset: 4% -26% 4% -14%;
+}
+
+@media (max-width: 999px) {
+  :root[dir='ltr'] .hero-copy::before {
+    inset: -10% -10% -6% -10%;
+  }
+}
+
+/* the film's progress bar fills in reading direction */
+:root[dir='ltr'] .film-bar span {
+  transform-origin: left;
+}
+
+/* the light passes across the portrait the other way */
+@keyframes sweep-ltr {
+  0% {
+    opacity: 0;
+    background-position: -20% 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    background-position: 120% 0;
+  }
+}
+
+:root[dir='ltr'].js .person-sweep {
+  animation-name: sweep-ltr;
+}
+
+:root[dir='ltr'] .person-sweep {
+  background-image: linear-gradient(255deg, transparent 38%, rgba(255, 255, 255, 0.55) 48%, rgba(255, 226, 170, 0.45) 52%, transparent 62%);
+}
+
+/* device compositions lean toward each other */
+:root[dir='ltr'] .pv-phone {
+  transform: translateZ(70px) rotate(3deg);
+}
+
+:root[dir='ltr'] .sv-phones .sv-phone--back {
+  rotate: -6deg;
+}
+
+/* brand light sits on the same side of the composition as in Persian, mirrored */
+:root[dir='ltr'] .card-stage {
+  background:
+    radial-gradient(80% 90% at 20% 10%, color-mix(in srgb, var(--brand) 22%, transparent), transparent 70%),
+    radial-gradient(60% 60% at 90% 100%, color-mix(in srgb, var(--brand) 12%, #fff), transparent 70%),
+    var(--tint);
+}
+
+:root[dir='ltr'] .case-hero-visual {
+  background:
+    radial-gradient(80% 90% at 20% 10%, color-mix(in srgb, var(--brand) 24%, transparent), transparent 70%),
+    var(--tint);
+}
+
+:root[dir='ltr'] .case {
+  background:
+    radial-gradient(70% 50% at 15% 0%, color-mix(in srgb, var(--brand) 16%, transparent), transparent 70%),
+    radial-gradient(50% 40% at 100% 30%, color-mix(in srgb, var(--brand) 8%, transparent), transparent 70%),
+    var(--pearl);
+}
+
+:root[dir='ltr'] .case-next {
+  background:
+    radial-gradient(60% 120% at 0% 0%, color-mix(in srgb, var(--brand) 20%, transparent), transparent 70%),
+    var(--surface);
+}
+
+:root[dir='ltr'] .case-cta {
+  background:
+    radial-gradient(70% 90% at 10% 0%, rgba(255, 255, 255, 0.22), transparent 60%),
+    var(--brand);
+}
+
+@media (max-width: 999px) {
+  :root[dir='ltr'] .svc-inline {
+    background: radial-gradient(80% 80% at 20% 0%, rgba(99, 140, 235, 0.25), transparent 70%), var(--pearl);
+  }
+}
+
+/* the painted stand-in for the aurora: lapis behind the portrait, saffron across from it */
+:root[dir='ltr'] .film-bg {
+  background:
+    radial-gradient(45% 55% at 82% 30%, rgba(99, 140, 235, 0.55), transparent 70%),
+    radial-gradient(40% 50% at 15% 75%, rgba(245, 199, 126, 0.5), transparent 70%),
+    radial-gradient(35% 40% at 40% 8%, rgba(111, 214, 203, 0.45), transparent 70%),
+    var(--pearl);
+}
+
+/* the process path is drawn from the first step, now on the left */
+:root[dir='ltr'] .steps-path {
+  scale: -1 1;
+}
+
+/* the marquee drifts the other way, so the loop stays seamless */
+@keyframes marquee-ltr {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+:root[dir='ltr'] .marquee-track {
+  animation-name: marquee-ltr;
+}
+
+:root[dir='ltr'] .channel-value {
+  text-align: left;
+}
+
+:root[dir='ltr']::view-transition-old(case-title),
+:root[dir='ltr']::view-transition-new(case-title) {
+  object-position: left center;
+}
+
+/* as in Persian: with reduced motion the signature fades in and the light sweep is skipped */
+@media (prefers-reduced-motion: reduce) {
+  :root[dir='ltr'].js .person-sign {
+    animation: fade 500ms ease both;
+  }
+  :root[dir='ltr'].js .person-sweep {
+    animation: none;
+  }
+}

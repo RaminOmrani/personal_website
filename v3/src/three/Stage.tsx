@@ -2,7 +2,7 @@ import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
 import * as THREE from 'three';
-import { app, sites } from '../data/copy';
+import { copy } from '../data/copy';
 import { auroraFragment, auroraVertex, screenFragment, screenVertex } from './shaders';
 import { keyboardTexture, plate, slab } from './geometry';
 import { beats, clamp01, damp, easeInOut, easeOut, film, lerp, range, smooth, stepped } from './film';
@@ -31,25 +31,33 @@ const palettes = {
 };
 
 const TABLET_SRC = 'work/crm-calendar.jpg';
+// the screens are the same on both pages
+const { sites, app } = copy.fa;
 const URLS = [...sites.items.map((s) => s.screen), TABLET_SRC, ...app.screens.map((s) => s.screen)];
 
 /* ---------- layout presets by viewport shape ---------- */
 
-function layout(aspect: number) {
+/**
+ * `m` is 1 on the right-to-left page and -1 on the left-to-right one: the whole composition
+ * is mirrored across the centre line (x and the turns about y and z flip sign), so the devices
+ * always gather around the portrait at the inline end and leave the headline side clear.
+ */
+function layout(aspect: number, m: 1 | -1) {
   // 0 = tall phone, 1 = wide desktop
   const k = clamp01((aspect - 0.62) / (1.45 - 0.62));
   return {
+    m,
     fov: lerp(40, 30, k),
-    cluster: new THREE.Vector3(lerp(0, -2.05, k), lerp(-1.35, 0, k), 0),
+    cluster: new THREE.Vector3(m * lerp(0, -2.05, k), lerp(-1.35, 0, k), 0),
     heroCam: new THREE.Vector3(0, lerp(0.2, 0.55, k), lerp(13.6, 10.4, k)),
     heroLook: new THREE.Vector3(0, lerp(0.55, 0.3, k), 0),
-    phone: new THREE.Vector3(lerp(0, -1.35, k), lerp(-0.42, 0, k), 0),
+    phone: new THREE.Vector3(m * lerp(0, -1.35, k), lerp(-0.42, 0, k), 0),
     phoneFill: lerp(0.5, 0.72, k),
     wide: k > 0.5,
-    // hero poses: the portrait stands left of centre, so the devices gather around it
-    heroLap: { pos: new THREE.Vector3(lerp(-1.45, -4.05, k), lerp(-2.75, 0.45, k), lerp(-1.8, -1.6, k)), ry: lerp(0.4, 0.6, k), scale: lerp(0.6, 0.86, k) },
-    heroTab: { pos: new THREE.Vector3(lerp(6, -4.6, k), lerp(0.2, -1.75, k), -2.6), ry: lerp(-0.35, 0.5, k) },
-    heroPhone: { pos: new THREE.Vector3(lerp(1.55, -0.45, k), lerp(-2.6, -1.1, k), lerp(1.2, 1.2, k)), ry: lerp(-0.3, -0.42, k), scale: lerp(0.58, 0.76, k) },
+    // hero poses: the portrait stands left of centre (right of it in English), so the devices gather around it
+    heroLap: { pos: new THREE.Vector3(m * lerp(-1.45, -4.05, k), lerp(-2.75, 0.45, k), lerp(-1.8, -1.6, k)), ry: m * lerp(0.4, 0.6, k), scale: lerp(0.6, 0.86, k) },
+    heroTab: { pos: new THREE.Vector3(m * lerp(6, -4.6, k), lerp(0.2, -1.75, k), -2.6), ry: m * lerp(-0.35, 0.5, k) },
+    heroPhone: { pos: new THREE.Vector3(m * lerp(1.55, -0.45, k), lerp(-2.6, -1.1, k), lerp(1.2, 1.2, k)), ry: m * lerp(-0.3, -0.42, k), scale: lerp(0.58, 0.76, k) },
   };
 }
 
@@ -90,7 +98,7 @@ function screenMaterial(w: number, h: number, radius: number, tex: THREE.Texture
   });
 }
 
-function Scene({ onReady }: { onReady: () => void }) {
+function Scene({ onReady, mirror }: { onReady: () => void; mirror: boolean }) {
   const { camera, size, clock } = useThree();
   const tex = useScreens();
 
@@ -101,7 +109,7 @@ function Scene({ onReady }: { onReady: () => void }) {
   const laptopScreen = useRef<THREE.Mesh>(null);
 
   const smooth2 = useRef({ px: 0, py: 0 });
-  const L = useMemo(() => layout(size.width / size.height), [size.width, size.height]);
+  const L = useMemo(() => layout(size.width / size.height, mirror ? -1 : 1), [size.width, size.height, mirror]);
   const tmp = useMemo(
     () => ({
       v: new THREE.Vector3(),
@@ -137,6 +145,7 @@ function Scene({ onReady }: { onReady: () => void }) {
         uC2: { value: palettes.hero[1].clone() },
         uC3: { value: palettes.hero[2].clone() },
         uIntensity: { value: 1 },
+        uFlip: { value: mirror ? 1 : 0 },
       },
     });
     return {
@@ -150,7 +159,7 @@ function Scene({ onReady }: { onReady: () => void }) {
       tabletScreen: screenMaterial(TABLET.screenW, TABLET.screenH, 0.05, tex.tablet, 800 / 1280),
       phoneScreen: screenMaterial(PHONE.screenW, PHONE.screenH, 0.12, tex.phone[1], app.screens[1].aspect),
     };
-  }, [tex]);
+  }, [tex, mirror]);
 
   const geo = useMemo(
     () => ({
@@ -209,7 +218,7 @@ function Scene({ onReady }: { onReady: () => void }) {
     const u = mats.aurora.uniforms;
     u.uTime.value = t;
     u.uRes.value.set(size.width, size.height);
-    u.uPointer.value.set(sp.px, sp.py);
+    u.uPointer.value.set(sp.px * L.m, sp.py); // the fields are mirrored, the pointer is not
     const wSites = range(p, 0.08, 0.24) * (1 - range(p, 0.6, 0.7));
     const wApp = range(p, 0.62, 0.72);
     for (const [k, i] of [['uC1', 0], ['uC2', 1], ['uC3', 2]] as const) {
@@ -239,8 +248,9 @@ function Scene({ onReady }: { onReady: () => void }) {
     const tab = tablet.current!;
     const off = dive;
     const ht = L.heroTab;
-    tab.position.set(ht.pos.x - off * 6, ht.pos.y + Math.sin(t * 0.7 + 1.3) * 0.06 * calm + off * 2.5 - (1 - rise) * 0.8, ht.pos.z - off * 3);
-    tab.rotation.set(0.1 + sp.py * 0.05, ht.ry + sp.px * 0.12 + off * 1.2, 0.05 + off * 0.6);
+    const m = L.m;
+    tab.position.set(ht.pos.x - m * off * 6, ht.pos.y + Math.sin(t * 0.7 + 1.3) * 0.06 * calm + off * 2.5 - (1 - rise) * 0.8, ht.pos.z - off * 3);
+    tab.rotation.set(0.1 + sp.py * 0.05, ht.ry + sp.px * 0.12 + m * off * 1.2, m * (0.05 + off * 0.6));
     tab.visible = off < 0.999 && L.wide;
     mats.tabletScreen.uniforms.uPower.value = power;
 
@@ -250,17 +260,17 @@ function Scene({ onReady }: { onReady: () => void }) {
     const flyOff = dive;
     const inPos = tmp.v.set(L.phone.x, L.phone.y - 4.6, 0).lerp(L.phone, phoneIn);
     const pinned = p >= beats.phoneIn[0];
-    const sway = (i: number) => (L.wide ? (i % 2 === 0 ? -0.2 : 0.18) : i % 2 === 0 ? -0.12 : 0.12);
+    const sway = (i: number) => m * (L.wide ? (i % 2 === 0 ? -0.2 : 0.18) : i % 2 === 0 ? -0.12 : 0.12);
     const ai = Math.min(Math.floor(appStep), app.screens.length - 2);
     const yaw = lerp(sway(ai), sway(ai + 1), appStep - ai);
     if (!pinned) {
-      ph.position.set(hp.pos.x + flyOff * 4.5, hp.pos.y + Math.sin(t * 0.9 + 2.1) * 0.07 * calm - flyOff * 4 - (1 - rise) * 1, hp.pos.z + flyOff * 2);
-      ph.rotation.set(0.04 + sp.py * 0.06, hp.ry + sp.px * 0.16 - flyOff * 1.4, -0.07 - flyOff * 0.8);
+      ph.position.set(hp.pos.x + m * flyOff * 4.5, hp.pos.y + Math.sin(t * 0.9 + 2.1) * 0.07 * calm - flyOff * 4 - (1 - rise) * 1, hp.pos.z + flyOff * 2);
+      ph.rotation.set(0.04 + sp.py * 0.06, hp.ry + sp.px * 0.16 - m * flyOff * 1.4, m * (-0.07 - flyOff * 0.8));
       ph.scale.setScalar(lerp(hp.scale, 1, flyOff));
     } else {
       ph.scale.setScalar(1);
       ph.position.set(inPos.x, inPos.y + end * 4.8, inPos.z);
-      ph.rotation.set(lerp(0.5, 0.02, phoneIn), lerp(-1.4, yaw, phoneIn), lerp(0.25, 0, phoneIn));
+      ph.rotation.set(lerp(0.5, 0.02, phoneIn), lerp(-1.4 * m, yaw, phoneIn), lerp(0.25 * m, 0, phoneIn));
     }
     ph.visible = pinned || flyOff < 0.999;
 
@@ -363,7 +373,7 @@ function Scene({ onReady }: { onReady: () => void }) {
 }
 
 /** The 3D stage. Mounted client-side only, after the page is already readable. */
-export default function Stage({ active, onReady }: { active: boolean; onReady: () => void }) {
+export default function Stage({ active, onReady, mirror = false }: { active: boolean; onReady: () => void; mirror?: boolean }) {
   return (
     <Canvas
       className="stage-canvas"
@@ -374,7 +384,7 @@ export default function Stage({ active, onReady }: { active: boolean; onReady: (
       aria-hidden="true"
     >
       <Suspense fallback={null}>
-        <Scene onReady={onReady} />
+        <Scene onReady={onReady} mirror={mirror} />
       </Suspense>
     </Canvas>
   );

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import clsx from 'clsx';
-import { about, faq, marquee, nameCard, process, promise, services, stats } from '../data/copy';
-import { fa, site, whatsappWith } from '../data/site';
+import { useCopy, type Copy } from '../data/copy';
+import { useSite, whatsappWith } from '../data/site';
+import { digits, useLang, type Lang } from '../i18n';
 import { gsap, ScrollTrigger } from '../lib/scroll';
 import { useReducedMotion } from '../lib/hooks';
 import { BotDemo } from '../ui/BotDemo';
@@ -11,7 +12,7 @@ import { Mili } from '../ui/Mili';
 import { Grad } from '../ui/Text';
 import { ArchPortrait } from '../ui/Arch';
 
-type Service = (typeof services.items)[number];
+type Service = Copy['services']['items'][number];
 
 function ServiceVisual({ v, live }: { v: Service['visual']; live?: boolean }) {
   switch (v.kind) {
@@ -41,6 +42,8 @@ function ServiceVisual({ v, live }: { v: Service['visual']; live?: boolean }) {
 
 /** Services on the right; on wide screens a sticky showcase on the left follows along. */
 export function Services() {
+  const lang = useLang();
+  const { services } = useCopy();
   const [active, setActive] = useState(0);
   const items = useRef<(HTMLElement | null)[]>([]);
   useEffect(() => {
@@ -76,7 +79,7 @@ export function Services() {
                 }}
               >
                 <span className="svc-num" aria-hidden="true">
-                  {fa(String(i + 1).padStart(2, '0'))}
+                  {digits(String(i + 1).padStart(2, '0'), lang)}
                 </span>
                 <span className="svc-icon">
                   <Icon name={s.icon} size={24} />
@@ -94,8 +97,8 @@ export function Services() {
                 <div className="svc-inline" aria-hidden="true">
                   <ServiceVisual v={s.visual} />
                 </div>
-                <a className="link-arrow" href={whatsappWith(`سلام رامین، دربارهٔ «${s.title}» سؤال دارم.`)} target="_blank" rel="noopener">
-                  دربارهٔ {s.title} بپرسید
+                <a className="link-arrow" href={whatsappWith(services.askMessage(s.topic))} target="_blank" rel="noopener">
+                  {services.ask(s.topic)}
                   <Icon name="arrow" size={16} />
                 </a>
               </li>
@@ -119,10 +122,13 @@ export function Services() {
 
 /** Two rows of ready-made capabilities, drifting in opposite directions. */
 export function Marquee() {
+  const {
+    marquee: { label, items: marquee },
+  } = useCopy();
   const half = Math.ceil(marquee.length / 2);
   const rows = [marquee.slice(0, half), marquee.slice(half)];
   return (
-    <section className="marquee" aria-label="امکانات آماده">
+    <section className="marquee" aria-label={label}>
       {rows.map((row, r) => (
         <div className={clsx('marquee-row', r === 1 && 'marquee-row--rev')} key={r}>
           <div className="marquee-track">
@@ -141,6 +147,8 @@ export function Marquee() {
 
 /** The process as a path that draws itself as you scroll; each step lights up as the line reaches it. */
 export function Process() {
+  const lang = useLang();
+  const { process } = useCopy();
   const root = useRef<HTMLDivElement>(null);
   const [lit, setLit] = useState(process.steps.length);
   const reduced = useReducedMotion();
@@ -170,9 +178,9 @@ export function Process() {
       gsap.set(paths, { strokeDashoffset: 0 });
       setLit(process.steps.length);
     };
-  }, [reduced]);
+  }, [reduced, process.steps.length]);
 
-  // a wave that crosses its midline under each of the four nodes (RTL: first step on the right)
+  // a wave that crosses its midline under each of the four nodes (drawn from the right; mirrored in CSS for left-to-right)
   const wave = 'M1000 40 C958 8 917 8 875 40 S792 72 750 40 S667 8 625 40 S542 72 500 40 S417 8 375 40 S292 72 250 40 S167 8 125 40 S42 72 0 40';
   return (
     <section className="section process" id="process">
@@ -198,7 +206,7 @@ export function Process() {
             {process.steps.map((s, i) => (
               <li key={s.title} className="step" data-lit={i < lit || undefined}>
                 <span className="step-node" aria-hidden="true">
-                  {fa(i + 1)}
+                  {digits(i + 1, lang)}
                 </span>
                 <span className="step-time">{s.time}</span>
                 <h3>{s.title}</h3>
@@ -216,9 +224,10 @@ export function Process() {
   );
 }
 
-function Counter({ value, suffix }: { value: number; suffix: string }) {
+function Counter({ value, suffix, lang }: { value: number; suffix: string; lang: Lang }) {
   const ref = useRef<HTMLSpanElement>(null);
   const reduced = useReducedMotion();
+  const fa = (n: number) => digits(n, lang);
   useEffect(() => {
     const el = ref.current;
     if (!el || reduced || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -241,7 +250,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
       tween.kill();
       el.textContent = fa(value) + suffix;
     };
-  }, [value, suffix, reduced]);
+  }, [value, suffix, reduced, lang]);
   return (
     <span ref={ref} aria-label={fa(value) + suffix}>
       {fa(value) + suffix}
@@ -254,6 +263,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
  * the word itself written in Nastaliq.
  */
 function NameCard() {
+  const { nameCard } = useCopy();
   return (
     <figure className="namecard" data-reveal>
       <svg className="namecard-bg" viewBox="0 0 400 520" preserveAspectRatio="none" aria-hidden="true">
@@ -299,6 +309,7 @@ function NameCard() {
 
 /** A short personal promise, next to what the name itself promises. */
 export function Pledge() {
+  const { promise } = useCopy();
   return (
     <section className="section promise" aria-labelledby="promise-title">
       <div className="container promise-grid">
@@ -328,15 +339,18 @@ export function Pledge() {
 }
 
 export function About() {
+  const lang = useLang();
+  const { about, stats, ui } = useCopy();
+  const site = useSite();
   return (
     <section className="section about" id="about">
       <div className="container about-grid">
         <div className="profile glass" data-reveal>
-          <ArchPortrait src="me/me-think.webp" alt="رامین عمرانی" width={544} height={482} className="profile-portrait">
+          <ArchPortrait src="me/me-think.webp" alt={about.portraitAlt} width={544} height={482} className="profile-portrait">
             <figcaption className="profile-quote">{about.quote}</figcaption>
           </ArchPortrait>
           <strong className="profile-name">{site.name}</strong>
-          <span className="profile-role">برنامه‌نویس فول‌استک و هوش مصنوعی</span>
+          <span className="profile-role">{about.role}</span>
           <p className="profile-now">
             <span className="live-dot" aria-hidden="true" />
             {about.now}
@@ -352,7 +366,7 @@ export function About() {
                 <Icon name={s.label === 'GitHub' ? 'github' : 'linkedin'} />
               </a>
             ))}
-            <a className="icon-btn" href={site.telegram.href} target="_blank" rel="noopener" aria-label="تلگرام">
+            <a className="icon-btn" href={site.telegram.href} target="_blank" rel="noopener" aria-label={ui.telegram}>
               <Icon name="telegram" />
             </a>
           </div>
@@ -371,7 +385,7 @@ export function About() {
             {stats.map((s) => (
               <div key={s.label} className="stat">
                 <strong>
-                  <Counter value={s.value} suffix={s.suffix} />
+                  <Counter value={s.value} suffix={s.suffix} lang={lang} />
                 </strong>
                 <span>{s.label}</span>
               </div>
@@ -384,6 +398,7 @@ export function About() {
 }
 
 export function Faq() {
+  const { faq } = useCopy();
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section className="section faq" id="faq">
@@ -393,16 +408,16 @@ export function Faq() {
           <h2 className="display display--sm">
             <Grad text={faq.title} />
           </h2>
-          <p className="section-text">سؤالتان اینجا نیست؟ مستقیم بپرسید؛ معمولاً همان روز جواب می‌دهم.</p>
-          <a className="btn btn--whatsapp" href={whatsappWith('سلام رامین، یک سؤال داشتم:')} target="_blank" rel="noopener">
+          <p className="section-text">{faq.text}</p>
+          <a className="btn btn--whatsapp" href={whatsappWith(faq.askMessage)} target="_blank" rel="noopener">
             <Icon name="whatsapp" />
-            سؤال در واتس‌اپ
+            {faq.ask}
           </a>
           <p className="faq-me">
             <span className="avatar avatar--sm">
               <img src="me/me-face.webp" alt="" width={80} height={80} loading="lazy" />
             </span>
-            سؤال‌هایتان را خودم جواب می‌دهم، نه ربات و نه واسطه.
+            {faq.me}
           </p>
         </header>
         <ul className="faq-list glass" data-reveal>

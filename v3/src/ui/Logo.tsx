@@ -1,5 +1,7 @@
 import { useId } from 'react';
 import clsx from 'clsx';
+import { useSite } from '../data/site';
+import { useLang } from '../i18n';
 
 /** The letter ر (Estedad Black), as outlines, so the mark never depends on a font. */
 const REH = 'M8 27.10L0 10.50Q8.40 7.20 13.40 4.10Q18.40 1 20.60-2.40Q22.80-5.80 22.80-9.90Q22.80-13.40 21.55-17.35Q20.30-21.30 17.70-27.60L33.40-36.10Q37.20-27.70 38.65-21.90Q40.10-16.10 40.10-10.80Q40.10 1.80 32.05 11.05Q24 20.30 8 27.10';
@@ -35,14 +37,16 @@ export function LogoMark({ size = 40, className }: { size?: number; className?: 
   );
 }
 
-/** Mark + wordmark. */
+/** Mark + wordmark; `latin` adds the name in Latin letters under the Persian one (Persian page only). */
 export function Logo({ size = 40, latin = false }: { size?: number; latin?: boolean }) {
+  const site = useSite();
+  const lang = useLang();
   return (
     <span className="logo">
       <LogoMark size={size} />
       <span className="logo-words">
-        <strong>رامین عمرانی</strong>
-        {latin && <small dir="ltr">RAMIN OMRANI</small>}
+        <strong>{site.name}</strong>
+        {latin && lang === 'fa' && <small dir="ltr">RAMIN OMRANI</small>}
       </span>
     </span>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useRef, type CSSProperties } from 'react';
-import { projects, type Project } from '../data/projects';
-import { site, whatsappWith } from '../data/site';
+import { useCopy } from '../data/copy';
+import { useProjects, type Project } from '../data/projects';
+import { useSite, whatsappWith } from '../data/site';
 import { BotDemo } from '../ui/BotDemo';
 import { Browser, Phone } from '../ui/Frames';
 import { Icon } from '../ui/Icon';
@@ -9,22 +10,24 @@ import { ProjectVisual } from './Work';
 
 function Gallery({ p }: { p: Project }) {
   const track = useRef<HTMLDivElement>(null);
+  const { caseStudy: t } = useCopy();
   const step = (dir: 1 | -1) => {
     const el = track.current;
     if (!el) return;
-    // RTL: "next" travels toward negative x
-    el.scrollBy({ left: -dir * el.clientWidth * 0.75, behavior: 'smooth' });
+    // "next" travels toward the inline end: negative x right to left, positive x left to right
+    const sign = getComputedStyle(el).direction === 'rtl' ? -1 : 1;
+    el.scrollBy({ left: sign * dir * el.clientWidth * 0.75, behavior: 'smooth' });
   };
   return (
     <div className="gallery">
-      <div className="gallery-track" ref={track} tabIndex={0} role="region" aria-label={`صفحه‌های ${p.name}`} data-lenis-prevent>
+      <div className="gallery-track" ref={track} tabIndex={0} role="region" aria-label={t.screensOf(p.name)} data-lenis-prevent>
         {p.live === 'telegram' && (
           <figure className="shot shot--phone shot--live">
             <Phone className="shot-phone">
               <BotDemo />
             </Phone>
             <figcaption>
-              <span className="live-dot" aria-hidden="true" /> دکمه‌ها را بزنید؛ همان جواب ربات واقعی را می‌گیرید
+              <span className="live-dot" aria-hidden="true" /> {t.tryBot}
             </figcaption>
           </figure>
         )}
@@ -39,15 +42,15 @@ function Gallery({ p }: { p: Project }) {
             <Phone className="shot-phone">
               <Mili />
             </Phone>
-            <figcaption>دستیار هوشمند میلی</figcaption>
+            <figcaption>{t.mili}</figcaption>
           </figure>
         )}
       </div>
       <div className="gallery-nav">
-        <button type="button" className="icon-btn" onClick={() => step(-1)} aria-label="قبلی">
+        <button type="button" className="icon-btn" onClick={() => step(-1)} aria-label={t.prev}>
           <Icon name="chevron" style={{ transform: 'scaleX(-1)' }} />
         </button>
-        <button type="button" className="icon-btn" onClick={() => step(1)} aria-label="بعدی">
+        <button type="button" className="icon-btn" onClick={() => step(1)} aria-label={t.nextShot}>
           <Icon name="chevron" />
         </button>
       </div>
@@ -59,6 +62,9 @@ function Gallery({ p }: { p: Project }) {
 export function CaseStudy({ p, onClose, onOpen }: { p: Project; onClose: () => void; onOpen: (slug: string) => void }) {
   const scroller = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
+  const { caseStudy: t } = useCopy();
+  const { projects } = useProjects();
+  const site = useSite();
   const next = projects[(projects.findIndex((x) => x.slug === p.slug) + 1) % projects.length];
 
   useEffect(() => {
@@ -76,7 +82,7 @@ export function CaseStudy({ p, onClose, onOpen }: { p: Project; onClose: () => v
     <div className="case" role="dialog" aria-modal="true" aria-labelledby="case-title" style={{ '--brand': p.color, '--tint': p.tint } as CSSProperties}>
       <div className="case-scroll" ref={scroller} data-lenis-prevent>
         <div className="case-bar glass">
-          <button type="button" className="icon-btn" onClick={onClose} ref={closeBtn} aria-label="بستن و بازگشت">
+          <button type="button" className="icon-btn" onClick={onClose} ref={closeBtn} aria-label={t.close}>
             <Icon name="close" />
           </button>
           <span className="case-bar-name">
@@ -85,7 +91,7 @@ export function CaseStudy({ p, onClose, onOpen }: { p: Project; onClose: () => v
           </span>
           {p.link ? (
             <a className="btn btn--glass btn--sm" href={p.link.href} target="_blank" rel="noopener">
-              <span className="hide-sm">نسخهٔ زنده</span>
+              <span className="hide-sm">{t.live}</span>
               <Icon name="external" size={16} />
             </a>
           ) : (
@@ -121,25 +127,25 @@ export function CaseStudy({ p, onClose, onOpen }: { p: Project; onClose: () => v
             <span className="story-icon story-icon--warn">
               <Icon name="bolt" size={20} />
             </span>
-            <h2>مشکل چه بود؟</h2>
+            <h2>{t.problem}</h2>
             <p>{p.problem}</p>
           </article>
           <article>
             <span className="story-icon story-icon--ok">
               <Icon name="check" size={20} />
             </span>
-            <h2>چه ساختم؟</h2>
+            <h2>{t.solution}</h2>
             <p>{p.solution}</p>
           </article>
         </section>
 
         <section className="case-section">
-          <h2 className="case-h">{p.live === 'telegram' ? 'داخل ربات' : 'داخل سایت و اپلیکیشن'}</h2>
+          <h2 className="case-h">{p.live === 'telegram' ? t.insideBot : t.inside}</h2>
           <Gallery p={p} />
         </section>
 
         <section className="case-section">
-          <h2 className="case-h">امکانات</h2>
+          <h2 className="case-h">{t.features}</h2>
           <ul className="features">
             {p.features.map((f) => (
               <li key={f.title}>
@@ -155,15 +161,15 @@ export function CaseStudy({ p, onClose, onOpen }: { p: Project; onClose: () => v
 
         <dl className="case-meta">
           <div>
-            <dt>کارفرما</dt>
+            <dt>{t.client}</dt>
             <dd>{p.client}</dd>
           </div>
           <div>
-            <dt>کار من</dt>
+            <dt>{t.role}</dt>
             <dd>{p.role}</dd>
           </div>
           <div className="case-meta-wide">
-            <dt>تکنولوژی‌ها</dt>
+            <dt>{t.stack}</dt>
             <dd>
               <ul className="tags">
                 {p.stack.map((s) => (
@@ -180,14 +186,14 @@ export function CaseStudy({ p, onClose, onOpen }: { p: Project; onClose: () => v
               <img src="me/me-face.webp" alt="" width={80} height={80} />
             </span>
             <div>
-              <h2>یک پروژهٔ شبیه این می‌خواهید؟</h2>
-              <p>بگویید برای چه کسب‌وکاری؛ مشاورهٔ اول رایگان است و خودم جواب می‌دهم.</p>
+              <h2>{t.ctaTitle}</h2>
+              <p>{t.ctaText}</p>
             </div>
           </div>
           <div className="case-cta-actions">
-            <a className="btn btn--whatsapp btn--lg" href={whatsappWith(`سلام رامین، پروژه‌ای شبیه «${p.name}» می‌خواهم.`)} target="_blank" rel="noopener">
+            <a className="btn btn--whatsapp btn--lg" href={whatsappWith(t.ctaMessage(p.name))} target="_blank" rel="noopener">
               <Icon name="whatsapp" />
-              پیام در واتس‌اپ
+              {t.whatsapp}
             </a>
             <a className="btn btn--glass btn--lg" href={site.phone.href}>
               <Icon name="call" size={18} />
@@ -197,7 +203,7 @@ export function CaseStudy({ p, onClose, onOpen }: { p: Project; onClose: () => v
         </section>
 
         <button type="button" className="case-next" onClick={() => onOpen(next.slug)} style={{ '--brand': next.color, '--tint': next.tint } as CSSProperties}>
-          <span className="case-next-label">پروژهٔ بعدی</span>
+          <span className="case-next-label">{t.next}</span>
           <strong>{next.name}</strong>
           <span className="case-next-kind">{next.kind}</span>
           <Icon name="arrow" size={22} />

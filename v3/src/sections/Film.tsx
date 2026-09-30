@@ -1,6 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { app, hero, sites } from '../data/copy';
-import { fa, whatsappWith } from '../data/site';
+import { useCopy } from '../data/copy';
+import { whatsappWith } from '../data/site';
+import { digits, useLang } from '../i18n';
 import { beats, damp, film, range, stepped, stepVisibility } from '../three/film';
 import { gsap, ScrollTrigger, scrollToTarget } from '../lib/scroll';
 import { hasWebGL, useMounted, useReducedMotion } from '../lib/hooks';
@@ -24,6 +25,8 @@ const show = (el: HTMLElement | null, v: number, y = 0) => {
  * the phone turns and walks through five app screens.
  */
 export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
+  const lang = useLang();
+  const { app, hero, sites, about, ui } = useCopy();
   const root = useRef<HTMLElement>(null);
   const heroEl = useRef<HTMLDivElement>(null);
   const cue = useRef<HTMLDivElement>(null);
@@ -143,18 +146,18 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
     apply(film.p);
     gsap.ticker.add(tick);
     return () => gsap.ticker.remove(tick);
-  }, [gl, reduced]);
+  }, [gl, reduced, sites.items.length, app.screens.length]);
 
   const staticFilm = gl === false;
 
   return (
-    <section className={staticFilm ? 'film film--static' : 'film'} ref={root} id="top" aria-label="معرفی">
+    <section className={staticFilm ? 'film film--static' : 'film'} ref={root} id="top" aria-label={ui.intro}>
       <div className="film-sticky">
         <div className="film-bg" aria-hidden="true" />
         {mounted && gl && (
           <div className="film-canvas" data-ready={ready || undefined}>
             <Suspense fallback={null}>
-              <Stage active={active} onReady={onReady} />
+              <Stage active={active} onReady={onReady} mirror={lang === 'en'} />
             </Suspense>
           </div>
         )}
@@ -182,13 +185,13 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
               <path className="arch-line" d="M24 560 V236 C24 140 104 70 200 14 C296 70 376 140 376 236 V560" fill="none" stroke="url(#pa-gold)" strokeWidth="5" pathLength={1} vectorEffect="non-scaling-stroke" />
             </svg>
             <span className="person-fig">
-              <img className="person-img" src="me/me-hero.webp" alt="رامین عمرانی" width={522} height={1008} fetchPriority="high" />
+              <img className="person-img" src="me/me-hero.webp" alt={about.portraitAlt} width={522} height={1008} fetchPriority="high" />
             </span>
             <span className="person-sweep" aria-hidden="true" style={{ maskImage: 'url(me/me-hero.webp)', WebkitMaskImage: 'url(me/me-hero.webp)' }} />
             <span className="person-sign" aria-hidden="true">
               {hero.signature}
             </span>
-            <ul className="person-chips" aria-label="دربارهٔ رامین">
+            <ul className="person-chips" aria-label={ui.aboutRamin}>
               {hero.chips.map((c, i) => (
                 <li
                   key={c}
@@ -278,13 +281,13 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
                     }}
                   >
                     <span className="cap-label">
-                      <span className="cap-index">{fa(String(i + 1).padStart(2, '0'))}</span>
+                      <span className="cap-index">{digits(String(i + 1).padStart(2, '0'), lang)}</span>
                       {c.label}
                     </span>
                     <h2>{c.title}</h2>
                     <p>{c.text}</p>
                     <button type="button" className="link-arrow" onClick={() => onOpen(c.slug)}>
-                      داستان کامل این پروژه
+                      {sites.more}
                       <Icon name="arrow" size={16} />
                     </button>
                   </article>
@@ -308,7 +311,7 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
                     }}
                   >
                     <span className="callout-n" aria-hidden="true">
-                      {fa(String(i + 1).padStart(2, '0'))}
+                      {digits(String(i + 1).padStart(2, '0'), lang)}
                     </span>
                     <strong>{s.title}</strong>
                     <span>{s.text}</span>
@@ -322,7 +325,7 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
         {!staticFilm && (
           <div className="film-hud">
             <ol className="film-chapters" aria-hidden="true">
-              {['معرفی', 'سایت‌ها', 'اپلیکیشن'].map((c, i) => (
+              {ui.chapters.map((c, i) => (
                 <li
                   key={c}
                   ref={(el) => {
@@ -345,7 +348,7 @@ export function Film({ onOpen }: { onOpen: (slug: string) => void }) {
               }}
             >
               <span className="skip-long">{hero.skip}</span>
-              <span className="skip-short">رد شدن</span>
+              <span className="skip-short">{hero.skipShort}</span>
               <Icon name="arrow" size={14} style={{ transform: 'rotate(-90deg)' }} />
             </a>
           </div>

@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { MotionConfig } from 'motion/react';
-import { projects } from './data/projects';
+import { useCopy } from './data/copy';
+import { projects, slugs } from './data/projects';
+import { LangProvider, type Lang } from './i18n';
 import { useReducedMotion } from './lib/hooks';
 import { gsap, lockScroll, startScroll } from './lib/scroll';
 import { Film } from './sections/Film';
@@ -16,7 +18,7 @@ type VTDoc = Document & { startViewTransition?: (cb: () => void) => { finished: 
 
 const slugFromHash = () => {
   const m = location.hash.match(/^#work-([\w-]+)$/);
-  return m && projects.some((p) => p.slug === m[1]) ? m[1] : null;
+  return m && slugs.includes(m[1]) ? m[1] : null;
 };
 
 const onScreen = (el: Element | null | undefined) => {
@@ -198,10 +200,20 @@ function useMagnetic(reduced: boolean) {
   }, [reduced]);
 }
 
-export function App() {
+/** The whole page, in one language: `lang` comes from the HTML page being rendered or hydrated. */
+export function App({ lang }: { lang: Lang }) {
+  return (
+    <LangProvider lang={lang}>
+      <Page lang={lang} />
+    </LangProvider>
+  );
+}
+
+function Page({ lang }: { lang: Lang }) {
   const reduced = useReducedMotion();
+  const { ui } = useCopy();
   const { slug, open, close } = useCaseRoute(reduced);
-  const project = projects.find((p) => p.slug === slug) ?? null;
+  const project = projects[lang].find((p) => p.slug === slug) ?? null;
 
   useEffect(() => startScroll(reduced), [reduced]);
   useReveal();
@@ -210,7 +222,7 @@ export function App() {
   return (
     <MotionConfig reducedMotion="user">
       <a className="skip-link" href="#work">
-        رفتن به نمونه‌کارها
+        {ui.skip}
       </a>
       <Header />
       <main>

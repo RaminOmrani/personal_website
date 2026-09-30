@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { contact, nav } from '../data/copy';
-import { jalaliYear, site, telegramWith, whatsappWith } from '../data/site';
+import { useCopy } from '../data/copy';
+import { telegramWith, useSite, whatsappWith, yearFor } from '../data/site';
+import { useLang } from '../i18n';
 import { copyText, useReducedMotion } from '../lib/hooks';
 import { scrollToTarget } from '../lib/scroll';
 import { auroraFragment } from '../three/shaders';
@@ -14,6 +15,7 @@ import { Logo } from '../ui/Logo';
 function AuroraCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
   const reduced = useReducedMotion();
+  const mirror = useLang() === 'en';
   useEffect(() => {
     const canvas = ref.current;
     const gl = canvas?.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: false });
@@ -47,6 +49,7 @@ function AuroraCanvas() {
     set3('uC2', '#F4C47C');
     set3('uC3', '#72D5CA');
     gl.uniform1f(U('uIntensity'), 1.05);
+    gl.uniform1f(U('uFlip'), mirror ? 1 : 0);
     gl.uniform2f(U('uPointer'), 0, 0);
 
     // soft by nature, so render at half resolution
@@ -82,7 +85,7 @@ function AuroraCanvas() {
       io.disconnect();
       ro.disconnect();
     };
-  }, [reduced]);
+  }, [reduced, mirror]);
   return <canvas ref={ref} className="contact-aurora" aria-hidden="true" />;
 }
 
@@ -91,12 +94,13 @@ let lid = 0;
 
 /** A 30-second chat that writes the first message for the visitor. */
 function ChatBrief() {
-  const c = contact.chat;
+  const c = useCopy().contact.chat;
+  const site = useSite();
   const [lines, setLines] = useState<Line[]>([{ id: ++lid, me: false, text: c.hello }]);
   const [step, setStep] = useState<'need' | 'budget' | 'name' | 'ready'>('need');
   const [typing, setTyping] = useState(false);
-  const [need, setNeed] = useState('');
-  const [budget, setBudget] = useState('');
+  const [need, setNeed] = useState(-1);
+  const [budget, setBudget] = useState(-1);
   const [name, setName] = useState('');
   const body = useRef<HTMLDivElement>(null);
   const timer = useRef(0);
@@ -117,19 +121,14 @@ function ChatBrief() {
     }, 650);
   };
 
-  const message = [
-    `سلام رامین${name.trim() ? `، ${name.trim()} هستم` : ''}.`,
-    need && need !== c.needs[c.needs.length - 1] ? `می‌خواهم ${need} بسازم.` : 'برای یک پروژه مشاوره می‌خواهم.',
-    budget && budget !== 'نمی‌دانم' ? `بودجه‌ام تقریباً ${budget} است.` : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
+  // greeting, what they want (the last option, "not sure", asks for advice), and the budget if they gave one
+  const message = [c.greet(name.trim()), c.needLines[need] ?? c.needLines[c.needLines.length - 1], c.budgetLines[budget] ?? ''].filter(Boolean).join(' ');
 
   const restart = () => {
     clearTimeout(timer.current);
     setTyping(false);
-    setNeed('');
-    setBudget('');
+    setNeed(-1);
+    setBudget(-1);
     setName('');
     setStep('need');
     setLines([{ id: ++lid, me: false, text: c.hello }]);
@@ -149,7 +148,7 @@ function ChatBrief() {
         </span>
         <div>
           <strong>{site.name}</strong>
-          <span>{typing ? 'در حال نوشتن…' : 'معمولاً همان روز جواب می‌دهد'}</span>
+          <span>{typing ? c.typing : c.status}</span>
         </div>
         {lines.length > 1 && (
           <button type="button" className="chat-restart" onClick={restart}>
@@ -177,7 +176,7 @@ function ChatBrief() {
           ))}
         </AnimatePresence>
         {typing && (
-          <p className="bubble bubble--typing" aria-label="در حال نوشتن">
+          <p className="bubble bubble--typing" aria-label={c.typingLabel}>
             <i />
             <i />
             <i />
@@ -192,17 +191,17 @@ function ChatBrief() {
       <div className="chat-input">
         {options && !typing && (
           <div className="chat-options">
-            {options.map((o) => (
+            {options.map((o, i) => (
               <button
                 key={o}
                 type="button"
                 className="chat-option"
                 onClick={() => {
                   if (step === 'need') {
-                    setNeed(o);
+                    setNeed(i);
                     say(o, c.askBudget, 'budget');
                   } else {
-                    setBudget(o);
+                    setBudget(i);
                     say(o, c.askName, 'name');
                   }
                 }}
@@ -217,15 +216,15 @@ function ChatBrief() {
             className="chat-name"
             onSubmit={(e) => {
               e.preventDefault();
-              say(name.trim() || 'ترجیح می‌دهم نگویم', c.ready, 'ready');
+              say(name.trim() || c.noName, c.ready, 'ready');
             }}
           >
             <label htmlFor="chat-name" className="sr-only">
-              اسم شما
+              {c.nameLabel}
             </label>
             <input id="chat-name" value={name} onChange={(e) => setName(e.target.value)} placeholder={c.namePlaceholder} autoComplete="given-name" enterKeyHint="send" maxLength={40} />
             <button type="submit" className="btn btn--primary">
-              ادامه
+              {c.next}
             </button>
           </form>
         )}
@@ -247,9 +246,11 @@ function ChatBrief() {
 }
 
 function Channels() {
+  const { contact } = useCopy();
+  const site = useSite();
   const items = [
     { id: 'call', icon: 'call', label: contact.channels.call, value: site.phone.display, href: site.phone.href, copy: site.phone.plain },
-    { id: 'wa', icon: 'whatsapp', label: contact.channels.whatsapp, value: site.whatsapp.display, href: whatsappWith('سلام رامین، برای یک پروژه پیام می‌دهم.'), copy: site.whatsapp.plain, ext: true },
+    { id: 'wa', icon: 'whatsapp', label: contact.channels.whatsapp, value: site.whatsapp.display, href: whatsappWith(contact.channelMessage), copy: site.whatsapp.plain, ext: true },
     { id: 'tg', icon: 'telegram', label: contact.channels.telegram, value: site.telegram.display, href: site.telegram.href, copy: site.telegram.display, ext: true },
     { id: 'mail', icon: 'mail', label: contact.channels.email, value: site.email, href: `mailto:${site.email}`, copy: site.email },
   ];
@@ -271,8 +272,8 @@ function Channels() {
           <button
             type="button"
             className="icon-btn icon-btn--sm channel-copy"
-            aria-label={`کپی ${c.label}`}
-            onClick={async () => toast((await copyText(c.copy)) ? `${c.label} کپی شد` : 'کپی نشد؛ لطفاً دستی کپی کنید')}
+            aria-label={contact.copy(c.label)}
+            onClick={async () => toast((await copyText(c.copy)) ? contact.copiedWhat(c.label) : contact.copyFailed)}
           >
             <Icon name="copy" size={16} />
           </button>
@@ -283,6 +284,7 @@ function Channels() {
 }
 
 export function Contact() {
+  const { contact } = useCopy();
   return (
     <section className="contact" id="contact">
       <AuroraCanvas />
@@ -304,6 +306,9 @@ export function Contact() {
 }
 
 export function Footer() {
+  const lang = useLang();
+  const { nav, ui } = useCopy();
+  const site = useSite();
   return (
     <footer className="footer">
       <div className="container footer-inner">
@@ -316,7 +321,7 @@ export function Footer() {
             {site.name}
           </span>
         </div>
-        <nav className="footer-nav" aria-label="لینک‌های پایین صفحه">
+        <nav className="footer-nav" aria-label={ui.footerLinks}>
           {nav.map((n) => (
             <a
               key={n.href}
@@ -331,22 +336,26 @@ export function Footer() {
           ))}
         </nav>
         <div className="footer-social">
-          <a href={site.whatsapp.href} target="_blank" rel="noopener" aria-label="واتس‌اپ">
+          <a href={site.whatsapp.href} target="_blank" rel="noopener" aria-label={ui.whatsapp}>
             <Icon name="whatsapp" />
           </a>
-          <a href={site.telegram.href} target="_blank" rel="noopener" aria-label="تلگرام">
+          <a href={site.telegram.href} target="_blank" rel="noopener" aria-label={ui.telegram}>
             <Icon name="telegram" />
           </a>
-          <a href={site.socials[0].href} target="_blank" rel="noopener" aria-label="گیت‌هاب">
+          <a href={site.socials[0].href} target="_blank" rel="noopener" aria-label={ui.github}>
             <Icon name="github" />
           </a>
-          <a href={site.socials[1].href} target="_blank" rel="noopener" aria-label="لینکدین">
+          <a href={site.socials[1].href} target="_blank" rel="noopener" aria-label={ui.linkedin}>
             <Icon name="linkedin" />
           </a>
         </div>
         <p className="footer-copy">
-          © {jalaliYear()} {site.name} · همهٔ پروژه‌ها با اجازهٔ کارفرما نمایش داده شده‌اند.
+          © {yearFor(lang)} {site.name} · {ui.rights}
         </p>
+        <a className="footer-versions" href="../?choose">
+          <Icon name="layers" size={16} />
+          {ui.versions}
+        </a>
       </div>
     </footer>
   );

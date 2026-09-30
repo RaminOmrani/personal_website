@@ -42,6 +42,7 @@ export const auroraFragment = /* glsl */ `
   uniform vec3 uC2;
   uniform vec3 uC3;
   uniform float uIntensity;
+  uniform float uFlip; // 1 mirrors the fields left to right (the English page); unset = 0
   ${noise}
 
   float field(vec2 p, vec2 c, float r) { return exp(-dot(p - c, p - c) / (r * r)); }
@@ -49,6 +50,7 @@ export const auroraFragment = /* glsl */ `
   void main() {
     float asp = uRes.x / max(uRes.y, 1.0);
     vec2 p = (vUv - 0.5) * vec2(asp, 1.0);
+    p.x *= 1.0 - 2.0 * uFlip;
     float t = uTime * 0.045;
 
     vec2 q = vec2(fbm(p * 1.1 + t), fbm(p * 1.1 - t + 4.3));

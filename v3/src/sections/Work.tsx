@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
 import clsx from 'clsx';
-import { work } from '../data/copy';
-import { categories, projects, type Category, type Project } from '../data/projects';
+import { useCopy } from '../data/copy';
+import { useProjects, type Category, type Project } from '../data/projects';
 import { useFinePointer } from '../lib/hooks';
 import { BotDemo } from '../ui/BotDemo';
 import { Browser, Phone } from '../ui/Frames';
@@ -13,16 +13,17 @@ type Filter = Category | 'all';
 
 /** The device composition for a project: a browser and a phone, floating in its brand light. */
 export function ProjectVisual({ p, big, eager }: { p: Project; big?: boolean; eager?: boolean }) {
+  const { ui } = useCopy();
   return (
     <div className={clsx('pv', big && 'pv--big')}>
       <span className="pv-light" aria-hidden="true" />
-      {p.cover.desktop && <Browser src={p.cover.desktop} alt={`${p.name}، نسخهٔ دسکتاپ`} url={p.link?.label} className="pv-browser" eager={eager} />}
+      {p.cover.desktop && <Browser src={p.cover.desktop} alt={ui.desktopOf(p.name)} url={p.link?.label} className="pv-browser" eager={eager} />}
       {p.live === 'telegram' ? (
         <Phone className="pv-phone">
           <BotDemo interactive={false} />
         </Phone>
       ) : (
-        p.cover.phone && <Phone src={p.cover.phone} alt={`${p.name}، نسخهٔ موبایل`} className="pv-phone" eager={eager} />
+        p.cover.phone && <Phone src={p.cover.phone} alt={ui.mobileOf(p.name)} className="pv-phone" eager={eager} />
       )}
     </div>
   );
@@ -83,6 +84,8 @@ function useTilt(enabled: boolean) {
 function Card({ p, index, onOpen }: { p: Project; index: number; onOpen: (slug: string) => void }) {
   const fine = useFinePointer();
   const ref = useTilt(fine);
+  const { work } = useCopy();
+  const { categories } = useProjects();
   const labels = categories.filter((c) => c.id !== 'all' && p.categories.includes(c.id as Category)).map((c) => c.label);
   return (
     <motion.article
@@ -139,6 +142,8 @@ function Card({ p, index, onOpen }: { p: Project; index: number; onOpen: (slug: 
 
 export function Work({ onOpen }: { onOpen: (slug: string) => void }) {
   const [filter, setFilter] = useState<Filter>('all');
+  const { work, ui } = useCopy();
+  const { projects, categories } = useProjects();
   const list = filter === 'all' ? projects : projects.filter((p) => p.categories.includes(filter));
   return (
     <section className="section work" id="work">
@@ -151,7 +156,7 @@ export function Work({ onOpen }: { onOpen: (slug: string) => void }) {
           <p className="section-text">{work.text}</p>
         </header>
         <LayoutGroup>
-          <div className="chips" role="group" aria-label="دسته‌بندی نمونه‌کارها" data-reveal>
+          <div className="chips" role="group" aria-label={ui.filter} data-reveal>
             {categories.map((c) => (
               <button key={c.id} type="button" className="chip" aria-pressed={filter === c.id} onClick={() => setFilter(c.id)}>
                 {filter === c.id && <motion.span layoutId="chip-pill" className="chip-pill" transition={{ type: 'spring', bounce: 0.12, duration: 0.4 }} />}

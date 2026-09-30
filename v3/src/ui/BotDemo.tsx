@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { botMenu, botReplies, botWelcome, type BotReply } from '../data/bot';
+import { useBot, type BotReply } from '../data/bot';
+import { dirOf, useLang } from '../i18n';
 
 type Msg = { id: number; me: boolean } & BotReply;
 
 let uid = 0;
-const start = (): Msg[] => [
+const start = (welcome: BotReply): Msg[] => [
   { id: ++uid, me: true, text: ['/start'] },
-  { id: ++uid, me: false, ...botWelcome },
+  { id: ++uid, me: false, ...welcome },
 ];
 
 /**
@@ -15,7 +16,9 @@ const start = (): Msg[] => [
  * `interactive={false}` renders the same screen as a still picture.
  */
 export function BotDemo({ interactive = true, className }: { interactive?: boolean; className?: string }) {
-  const [msgs, setMsgs] = useState<Msg[]>(start);
+  const bot = useBot();
+  const lang = useLang();
+  const [msgs, setMsgs] = useState<Msg[]>(() => start(bot.welcome));
   const [typing, setTyping] = useState(false);
   const body = useRef<HTMLDivElement>(null);
   const timer = useRef<number>(0);
@@ -26,9 +29,9 @@ export function BotDemo({ interactive = true, className }: { interactive?: boole
   }, [msgs, typing]);
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  const press = (label: string) => {
+  const press = (key: keyof typeof bot.replies, label: string) => {
     if (!interactive || typing) return;
-    const reply = botReplies[label];
+    const reply = bot.replies[key];
     setMsgs((m) => [...m.slice(-6), { id: ++uid, me: true, text: [label] }]);
     setTyping(true);
     timer.current = window.setTimeout(() => {
@@ -38,12 +41,12 @@ export function BotDemo({ interactive = true, className }: { interactive?: boole
   };
 
   return (
-    <div className={clsx('tg', className)} dir="rtl">
+    <div className={clsx('tg', className)} dir={dirOf(lang)}>
       <div className="tg-head">
         <img src="logos/forwardbot.png" alt="" width={36} height={36} />
         <div>
-          <strong>فورواردبات</strong>
-          <span>{typing ? 'در حال نوشتن…' : 'ربات'}</span>
+          <strong>{bot.name}</strong>
+          <span>{typing ? bot.typing : bot.status}</span>
         </div>
       </div>
       <div className="tg-body" ref={body} data-lenis-prevent>
@@ -69,17 +72,17 @@ export function BotDemo({ interactive = true, className }: { interactive?: boole
           </div>
         )}
       </div>
-      <div className="tg-keyboard" role={interactive ? 'group' : undefined} aria-label="منوی ربات">
-        {botMenu.map((row) => (
-          <div className="tg-row" key={row[0]}>
+      <div className="tg-keyboard" role={interactive ? 'group' : undefined} aria-label={bot.menuLabel}>
+        {bot.menu.map((row) => (
+          <div className="tg-row" key={row[0].key}>
             {row.map((b) =>
               interactive ? (
-                <button key={b} type="button" className="tg-btn" onClick={() => press(b)}>
-                  {b}
+                <button key={b.key} type="button" className="tg-btn" onClick={() => press(b.key, b.label)}>
+                  {b.label}
                 </button>
               ) : (
-                <span key={b} className="tg-btn">
-                  {b}
+                <span key={b.key} className="tg-btn">
+                  {b.label}
                 </span>
               ),
             )}

@@ -9,7 +9,8 @@ export default defineConfig({
     target: 'es2022',
     chunkSizeWarningLimit: 1200,
     rolldownOptions: {
-      input: { main: resolve(import.meta.dirname, 'index.html') },
+      // two pages, one app: Persian (index.html, right to left) and English (en.html, left to right)
+      input: { main: resolve(import.meta.dirname, 'index.html'), en: resolve(import.meta.dirname, 'en.html') },
     },
   },
 });

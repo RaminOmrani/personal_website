@@ -52,10 +52,14 @@ const brands: Record<string, string> = {
 
 export type IconName = keyof typeof paths | keyof typeof brands;
 
-export function Icon({ name, size = 20, ...rest }: { name: IconName | string; size?: number } & SVGProps<SVGSVGElement>) {
+/** Drawn for right-to-left reading ("forward" points left); mirrored on the English page via .icon-dir. */
+const directional = new Set(['arrow', 'chevron', 'external']);
+
+export function Icon({ name, size = 20, className, ...rest }: { name: IconName | string; size?: number } & SVGProps<SVGSVGElement>) {
   const brand = brands[name];
   return (
     <svg
+      className={directional.has(name) ? (className ? `icon-dir ${className}` : 'icon-dir') : className}
       viewBox="0 0 24 24"
       width={size}
       height={size}
