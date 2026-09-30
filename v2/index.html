@@ -14,7 +14,10 @@
     <meta property="og:description" content="سایت و اپلیکیشنی که مشتری بیاورد؛ از طراحی تا راه‌اندازی، با یک نفر." />
     <meta property="og:image" content="https://raminomrani.github.io/personal_website/v2/og.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <script>document.documentElement.classList.add('js')</script>
+    <script>
+      // lang/dir also set here, so the page stays right-to-left even inside hosts that rewrite <html>
+      (function (d) { d.classList.add('js'); d.lang = 'fa'; d.dir = 'rtl'; })(document.documentElement);
+    </script>
     <noscript><style>[data-reveal]{opacity:1!important;transform:none!important}</style></noscript>
   </head>
   <body>
