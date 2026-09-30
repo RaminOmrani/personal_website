@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import clsx from 'clsx';
-import { about, faq, marquee, process, promise, services, stats } from '../data/copy';
+import { about, faq, marquee, nameCard, process, promise, services, stats } from '../data/copy';
 import { fa, site, whatsappWith } from '../data/site';
 import { gsap, ScrollTrigger } from '../lib/scroll';
 import { useReducedMotion } from '../lib/hooks';
@@ -249,12 +249,60 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   );
 }
 
-/** A short personal promise, sealed with a hand on the heart. */
+/**
+ * The surname as a dictionary entry, inside the logo's arch: tile-blue, a gold girih pattern,
+ * the word itself written in Nastaliq.
+ */
+function NameCard() {
+  return (
+    <figure className="namecard" data-reveal>
+      <svg className="namecard-bg" viewBox="0 0 400 520" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="nc-fill" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#2356d6" />
+            <stop offset=".6" stopColor="#1673c4" />
+            <stop offset="1" stopColor="#0e9aa7" />
+          </linearGradient>
+          <linearGradient id="nc-gold" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#f8cf7a" />
+            <stop offset="1" stopColor="#e0962f" />
+          </linearGradient>
+          {/* khatam: the eight-pointed star of Persian tilework, two squares turned 45° apart */}
+          <pattern id="nc-girih" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M8 8h24v24H8zM20 3l17 17-17 17L3 20z" fill="none" stroke="#f3c46e" strokeWidth="1" />
+          </pattern>
+          <clipPath id="nc-clip">
+            <path d="M20 520 V220 C20 128 104 62 200 12 C296 62 380 128 380 220 V520 Z" />
+          </clipPath>
+        </defs>
+        <path d="M20 520 V220 C20 128 104 62 200 12 C296 62 380 128 380 220 V520 Z" fill="url(#nc-fill)" />
+        <rect className="namecard-girih" width="400" height="520" fill="url(#nc-girih)" clipPath="url(#nc-clip)" />
+        <path className="namecard-line" d="M44 520 V230 C44 150 116 94 200 50 C284 94 356 150 356 230 V520" fill="none" stroke="url(#nc-gold)" strokeWidth="3" vectorEffect="non-scaling-stroke" pathLength={1} />
+      </svg>
+      <figcaption className="namecard-body">
+        <span className="namecard-eyebrow">{nameCard.eyebrow}</span>
+        <strong className="namecard-word">{nameCard.word}</strong>
+        <span className="namecard-phon" dir="ltr">
+          {nameCard.phonetic}
+        </span>
+        <span className="namecard-kind">{nameCard.kind}</span>
+        <ol className="namecard-defs">
+          {nameCard.meanings.map((m) => (
+            <li key={m}>{m}</li>
+          ))}
+        </ol>
+        <p className="namecard-note">{nameCard.note}</p>
+      </figcaption>
+    </figure>
+  );
+}
+
+/** A short personal promise, next to what the name itself promises. */
 export function Pledge() {
   return (
     <section className="section promise" aria-labelledby="promise-title">
       <div className="container promise-grid">
-        <ArchPortrait src="me/me-promise.webp" alt="رامین عمرانی، دست روی قلب" width={348} height={526} className="promise-portrait" />
+        <NameCard />
         <div className="promise-copy" data-reveal>
           <p className="eyebrow">{promise.eyebrow}</p>
           <h2 id="promise-title" className="promise-title">
@@ -350,9 +398,12 @@ export function Faq() {
             <Icon name="whatsapp" />
             سؤال در واتس‌اپ
           </a>
-          <ArchPortrait src="me/me-desk.webp" alt="" width={436} height={482} className="faq-portrait">
-            <figcaption>سؤال‌هایتان را خودم جواب می‌دهم، نه ربات و نه واسطه.</figcaption>
-          </ArchPortrait>
+          <p className="faq-me">
+            <span className="avatar avatar--sm">
+              <img src="me/me-face.webp" alt="" width={80} height={80} loading="lazy" />
+            </span>
+            سؤال‌هایتان را خودم جواب می‌دهم، نه ربات و نه واسطه.
+          </p>
         </header>
         <ul className="faq-list glass" data-reveal>
           {faq.items.map((f, i) => {

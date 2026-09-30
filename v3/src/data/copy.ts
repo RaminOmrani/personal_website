@@ -37,7 +37,7 @@ export const sites = {
     },
     {
       slug: 'dopingshimi',
-      screen: 'work/doping-home.jpg',
+      screen: 'work/doping-video.jpg',
       label: 'دوپینگ شیمی',
       title: 'کلاس کنکوری که آنلاین فروخته می‌شود',
       text: 'ویدیوی محافظت‌شده، آزمون آنلاین و رتبه‌بندی‌ای که دانش‌آموز را سر ذوق می‌آورد.',
@@ -67,7 +67,7 @@ export const app = {
   screens: [
     { screen: 'work/zehnesabz-app-login.jpg', aspect: 960 / 540, title: 'ورود با یک کد پیامکی', text: 'نه رمزی، نه فراموشی.' },
     { screen: 'work/zehnesabz-app-dashboard.jpg', aspect: 960 / 540, title: 'همه‌چیز در یک نگاه', text: 'جلسهٔ بعدی، وضعیت مالی و پیشرفت درمان.' },
-    { screen: 'work/zehnesabz-app-schedule.jpg', aspect: 960 / 540, title: 'یادآوری خودکار', text: 'پیامک دو ساعت قبل از هر جلسه.' },
+    { screen: 'work/doping-m-video.jpg', aspect: 1169 / 540, title: 'دوپینگ شیمی: کلاس در جیب', text: 'ویدیوی درس، جزوه و آزمون، هر جا که دانش‌آموز هست.' },
     { screen: 'work/dongi-m-balances.jpg', aspect: 1169 / 540, title: 'دنگی: حساب اکیپ، صاف', text: 'کی به کی چقدر بدهکاره؟ با شمارهٔ کارت و یادآوری.' },
     { screen: 'work/crm-m.jpg', aspect: 1169 / 540, title: 'CRM در جیب تیم فروش', text: 'موجودی، قیمت و مانده حساب، همان‌جا که مشتری است.' },
   ],
@@ -153,7 +153,17 @@ export const process = {
   ],
 };
 
-/** A short, personal promise, next to a photo. */
+/** What the surname means, set like a dictionary entry beside the promise. */
+export const nameCard = {
+  eyebrow: 'معنی اسم',
+  word: 'عُمرانی',
+  phonetic: '/om·rā·ni/',
+  kind: 'از ریشهٔ «عمران»',
+  meanings: ['ساختن، آباد کردن و جان دادن به چیزها.', 'کسی که برای کسب‌وکار شما سایت و اپلیکیشن می‌سازد.'],
+  note: 'انگار اسمم از اول شرح شغلم بوده.',
+};
+
+/** A short, personal promise. */
 export const promise = {
   eyebrow: 'تعهد من',
   title: 'قول من',

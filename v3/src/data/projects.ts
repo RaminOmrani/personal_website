@@ -180,7 +180,7 @@ export const projects: Project[] = [
     color: '#7C3AED',
     tint: '#F1ECFE',
     link: { href: 'https://dopingshimi.ir', label: 'dopingshimi.ir' },
-    cover: { desktop: w('doping-home'), phone: w('doping-home-m') },
+    cover: { desktop: w('doping-video'), phone: w('doping-m-video') },
     summary:
       'یک مدرس شیمی کنکور می‌خواست کلاس‌ها، همایش‌ها و ویدیوهایش را آنلاین بفروشد و پیشرفت دانش‌آموزانش را دنبال کند. نتیجه یک سایت پرانرژی و یک اپلیکیشن آموزشی شد.',
     problem:
@@ -203,6 +203,10 @@ export const projects: Project[] = [
       { icon: 'search', title: 'سئو و مقاله', text: 'بخش مقاله و ساختار استاندارد برای دیده شدن در گوگل.' },
     ],
     screens: [
+      { src: w('doping-video'), caption: 'پنل دانش‌آموز: تماشای جلسهٔ درس', device: 'desktop' },
+      { src: w('doping-m-video'), caption: 'همان کلاس روی گوشی', device: 'phone' },
+      { src: w('doping-panel'), caption: 'داشبورد دانش‌آموز: پیشرفت، آزمون‌ها و رتبه', device: 'desktop' },
+      { src: w('doping-m-panel'), caption: 'پنل دانش‌آموز در اپلیکیشن', device: 'phone' },
       { src: w('doping-home'), caption: 'صفحهٔ اصلی با انیمیشن مولکول‌ها', device: 'desktop' },
       { src: w('doping-home-m'), caption: 'نسخهٔ موبایل و اپلیکیشن', device: 'phone' },
     ],

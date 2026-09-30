@@ -287,9 +287,6 @@ export function Contact() {
     <section className="contact" id="contact">
       <AuroraCanvas />
       <div className="container contact-inner">
-        <span className="contact-portrait" data-reveal>
-          <img src="me/me-side.webp" alt="" width={302} height={501} loading="lazy" />
-        </span>
         <header className="section-head section-head--center" data-reveal>
           <p className="eyebrow">{contact.eyebrow}</p>
           <h2 className="display display--xl">

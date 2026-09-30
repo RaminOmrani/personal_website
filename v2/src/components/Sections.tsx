@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { animate, motion, useMotionValue, useTransform } from 'motion/react';
 import { Accordion } from '@base-ui/react/accordion';
-import { about, clients, faq, process, services, stats, toolkit } from '../data/copy';
+import { about, clients, faq, nameCard, process, services, stats, toolkit } from '../data/copy';
 import { site, whatsappWith } from '../data/site';
 import { Marked } from '../lib';
 import { Icon } from './Icon';
@@ -293,8 +293,8 @@ export function About() {
     <section className="section" id="about">
       <div className="container about">
         <aside className="profile" data-reveal>
-          <div className="profile-avatar" aria-hidden="true">
-            ر
+          <div className="profile-avatar">
+            <img src="me/me-face.webp" alt={site.name} width={84} height={84} loading="lazy" />
           </div>
           <strong className="profile-name">{site.name}</strong>
           <span className="profile-role">برنامه‌نویس فول‌استک و هوش مصنوعی</span>
@@ -327,6 +327,23 @@ export function About() {
           {about.text.map((t) => (
             <p key={t}>{t}</p>
           ))}
+          <figure className="namecard">
+            <div className="namecard-head">
+              <strong className="namecard-word">{nameCard.word}</strong>
+              <span className="namecard-phon" dir="ltr">
+                {nameCard.phonetic}
+              </span>
+              <span className="namecard-kind">{nameCard.kind}</span>
+            </div>
+            <ol className="namecard-defs">
+              {nameCard.meanings.map((m) => (
+                <li key={m}>{m}</li>
+              ))}
+            </ol>
+            <figcaption className="namecard-note">
+              <mark>{nameCard.note}</mark>
+            </figcaption>
+          </figure>
           <div className="about-proof">
             <Icon name="trophy" size={20} />
             <span>

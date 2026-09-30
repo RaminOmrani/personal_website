@@ -1948,19 +1948,20 @@ button.tab:active {
 }
 
 .profile-avatar {
-  display: grid;
-  place-items: center;
   width: 84px;
   height: 84px;
+  overflow: hidden;
   border-radius: 26px;
   background: linear-gradient(145deg, #3a67ff, #1a3ed0);
-  color: #fff;
-  font-size: 40px;
-  font-weight: 800;
-  line-height: 1;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 3px #fff,
     0 14px 30px -12px rgba(36, 85, 255, 0.8);
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .profile-name {
@@ -2002,6 +2003,78 @@ button.tab:active {
   color: var(--ink-2);
   font-size: 1.08rem;
   line-height: 2;
+}
+
+/* the surname, as a dictionary entry */
+.namecard {
+  margin: 28px 0 0;
+  padding: 22px 24px;
+  border-radius: var(--r-lg);
+  background:
+    radial-gradient(70% 90% at 0% 0%, rgba(255, 228, 90, 0.28), transparent 70%),
+    var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line), var(--shadow-sm);
+}
+
+.namecard-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 14px;
+}
+
+.namecard-word {
+  font-size: clamp(2.2rem, 1.6rem + 2vw, 3rem);
+  font-weight: 900;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.namecard-phon {
+  color: var(--accent);
+  font-family: var(--font-latin);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.namecard-kind {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.namecard-defs {
+  display: grid;
+  gap: 4px;
+  margin: 12px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px dashed var(--line-2);
+  list-style: none;
+  counter-reset: def;
+  color: var(--ink-2);
+  line-height: 1.9;
+}
+
+.namecard-defs li {
+  counter-increment: def;
+  display: flex;
+  gap: 8px;
+}
+
+.namecard-defs li::before {
+  content: counter(def, persian) '.';
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.namecard-note {
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+.namecard-note mark {
+  padding: 0 4px;
+  background: linear-gradient(transparent 55%, var(--marker) 55%);
+  color: inherit;
 }
 
 .about-proof {

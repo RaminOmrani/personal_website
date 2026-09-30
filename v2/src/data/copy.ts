@@ -133,6 +133,15 @@ export const stats = [
   { value: 6, suffix: '+', label: 'سال تجربه در داده و هوش مصنوعی' },
 ];
 
+/** What the surname means, set like a dictionary entry. */
+export const nameCard = {
+  word: 'عُمرانی',
+  phonetic: '/om·rā·ni/',
+  kind: 'از ریشهٔ «عمران»',
+  meanings: ['ساختن، آباد کردن و جان دادن به چیزها.', 'کسی که برای کسب‌وکار شما سایت و اپلیکیشن می‌سازد.'],
+  note: 'انگار اسمم از اول شرح شغلم بوده.',
+};
+
 export const about = {
   eyebrow: 'دربارهٔ من',
   hello: 'سلام، رامین هستم',

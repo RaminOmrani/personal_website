@@ -117,7 +117,7 @@ export function ShowcaseStage() {
     <div className="stage" ref={ref} onPointerMove={onMove} onPointerLeave={onLeave} data-enter style={enter(2)}>
       <div className="stage-glow" aria-hidden="true" />
       <motion.div className="stage-back" style={{ transform: back }}>
-        <Browser src="work/doping-home.jpg" alt="سایت دوپینگ شیمی" url="dopingshimi.ir" eager />
+        <Browser src="work/doping-video.jpg" alt="پنل دانش‌آموز دوپینگ شیمی، در حال تماشای درس" url="dopingshimi.ir/panel" eager />
       </motion.div>
       <motion.div className="stage-front" style={{ transform: front }}>
         <motion.div
