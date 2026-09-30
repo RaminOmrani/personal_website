@@ -35,11 +35,10 @@
         w.roLang = lang === 'en' ? 'en' : 'fa';
         w.roSaved = paths[saved] ? saved : null;
         if (w.roSaved && !q.has('choose')) location.replace(w.roTarget(w.roSaved, w.roLang));
+        // set here too, so the page keeps its direction even inside hosts that rewrite <html>
         d.documentElement.classList.add('js');
-        if (w.roLang === 'en') {
-          d.documentElement.lang = 'en';
-          d.documentElement.dir = 'ltr';
-        }
+        d.documentElement.lang = w.roLang;
+        d.documentElement.dir = w.roLang === 'en' ? 'ltr' : 'rtl';
       })(window, document);
     </script>
     <script type="application/ld+json">
