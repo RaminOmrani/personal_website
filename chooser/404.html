@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>صفحه پیدا نشد · رامین عمرانی</title>
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0b0d12" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- served at any depth, so every URL here is absolute -->
+    <style>
+      @font-face {
+        font-family: 'Vazirmatn';
+        font-display: swap;
+        font-weight: 100 900;
+        src: url(/fonts/vazirmatn-arabic.woff2) format('woff2-variations');
+        unicode-range: U+0600-06FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC;
+      }
+      @font-face {
+        font-family: 'Vazirmatn';
+        font-display: swap;
+        font-weight: 100 900;
+        src: url(/fonts/vazirmatn-latin.woff2) format('woff2-variations');
+        unicode-range: U+0000-00FF, U+2000-206F;
+      }
+      :root {
+        color-scheme: dark;
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        display: grid;
+        place-items: center;
+        min-height: 100svh;
+        margin: 0;
+        padding: 24px;
+        background:
+          radial-gradient(40% 50% at 20% 20%, rgba(55, 240, 207, 0.14), transparent 70%),
+          radial-gradient(40% 50% at 80% 20%, rgba(233, 162, 59, 0.14), transparent 70%),
+          #0b0d12;
+        color: #f3f1ec;
+        font-family: 'Vazirmatn', Tahoma, system-ui, sans-serif;
+        text-align: center;
+      }
+      main {
+        max-width: 520px;
+      }
+      .code {
+        margin: 0;
+        font-size: clamp(5rem, 20vw, 9rem);
+        font-weight: 900;
+        line-height: 1;
+        background: linear-gradient(120deg, #37f0cf, #f3c46e);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      h1 {
+        margin: 12px 0 0;
+        font-size: 1.6rem;
+        line-height: 1.6;
+      }
+      p {
+        margin: 6px 0 0;
+        color: rgba(243, 241, 236, 0.66);
+        line-height: 1.9;
+      }
+      .en {
+        margin-top: 18px;
+        direction: ltr;
+        font-size: 14px;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 28px;
+      }
+      a {
+        display: inline-flex;
+        align-items: center;
+        height: 46px;
+        padding: 0 20px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.07);
+        color: inherit;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 160ms var(--ease-out), background-color 200ms ease;
+      }
+      a:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      a:active {
+        transform: scale(0.97);
+      }
+      a.primary {
+        background: #f3c46e;
+        color: #1b1405;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="code">۴۰۴</p>
+      <h1>این صفحه پیدا نشد</h1>
+      <p>شاید آدرس عوض شده باشد. از اینجا ادامه دهید:</p>
+      <p class="en">This page doesn’t exist. Pick up from here:</p>
+      <nav>
+        <a class="primary" href="/?choose">صفحهٔ اصلی · Home</a>
+        <a href="/v3/">نمونه‌کارها · Work</a>
+        <a href="https://wa.me/989365743458">واتس‌اپ · WhatsApp</a>
+      </nav>
+    </main>
+  </body>
+</html>
