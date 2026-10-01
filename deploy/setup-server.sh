@@ -24,10 +24,6 @@ fail() { printf '\033[1;31m✗ %s\033[0m\n' "$*"; exit 1; }
 [ "$(id -u)" = 0 ] || fail "Run it with sudo:  sudo bash setup-server.sh"
 command -v apt-get >/dev/null || fail "This script is for Ubuntu/Debian (apt). Tell Claude which Linux the VPS runs."
 
-reload_nginx() {
-  systemctl reload nginx 2>/dev/null || systemctl restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || nginx
-}
-
 # Asks Let's Encrypt for a certificate once the domain really reaches this server.
 https() {
   say "HTTPS"
@@ -97,17 +93,28 @@ fi
 
 [ -f "$HERE/site/index.html" ] || fail "site/ is missing next to this script. Extract the whole package first."
 
+# ---- before changing anything: the site needs ports 80 and 443, shared only with Nginx ----
+say "Checking ports 80 and 443 (other sites and ports on this server are left alone)"
+command -v ss >/dev/null || fail "The 'ss' command is missing (package iproute2). Tell Claude."
+port_owner() {
+  echo $(ss -ltnpH "( sport = :$1 )" 2>/dev/null | sed -n 's/.*users:(("\([^"]*\)".*/\1/p' | sort -u)
+}
+for p in 80 443; do
+  who=$(port_owner "$p")
+  if [ -n "$who" ] && [ "$who" != "nginx" ]; then
+    fail "Port $p is already used by: $who. Nothing was changed. Send Claude the output of check-server.sh so we can fit the site in safely."
+  fi
+  ok "port $p: ${who:-free}"
+done
+had_nginx=0
+command -v nginx >/dev/null && had_nginx=1
+
 say "Installing Nginx and Certbot"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y -q
-apt-get install -y -q nginx certbot python3-certbot-nginx curl openssl
+# --no-upgrade: an Nginx that already runs other sites is not upgraded or restarted
+apt-get install -y -q --no-upgrade nginx certbot python3-certbot-nginx curl openssl
 ok "Installed"
-
-# something else already on port 80 (Apache, a control panel...) would block Nginx
-if command -v ss >/dev/null && ss -ltnp 2>/dev/null | grep -E ':80\s' | grep -vq nginx; then
-  ss -ltnp | grep -E ':80\s' || true
-  fail "Another program is using port 80 (above). Stop it first, or ask Claude."
-fi
 
 say "Copying the site to $ROOT"
 mkdir -p "$ROOT"
@@ -120,23 +127,37 @@ find "$ROOT" -type d -exec chmod 755 {} +
 find "$ROOT" -type f -exec chmod 644 {} +
 ok "$(find "$ROOT" -type f | wc -l) files in place"
 
+# "zz-" loads it after the other sites, so it never becomes the catch-all for requests to the bare IP
+LINK=/etc/nginx/sites-enabled/zz-$DOMAIN.conf
 if [ -f "$CONF" ]; then
   say "Nginx is already set up for $DOMAIN (kept as it is)"
 else
-  say "Setting up Nginx for $DOMAIN"
+  say "Adding $DOMAIN to Nginx"
   sed "s#/var/www/raminomrani.ir#$ROOT#" "$HERE/raminomrani.ir.conf" >"$CONF"
-  ln -sf "$CONF" "/etc/nginx/sites-enabled/$DOMAIN.conf"
-  rm -f /etc/nginx/sites-enabled/default
+  ln -sf "$CONF" "$LINK"
+  # a brand-new Nginx only shows its welcome page from "default"; an Nginx that was already
+  # here keeps every site it had, "default" included
+  [ "$had_nginx" = 0 ] && rm -f /etc/nginx/sites-enabled/default
   if ! nginx -t 2>/tmp/ro-nginx-test.txt; then
     if grep -q 'Address family not supported' /tmp/ro-nginx-test.txt; then
       warn "No IPv6 on this server; listening on IPv4 only."
       sed -i '/listen \[::\]:80;/d' "$CONF"
     fi
-    nginx -t || fail "Nginx rejected the config (above). Send Claude these lines."
+    if ! nginx -t; then
+      rm -f "$LINK" "$CONF"
+      fail "Nginx rejected the new site, so it was removed again; your other sites are untouched. Send Claude the lines above."
+    fi
   fi
 fi
-systemctl enable nginx >/dev/null 2>&1 || true
-reload_nginx
+
+nginx -t 2>/dev/null || fail "Nginx's configuration has an error (see: sudo nginx -t). Nothing was reloaded."
+if systemctl is-active --quiet nginx 2>/dev/null; then
+  systemctl reload nginx # graceful: sites already running keep running
+elif command -v systemctl >/dev/null && systemctl enable --now nginx 2>/dev/null; then
+  :
+else
+  nginx -s reload 2>/dev/null || nginx
+fi
 ok "Nginx is serving the site"
 
 if command -v ufw >/dev/null && ufw status 2>/dev/null | grep -q 'Status: active'; then
@@ -147,4 +168,4 @@ https
 
 say "Done"
 echo "   Open https://$DOMAIN (or http:// until HTTPS is on)."
-echo "   To update the site later: extract a new package and run  sudo bash setup-server.sh  again."
+echo "   Later updates:  sudo bash /root/raminomrani-site/setup-server.sh --update"
