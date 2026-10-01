@@ -25,9 +25,7 @@ export function Header() {
     <header className="header" data-scrolled={scrolled || undefined}>
       <div className="header-inner">
         <a className="brand" href="#top" aria-label={`${name} — ${t('صفحهٔ اصلی', 'home')}`}>
-          <span className="brand-mark" aria-hidden="true">
-            {t('ر', 'R')}
-          </span>
+          <img className="brand-mark" src="brand-mark.svg" alt="" width={40} height={40} aria-hidden="true" />
           <span className="brand-text">
             <strong>{name}</strong>
             <small>{t(site.role)}</small>

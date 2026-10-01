@@ -165,9 +165,7 @@ export function Footer() {
     <footer className="footer">
       <div className="container footer-inner">
         <div className="footer-brand">
-          <span className="brand-mark" aria-hidden="true">
-            {t('ر', 'R')}
-          </span>
+          <img className="brand-mark" src="brand-mark.svg" alt="" width={40} height={40} aria-hidden="true" />
           <div>
             <strong>{name}</strong>
             <p>
