@@ -101,26 +101,20 @@ cd /root && curl -fL -o raminomrani-site.tar.gz https://raw.githubusercontent.co
 - [ ] در [PageSpeed Insights](https://pagespeed.web.dev) سرعت را ببینید.
 - [ ] سایت را در [Google Search Console](https://search.google.com/search-console) ثبت کنید و `https://raminomrani.ir/sitemap.xml` را بدهید.
 
-## ۶. ساختن اپ اندروید با PWABuilder
+## ۶. اپ اندروید (PWABuilder) و انتشار در بازار، مایکت و گوگل‌پلی
 
-1. به [pwabuilder.com](https://www.pwabuilder.com) بروید و آدرس `https://raminomrani.ir/app/` را بدهید.
-2. گزارشش را ببینید. manifest، service worker و HTTPS باید سبز باشند.
-3. **Package For Stores → Android** را بزنید. مقادیر پیشنهادی:
-   - Package ID: `ir.raminomrani.app`
-   - App name: `رامین عمرانی`
-   - Signing key: گزینهٔ New (خود PWABuilder کلید می‌سازد)
-4. فایل zip را دانلود کنید. داخلش این‌هاست:
-   - فایل `.aab` برای Google Play
-   - فایل `.apk` برای کافه‌بازار، مایکت یا نصب مستقیم
-   - فایل کلید امضا و اطلاعاتش. **این دو را جای امنی نگه دارید؛ بدون آن‌ها هیچ‌وقت نمی‌توانید اپ را آپدیت کنید.**
-   - فایل `assetlinks.json`
-5. فایل `assetlinks.json` را در پروژه در مسیر `chooser/.well-known/assetlinks.json` بگذارید. دوباره `npm run build:site` بزنید و سایت را آپلود کنید، تا از آدرس `https://raminomrani.ir/.well-known/assetlinks.json` باز شود.
-   - این فایل ثابت می‌کند اپ مال همین سایت است. بدون آن، بالای اپ نوار آدرس مرورگر دیده می‌شود.
-   - اگر در Google Play گزینهٔ Play App Signing را فعال کردید، اثر انگشت SHA-256 کلیدی را که گوگل در Play Console (بخش App integrity) نشان می‌دهد هم به همین فایل اضافه کنید.
-6. APK را در کافه‌بازار یا مایکت، و AAB را در Google Play منتشر کنید.
-7. **iOS (اختیاری):** PWABuilder پروژهٔ Xcode می‌سازد، اما برای انتشار، مک و حساب Apple Developer لازم است. کاربر آیفون می‌تواند همان `raminomrani.ir/app/` را در Safari با Share → Add to Home Screen نصب کند.
+راهنمای کامل، متن‌های صفحهٔ فروشگاه، آیکون ۵۱۲ با نام اپ و اسکرین‌شات‌ها در پوشهٔ [`store/`](store/README.md) است. خلاصه:
+
+1. در [pwabuilder.com](https://www.pwabuilder.com) آدرس `https://raminomrani.ir/app/` را بدهید → **Package For Stores → Android**، با Package ID `ir.raminomrani.app` و کلید امضای جدید. فایل کلید (`signing.keystore`) و اطلاعاتش را در دو جای امن نگه دارید.
+2. اثر انگشت کلید (`sha256_cert_fingerprints` در `assetlinks.json` داخل zip) در [`deploy/android.json`](deploy/android.json) می‌رود. سایت خودش `https://raminomrani.ir/.well-known/assetlinks.json` را می‌سازد، همراه ورودی `cafebazaar_twa` که بازار برای تأیید اپ‌های TWA می‌خواهد.
+3. سیاست حریم خصوصی برای فروشگاه‌ها: `https://raminomrani.ir/privacy/`
+4. APK را در بازار و مایکت، و AAB را در گوگل‌پلی منتشر کنید. لینک صفحهٔ اپ در هر فروشگاه که در `deploy/android.json` گذاشته شود، دکمه‌اش خودکار در صفحهٔ اول سایت و تنظیمات اپ ظاهر می‌شود.
+5. دانلود مستقیم: فایل APK را با نام `raminomrani.apk` در `/var/www/raminomrani.ir/downloads/` بگذارید؛ با `--update` پاک نمی‌شود.
+6. **iOS (اختیاری):** PWABuilder پروژهٔ Xcode می‌سازد، اما برای انتشار، مک و حساب Apple Developer لازم است. کاربر آیفون می‌تواند همان `raminomrani.ir/app/` را در Safari با Share → Add to Home Screen نصب کند.
 
 **نکتهٔ مهم:** اپ اندروید همان صفحهٔ زندهٔ `raminomrani.ir/app/` را باز می‌کند. پس هر تغییری در محتوا (پروژهٔ جدید، متن، عکس) بعد از آپلود سایت خودکار در اپ هم دیده می‌شود. فقط وقتی نام، آیکن یا شناسهٔ اپ عوض شود، باید دوباره در فروشگاه منتشر کنید.
+
+لوگو، نسخه‌های آن و راهنمای هویت بصری در پوشهٔ [`brand/`](brand/README.md) است.
 
 ## ۷. به‌روزرسانی‌های بعدی
 

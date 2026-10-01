@@ -3,6 +3,7 @@ import { projects } from '../../v3/src/data/projects';
 import { useSite } from '../../v3/src/data/site';
 import { LangProvider, faDigits, type Lang } from '../../v3/src/i18n';
 import { useAppCopy } from './copy';
+import { useAndroidLinks } from './lib/android';
 import { copyText, useOnline, useReducedMotion } from './lib/hooks';
 import { setLang, useAppLang } from './lib/lang';
 import { closeOverlay, goBack, goTab, onRetap, openOverlay, tabOf, tabPaths, useNav, type Motion, type Nav, type Route, type TabPath } from './lib/router';
@@ -207,6 +208,8 @@ function SettingsSheet({ open }: { open: boolean }) {
   const built = new Intl.DateTimeFormat(lang === 'fa' ? 'fa-IR-u-ca-persian' : 'en-GB', { dateStyle: 'medium' }).format(new Date(__BUILD_DATE__));
   const version = `${lang === 'fa' ? faDigits(__APP_VERSION__) : __APP_VERSION__} · ${built}`;
   const [canShare] = useState(() => typeof navigator.share === 'function');
+  const android = useAndroidLinks(open);
+  const stores = android ? (['bazaar', 'myket', 'googlePlay', 'apk'] as const).filter((k) => android[k]) : [];
   const langs: { id: Lang; label: string }[] = [
     { id: 'fa', label: 'فارسی' },
     { id: 'en', label: 'English' },
@@ -260,6 +263,22 @@ function SettingsSheet({ open }: { open: boolean }) {
         </span>
         <Icon name="chevron" size={18} />
       </button>
+      {stores.map((k) => (
+        <a key={k} className="setting setting--link" href={android![k]} target="_blank" rel="noopener" {...(k === 'apk' ? { download: '' } : {})}>
+          <span className="setting-label">
+            <Icon name={k === 'apk' ? 'download' : 'android'} size={20} />
+            {t.settings[k]}
+          </span>
+          <Icon name="chevron" size={18} />
+        </a>
+      ))}
+      <a className="setting setting--link" href={lang === 'en' ? '../privacy/#en' : '../privacy/'}>
+        <span className="setting-label">
+          <Icon name="shield" size={20} />
+          {t.settings.privacy}
+        </span>
+        <Icon name="chevron" size={18} />
+      </a>
       <div className="setting setting--static">
         <span className="setting-label">
           <Icon name="code" size={20} />

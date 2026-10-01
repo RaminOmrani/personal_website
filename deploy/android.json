@@ -1,0 +1,11 @@
+{
+  "_readme": "The Android app (PWABuilder TWA). Build writes /.well-known/assetlinks.json and /app-links.json from this. See DEPLOY.md.",
+  "package": "ir.raminomrani.app",
+  "sha256_cert_fingerprints": [],
+  "apk": "/downloads/raminomrani.apk",
+  "stores": {
+    "bazaar": "",
+    "myket": "",
+    "googlePlay": ""
+  }
+}

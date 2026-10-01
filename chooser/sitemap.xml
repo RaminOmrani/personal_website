@@ -36,4 +36,8 @@
     <loc>https://raminomrani.ir/app/</loc>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://raminomrani.ir/privacy/</loc>
+    <priority>0.3</priority>
+  </url>
 </urlset>

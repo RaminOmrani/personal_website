@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>حریم خصوصی · رامین عمرانی</title>
+    <meta name="description" content="سیاست حریم خصوصی سایت raminomrani.ir و اپلیکیشن رامین عمرانی: چه چیزی ذخیره می‌شود، چه چیزی نه، و چطور با ما تماس بگیرید." />
+    <link rel="canonical" href="https://raminomrani.ir/privacy/" />
+    <meta name="theme-color" content="#F6F4EF" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- app stores (Cafe Bazaar, Myket, Google Play) link to this page; every URL here is absolute -->
+    <script>
+      // readers who chose English on the site land on the English half
+      try {
+        if (!location.hash && localStorage.getItem('ro:lang') === 'en') location.replace('#en');
+      } catch (e) {}
+    </script>
+    <style>
+      @font-face {
+        font-family: 'Vazirmatn';
+        font-display: swap;
+        font-weight: 100 900;
+        src: url(/fonts/vazirmatn-arabic.woff2) format('woff2-variations');
+        unicode-range: U+0600-06FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC;
+      }
+      @font-face {
+        font-family: 'Vazirmatn';
+        font-display: swap;
+        font-weight: 100 900;
+        src: url(/fonts/vazirmatn-latin.woff2) format('woff2-variations');
+        unicode-range: U+0000-00FF, U+2000-206F;
+      }
+      @font-face {
+        font-family: 'Inter Tight';
+        font-display: swap;
+        font-weight: 100 900;
+        src: url(/fonts/inter-tight-latin.woff2) format('woff2-variations');
+      }
+      :root {
+        color-scheme: light;
+        --paper: #f6f4ef;
+        --card: #ffffff;
+        --ink: #0f1b2d;
+        --ink-2: #43506a;
+        --ink-3: #6b7690;
+        --line: #e8e4da;
+        --lapis: #1f52d6;
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 400 16px/2 'Vazirmatn', Tahoma, system-ui, sans-serif;
+        -webkit-text-size-adjust: 100%;
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 28px 16px calc(48px + env(safe-area-inset-bottom, 0px));
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: inherit;
+        text-decoration: none;
+        font-weight: 800;
+      }
+      .brand img {
+        filter: drop-shadow(0 6px 10px rgba(31, 82, 214, 0.28));
+      }
+      .lang {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        color: var(--ink-2);
+        font: 600 14px/1 'Inter Tight', 'Vazirmatn', sans-serif;
+        text-decoration: none;
+        transition: transform 160ms var(--ease-out), background-color 200ms ease;
+      }
+      .lang:active {
+        transform: scale(0.97);
+      }
+      h1 {
+        margin: 40px 0 6px;
+        font-size: clamp(1.9rem, 6vw, 2.6rem);
+        font-weight: 900;
+        line-height: 1.35;
+        letter-spacing: -0.01em;
+      }
+      .meta {
+        margin: 0;
+        color: var(--ink-3);
+        font-size: 14px;
+      }
+      .summary {
+        margin: 24px 0 8px;
+        padding: 20px 22px;
+        border-radius: 20px;
+        background: #e8eefc;
+        color: #173fa8;
+        font-weight: 600;
+        line-height: 1.95;
+      }
+      section {
+        margin-top: 16px;
+        padding: 20px 22px;
+        border-radius: 20px;
+        background: var(--card);
+        border: 1px solid var(--line);
+      }
+      h2 {
+        margin: 0 0 4px;
+        font-size: 1.12rem;
+        font-weight: 800;
+        line-height: 1.6;
+      }
+      p,
+      ul {
+        margin: 0;
+        color: var(--ink-2);
+      }
+      ul {
+        padding-inline-start: 1.2em;
+      }
+      li + li {
+        margin-top: 4px;
+      }
+      a {
+        color: var(--lapis);
+      }
+      code {
+        font-family: 'Inter Tight', monospace;
+        font-size: 0.92em;
+        direction: ltr;
+        unicode-bidi: isolate;
+      }
+      .contact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .contact a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+        padding: 0 14px;
+        border-radius: 12px;
+        background: var(--paper);
+        color: var(--ink);
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 160ms var(--ease-out);
+      }
+      .contact a:active {
+        transform: scale(0.97);
+      }
+      .en {
+        margin-top: 56px;
+        padding-top: 32px;
+        border-top: 1px solid var(--line);
+        font-family: 'Inter Tight', 'Vazirmatn', system-ui, sans-serif;
+        line-height: 1.7;
+      }
+      .en h1 {
+        letter-spacing: -0.02em;
+      }
+      .en h2 {
+        font-weight: 700;
+      }
+      footer {
+        margin-top: 40px;
+        color: var(--ink-3);
+        font-size: 14px;
+        text-align: center;
+      }
+      footer a {
+        color: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <a class="brand" href="/?choose">
+          <img src="/logo.svg" alt="" width="40" height="40" />
+          <span>رامین عمرانی</span>
+        </a>
+        <a class="lang" href="#en" hreflang="en" lang="en">English</a>
+      </header>
+
+      <main>
+        <h1>سیاست حریم خصوصی</h1>
+        <p class="meta">سایت <code>raminomrani.ir</code> و اپلیکیشن «رامین عمرانی» (اندروید و نسخهٔ وب) · آخرین به‌روزرسانی: مهر ۱۴۰۵</p>
+
+        <p class="summary">خلاصه: این سایت و اپلیکیشن هیچ حساب کاربری، فرم ثبت‌نام، کوکی، ابزار آمارگیری یا تبلیغاتی ندارند و اطلاعات شخصی شما را جمع نمی‌کنند. فقط انتخاب زبان و نسخهٔ سایت، روی گوشی یا مرورگر خودتان نگه داشته می‌شود.</p>
+
+        <section>
+          <h2>این سایت و اپلیکیشن چیست؟</h2>
+          <p>نمونه‌کارها و خدمات رامین عمرانی، برنامه‌نویس فول‌استک و هوش مصنوعی در مشهد. اپلیکیشن اندروید همان صفحهٔ <code>raminomrani.ir/app</code> است که روی گوشی نصب می‌شود.</p>
+        </section>
+
+        <section>
+          <h2>چه اطلاعاتی جمع می‌شود؟</h2>
+          <p>هیچ اطلاعات شخصی (نام، شماره، ایمیل، موقعیت مکانی، مخاطبین یا فایل‌ها) از شما گرفته یا ذخیره نمی‌شود. سایت و اپلیکیشن هیچ سرویس آمارگیری، تبلیغاتی یا ردیابی شخص ثالث ندارند و از کوکی استفاده نمی‌کنند. فونت‌ها و تصویرها هم از همین سرور بارگذاری می‌شوند، نه از سرویس دیگری.</p>
+        </section>
+
+        <section>
+          <h2>چه چیزی روی دستگاه خودتان می‌ماند؟</h2>
+          <ul>
+            <li>زبانی که انتخاب کرده‌اید (فارسی یا انگلیسی) و نسخه‌ای از سایت که خواسته‌اید مستقیم باز شود، در حافظهٔ مرورگر (<code>localStorage</code>).</li>
+            <li>یک نسخهٔ ذخیره از صفحه‌ها و تصویرها (Service Worker) تا اپ سریع و بدون اینترنت هم باز شود.</li>
+          </ul>
+          <p>این‌ها هیچ‌وقت برای ما فرستاده نمی‌شوند. با پاک کردن داده‌های اپ یا مرورگر، یا حذف اپ، کامل پاک می‌شوند.</p>
+        </section>
+
+        <section>
+          <h2>گزارش‌های سرور</h2>
+          <p>مثل هر وب‌سایتی، سرور برای امنیت و رفع خطا، آدرس IP، زمان، صفحهٔ درخواست‌شده و نوع مرورگر را در گزارش (log) ثبت می‌کند. این گزارش‌ها برای شناسایی افراد یا تبلیغات استفاده نمی‌شوند، با کسی به اشتراک گذاشته نمی‌شوند و حداکثر دو هفته نگه داشته می‌شوند.</p>
+        </section>
+
+        <section>
+          <h2>تماس از طریق واتس‌اپ، تلگرام و تلفن</h2>
+          <p>دکمه‌های تماس فقط برنامهٔ واتس‌اپ، تلگرام یا شماره‌گیر گوشی شما را باز می‌کنند. پیامی که آنجا می‌فرستید تابع سیاست حریم خصوصی همان سرویس است و فقط برای پاسخ به خود شما استفاده می‌شود.</p>
+        </section>
+
+        <section>
+          <h2>دسترسی‌های اپلیکیشن اندروید</h2>
+          <p>اپلیکیشن فقط به اینترنت نیاز دارد. به مخاطبین، دوربین، میکروفون، موقعیت مکانی، پیامک یا فایل‌های گوشی دسترسی ندارد و اعلان (نوتیفیکیشن) نمی‌فرستد.</p>
+        </section>
+
+        <section>
+          <h2>کودکان</h2>
+          <p>این سایت و اپلیکیشن برای کسب‌وکارها ساخته شده و عمداً هیچ اطلاعاتی از کودکان جمع نمی‌کند.</p>
+        </section>
+
+        <section>
+          <h2>تغییرات این سیاست</h2>
+          <p>اگر چیزی در این سیاست تغییر کند، همین صفحه با تاریخ جدید به‌روز می‌شود.</p>
+        </section>
+
+        <section>
+          <h2>تماس دربارهٔ حریم خصوصی</h2>
+          <p>هر پرسشی دربارهٔ این سیاست داشتید، با رامین عمرانی تماس بگیرید:</p>
+          <div class="contact">
+            <a href="tel:+989017021166">تلفن: ۰۹۰۱ ۷۰۲ ۱۱۶۶</a>
+            <a href="https://wa.me/989365743458" rel="noopener">واتس‌اپ: ۰۹۳۶ ۵۷۴ ۳۴۵۸</a>
+            <a href="https://t.me/Daneshjoo_AI" rel="noopener" dir="ltr">Telegram @Daneshjoo_AI</a>
+          </div>
+        </section>
+      </main>
+
+      <article class="en" id="en" lang="en" dir="ltr">
+        <h1>Privacy policy</h1>
+        <p class="meta">The <code>raminomrani.ir</code> website and the “Ramin Omrani” app (Android and web) · Last updated: October 2026</p>
+
+        <p class="summary">In short: the website and the app have no accounts, sign-up forms, cookies, analytics or ads, and do not collect your personal data. Only your choice of language and site version is kept, on your own device.</p>
+
+        <section>
+          <h2>What this is</h2>
+          <p>The portfolio and services of Ramin Omrani, a full-stack and AI developer in Mashhad, Iran. The Android app is the page at <code>raminomrani.ir/app</code>, installed on your phone.</p>
+        </section>
+        <section>
+          <h2>What we collect</h2>
+          <p>No personal data (name, phone number, email, location, contacts or files) is requested or stored. There are no third-party analytics, advertising or tracking services and no cookies. Fonts and images are served from this server, not from other services.</p>
+        </section>
+        <section>
+          <h2>What stays on your device</h2>
+          <ul>
+            <li>Your language (Persian or English) and the site version you asked to open directly, in your browser’s <code>localStorage</code>.</li>
+            <li>A saved copy of pages and pictures (a service worker), so the app opens quickly, even offline.</li>
+          </ul>
+          <p>None of this is ever sent to us. Clearing the app’s or browser’s data, or uninstalling the app, removes it completely.</p>
+        </section>
+        <section>
+          <h2>Server logs</h2>
+          <p>Like any website, the server records the IP address, time, requested page and browser type for security and troubleshooting. These logs are not used to identify people or for advertising, are not shared, and are kept for at most two weeks.</p>
+        </section>
+        <section>
+          <h2>Contacting us on WhatsApp, Telegram or by phone</h2>
+          <p>The contact buttons only open WhatsApp, Telegram or your phone’s dialer. Messages you send there are covered by that service’s privacy policy and are used only to reply to you.</p>
+        </section>
+        <section>
+          <h2>Android app permissions</h2>
+          <p>The app only needs internet access. It cannot read your contacts, camera, microphone, location, SMS or files, and it sends no notifications.</p>
+        </section>
+        <section>
+          <h2>Children</h2>
+          <p>The website and the app are made for businesses and do not knowingly collect any data from children.</p>
+        </section>
+        <section>
+          <h2>Changes</h2>
+          <p>If anything in this policy changes, this page is updated with a new date.</p>
+        </section>
+        <section>
+          <h2>Contact</h2>
+          <p>For any question about this policy, contact Ramin Omrani:</p>
+          <div class="contact">
+            <a href="tel:+989017021166">Phone: +98 901 702 1166</a>
+            <a href="https://wa.me/989365743458" rel="noopener">WhatsApp: +98 936 574 3458</a>
+            <a href="https://t.me/Daneshjoo_AI" rel="noopener">Telegram @Daneshjoo_AI</a>
+          </div>
+        </section>
+      </article>
+
+      <footer><a href="/?choose">raminomrani.ir</a></footer>
+    </div>
+  </body>
+</html>

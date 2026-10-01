@@ -61,6 +61,11 @@ const src = {
     version: l('نسخهٔ اپ', 'App version'),
     close: l('بستن', 'Close'),
     shared: l('لینک اپ کپی شد', 'App link copied'),
+    privacy: l('حریم خصوصی', 'Privacy policy'),
+    bazaar: l('دریافت از بازار', 'Get it on Cafe Bazaar'),
+    myket: l('دریافت از مایکت', 'Get it on Myket'),
+    googlePlay: l('دریافت از گوگل‌پلی', 'Get it on Google Play'),
+    apk: l('دانلود مستقیم (APK)', 'Direct download (APK)'),
   },
   net: {
     offline: l('آفلاین هستید؛ نسخهٔ ذخیره‌شده را می‌بینید', 'You’re offline — showing saved content'),

@@ -687,7 +687,42 @@
       }
       .app img {
         flex: none;
-        border-radius: 14px;
+        filter: drop-shadow(0 8px 14px rgba(31, 82, 214, 0.35));
+      }
+      /* the Android app in the stores; each link shows up once it exists (app-links.json) */
+      .stores {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 12px 4px 0;
+        color: var(--fg-3);
+        font-size: 13.5px;
+      }
+      .stores[hidden],
+      .stores a[hidden] {
+        display: none;
+      }
+      .stores a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 0 0 1px var(--line);
+        color: var(--fg);
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+          transform 160ms var(--ease-out),
+          background-color 200ms ease;
+      }
+      .stores a:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .stores a:active {
+        transform: scale(0.97);
       }
       .app-text {
         display: grid;
@@ -805,6 +840,13 @@
         </span>
         <span class="app-go" data-t="app.go">باز کردن</span>
       </a>
+      <p class="stores" data-stores hidden>
+        <span data-t="stores">نسخهٔ اندروید:</span>
+        <a data-store="bazaar" data-t="store.bazaar" target="_blank" rel="noopener" hidden>دریافت از بازار</a>
+        <a data-store="myket" data-t="store.myket" target="_blank" rel="noopener" hidden>دریافت از مایکت</a>
+        <a data-store="googlePlay" data-t="store.googlePlay" target="_blank" rel="noopener" hidden>گوگل‌پلی</a>
+        <a data-store="apk" data-t="store.apk" download hidden>دانلود مستقیم (APK)</a>
+      </p>
 
       <div class="options">
         <p class="note" data-t="note">هر وقت خواستید، از پایین هر نسخه به اینجا برمی‌گردید.</p>
@@ -827,6 +869,7 @@
       <a href="tel:+989017021166" data-t="call">تماس: ۰۹۰۱ ۷۰۲ ۱۱۶۶</a>
       <a href="https://wa.me/989365743458" target="_blank" rel="noopener" data-t="wa">واتس‌اپ: ۰۹۳۶ ۵۷۴ ۳۴۵۸</a>
       <a href="https://t.me/Daneshjoo_AI" target="_blank" rel="noopener" dir="ltr">Telegram @Daneshjoo_AI</a>
+      <a href="privacy/" data-t="privacy" data-privacy>حریم خصوصی</a>
     </footer>
 
     <script>
@@ -858,6 +901,12 @@
           'ask.no': 'No, ask me each time',
           call: 'Call: +98 901 702 1166',
           wa: 'WhatsApp: +98 936 574 3458',
+          privacy: 'Privacy',
+          stores: 'Android app:',
+          'store.bazaar': 'Cafe Bazaar',
+          'store.myket': 'Myket',
+          'store.googlePlay': 'Google Play',
+          'store.apk': 'Direct download (APK)',
         };
         var d = document;
         var html = d.documentElement;
@@ -888,6 +937,7 @@
           d.querySelectorAll('[data-v]').forEach(function (a) {
             a.href = window.roTarget(a.getAttribute('data-v'), lang);
           });
+          d.querySelector('[data-privacy]').href = lang === 'en' ? 'privacy/#en' : 'privacy/';
           window.roLang = lang;
         }
 
@@ -933,6 +983,35 @@
             ask.showModal();
           });
         });
+        // Android app links, filled in deploy/android.json; the APK only once it is on the server
+        if (window.fetch) {
+          fetch('app-links.json', { cache: 'no-cache' })
+            .then(function (r) {
+              return r.ok ? r.json() : {};
+            })
+            .then(function (cfg) {
+              var stores = cfg.stores || {};
+              var row = d.querySelector('[data-stores]');
+              var show = function (k, url) {
+                var a = row.querySelector('[data-store="' + k + '"]');
+                a.href = url;
+                a.hidden = false;
+                row.hidden = false;
+              };
+              ['bazaar', 'myket', 'googlePlay'].forEach(function (k) {
+                if (stores[k]) show(k, stores[k]);
+              });
+              if (cfg.apk) {
+                fetch(cfg.apk, { method: 'HEAD', cache: 'no-cache' })
+                  .then(function (r) {
+                    if (r.ok) show('apk', cfg.apk);
+                  })
+                  .catch(function () {});
+              }
+            })
+            .catch(function () {});
+        }
+
         ask.addEventListener('click', function (e) {
           var b = e.target.closest('[data-answer]');
           if (b) {

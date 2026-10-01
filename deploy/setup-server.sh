@@ -24,6 +24,86 @@ fail() { printf '\033[1;31m✗ %s\033[0m\n' "$*"; exit 1; }
 [ "$(id -u)" = 0 ] || fail "Run it with sudo:  sudo bash setup-server.sh"
 command -v apt-get >/dev/null || fail "This script is for Ubuntu/Debian (apt). Tell Claude which Linux the VPS runs."
 
+LINK=/etc/nginx/sites-enabled/zz-$DOMAIN.conf
+LIVE=/etc/letsencrypt/live/$DOMAIN
+
+# The site's Nginx config, from raminomrani.ir.conf: as it is until there is a certificate, then the
+# same site on 443 with an http → https redirect. Written on every run, so config changes arrive
+# with --update; the previous file is kept and put back if Nginx rejects the new one.
+site_conf() {
+  local tmpl="$HERE/raminomrani.ir.conf"
+  if [ -f "$LIVE/fullchain.pem" ]; then
+    local tls="    ssl_certificate $LIVE/fullchain.pem;\n    ssl_certificate_key $LIVE/privkey.pem;"
+    if [ -f /etc/letsencrypt/options-ssl-nginx.conf ]; then
+      tls="$tls\n    include /etc/letsencrypt/options-ssl-nginx.conf;"
+    else
+      tls="$tls\n    ssl_protocols TLSv1.2 TLSv1.3;"
+    fi
+    [ -f /etc/letsencrypt/ssl-dhparams.pem ] && tls="$tls\n    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;"
+    sed -n '1,/^server {/p' "$tmpl" | sed '$d'
+    cat <<EOF
+# http: only Let's Encrypt renewals; everything else moves to https
+server {
+    listen 80;
+    listen [::]:80;
+    server_name $DOMAIN www.$DOMAIN;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root $ROOT;
+    }
+    location / {
+        return 301 https://$DOMAIN\$request_uri;
+    }
+}
+
+EOF
+    sed -n '/^server {/,$p' "$tmpl" |
+      sed -e 's/^    listen 80;/    listen 443 ssl http2;/' \
+        -e 's/^    listen \[::\]:80;/    listen [::]:443 ssl http2;/' \
+        -e "/^    server_name /a\\
+$tls"
+  else
+    cat "$tmpl"
+  fi
+}
+
+write_conf() {
+  local backup=""
+  if [ -f "$CONF" ]; then
+    backup="$CONF.bak"
+    cp -p "$CONF" "$backup"
+  fi
+  site_conf | sed "s#/var/www/raminomrani.ir#$ROOT#" >"$CONF"
+  ln -sf "$CONF" "$LINK"
+  if ! nginx -t 2>/tmp/ro-nginx-test.txt; then
+    if grep -q 'Address family not supported' /tmp/ro-nginx-test.txt; then
+      warn "No IPv6 on this server; listening on IPv4 only."
+      sed -i '/listen \[::\]:/d' "$CONF"
+    fi
+    if ! nginx -t 2>/tmp/ro-nginx-test.txt; then
+      cat /tmp/ro-nginx-test.txt
+      if [ -n "$backup" ]; then
+        cp -p "$backup" "$CONF"
+        warn "Nginx rejected the new config, so the previous one is back in place; your sites are untouched."
+      else
+        rm -f "$LINK" "$CONF"
+        warn "Nginx rejected the new site, so it was removed again; your other sites are untouched."
+      fi
+      return 1
+    fi
+  fi
+}
+
+reload_nginx() {
+  if systemctl is-active --quiet nginx 2>/dev/null; then
+    systemctl reload nginx # graceful: sites already running keep running
+  elif command -v systemctl >/dev/null && systemctl enable --now nginx 2>/dev/null; then
+    :
+  else
+    nginx -s reload 2>/dev/null || nginx
+  fi
+}
+
 # Asks Let's Encrypt for a certificate once the domain really reaches this server.
 https() {
   say "HTTPS"
@@ -68,6 +148,8 @@ https() {
   local mail=(--register-unsafely-without-email)
   [ -n "${EMAIL:-}" ] && mail=(-m "$EMAIL" --no-eff-email)
   if certbot --nginx --non-interactive --agree-tos --expand "${mail[@]}" "${names[@]}" --redirect; then
+    # certbot edited the config by itself; replace that with the full HTTPS config from the template
+    write_conf && reload_nginx
     ok "HTTPS is on: https://$DOMAIN"
   else
     warn "certbot could not get a certificate. Send Claude the lines above."
@@ -118,8 +200,9 @@ ok "Installed"
 
 say "Copying the site to $ROOT"
 mkdir -p "$ROOT"
-# replace everything except .well-known (the Android app's assetlinks.json lives there)
-find "$ROOT" -mindepth 1 -maxdepth 1 ! -name '.well-known' -exec rm -rf {} +
+# replace everything except .well-known (Let's Encrypt) and downloads/ (an APK uploaded by hand);
+# the package's own files in those two folders still overwrite older copies
+find "$ROOT" -mindepth 1 -maxdepth 1 ! -name '.well-known' ! -name 'downloads' -exec rm -rf {} +
 cp -a "$HERE/site/." "$ROOT/"
 rm -f "$ROOT/.htaccess" "$ROOT/CNAME"
 chown -R www-data:www-data "$ROOT"
@@ -128,37 +211,18 @@ find "$ROOT" -type f -exec chmod 644 {} +
 ok "$(find "$ROOT" -type f | wc -l) files in place"
 
 # "zz-" loads it after the other sites, so it never becomes the catch-all for requests to the bare IP
-LINK=/etc/nginx/sites-enabled/zz-$DOMAIN.conf
-if [ -f "$CONF" ]; then
-  say "Nginx is already set up for $DOMAIN (kept as it is)"
-else
-  say "Adding $DOMAIN to Nginx"
-  sed "s#/var/www/raminomrani.ir#$ROOT#" "$HERE/raminomrani.ir.conf" >"$CONF"
-  ln -sf "$CONF" "$LINK"
-  # a brand-new Nginx only shows its welcome page from "default"; an Nginx that was already
-  # here keeps every site it had, "default" included
-  [ "$had_nginx" = 0 ] && rm -f /etc/nginx/sites-enabled/default
-  if ! nginx -t 2>/tmp/ro-nginx-test.txt; then
-    if grep -q 'Address family not supported' /tmp/ro-nginx-test.txt; then
-      warn "No IPv6 on this server; listening on IPv4 only."
-      sed -i '/listen \[::\]:80;/d' "$CONF"
-    fi
-    if ! nginx -t; then
-      rm -f "$LINK" "$CONF"
-      fail "Nginx rejected the new site, so it was removed again; your other sites are untouched. Send Claude the lines above."
-    fi
-  fi
+say "Nginx config for $DOMAIN"
+fresh=0
+[ -f "$CONF" ] || fresh=1
+write_conf || fail "Send Claude the lines above."
+# a brand-new Nginx only shows its welcome page from "default"; an Nginx that was already
+# here keeps every site it had, "default" included
+if [ "$fresh" = 1 ] && [ "$had_nginx" = 0 ]; then
+  rm -f /etc/nginx/sites-enabled/default
 fi
-
 nginx -t 2>/dev/null || fail "Nginx's configuration has an error (see: sudo nginx -t). Nothing was reloaded."
-if systemctl is-active --quiet nginx 2>/dev/null; then
-  systemctl reload nginx # graceful: sites already running keep running
-elif command -v systemctl >/dev/null && systemctl enable --now nginx 2>/dev/null; then
-  :
-else
-  nginx -s reload 2>/dev/null || nginx
-fi
-ok "Nginx is serving the site"
+reload_nginx
+if [ -f "$LIVE/fullchain.pem" ]; then ok "Nginx is serving the site over https"; else ok "Nginx is serving the site"; fi
 
 if command -v ufw >/dev/null && ufw status 2>/dev/null | grep -q 'Status: active'; then
   ufw allow 'Nginx Full' >/dev/null && ok "Firewall: ports 80 and 443 open"
