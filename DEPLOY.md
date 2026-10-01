@@ -48,23 +48,17 @@ npm run build:site
 
 ## ۴. راه‌اندازی روی سرور
 
-### گزینهٔ ۱: VPS لینوکس (Nginx) — با یک بسته و یک دستور
+### گزینهٔ ۱: VPS لینوکس (Nginx) — مستقیم از گیت‌هاب، با یک دستور
 
-1. روی کامپیوتر خودتان بسته را بسازید. خروجی یک فایل است: `raminomrani-site.tar.gz`.
-   ```bash
-   npm run package:site
-   ```
-   داخل این فایل هم کل سایت هست و هم اسکریپت راه‌اندازی.
-2. فایل را روی سرور بفرستید:
-   - **از ویندوز:** با WinSCP، یا در PowerShell:
-     ```bash
-     scp raminomrani-site.tar.gz root@IP:/root/
-     ```
-3. روی سرور (با SSH) اجرا کنید:
-   ```bash
-   tar -xzf raminomrani-site.tar.gz && cd raminomrani-site && sudo bash setup-server.sh
-   ```
-   اسکریپت [`deploy/setup-server.sh`](deploy/setup-server.sh) این کارها را خودش انجام می‌دهد:
+بستهٔ آمادهٔ سایت همیشه در مخزن است ([`release/raminomrani-site.tar.gz`](release/raminomrani-site.tar.gz)) و داخلش کل سایت و اسکریپت راه‌اندازی هست. روی سرور (با SSH) فقط همین را بزنید:
+
+```bash
+cd /root && curl -fL -o raminomrani-site.tar.gz https://raw.githubusercontent.com/RaminOmrani/personal_website/HEAD/release/raminomrani-site.tar.gz && tar -xzf raminomrani-site.tar.gz && cd raminomrani-site && sudo bash setup-server.sh
+```
+
+اگر سرور به گیت‌هاب دسترسی نداشت، همان فایل را از گیت‌هاب دانلود کنید و با WinSCP یا `scp` در `/root` سرور بگذارید، بعد دستور بالا را از `tar -xzf` به بعد بزنید.
+
+اسکریپت [`deploy/setup-server.sh`](deploy/setup-server.sh) این کارها را خودش انجام می‌دهد:
    - Nginx و Certbot را نصب می‌کند.
    - سایت را در `/var/www/raminomrani.ir` می‌گذارد.
    - تنظیمات [`deploy/nginx/raminomrani.ir.conf`](deploy/nginx/raminomrani.ir.conf) را فعال می‌کند.
@@ -74,7 +68,10 @@ npm run build:site
    ```bash
    sudo bash setup-server.sh --https
    ```
-5. **برای به‌روزرسانی‌های بعدی** همین سه قدم را تکرار کنید. تنظیمات Nginx و HTTPS دست نمی‌خورند و فقط فایل‌های سایت عوض می‌شوند.
+5. **برای به‌روزرسانی‌های بعدی** فقط این را روی سرور بزنید. آخرین نسخه را از گیت‌هاب می‌گیرد و نصب می‌کند؛ تنظیمات Nginx و HTTPS دست نمی‌خورند:
+   ```bash
+   sudo bash /root/raminomrani-site/setup-server.sh --update
+   ```
 
 بعد از چند روز که همه‌چیز درست کار کرد، می‌توانید HSTS را روشن کنید:
 1. در `/etc/nginx/sites-available/raminomrani.ir.conf`، خط `Strict-Transport-Security` را از حالت کامنت دربیاورید.
@@ -128,7 +125,7 @@ npm run build:site
 ## ۷. به‌روزرسانی‌های بعدی
 
 1. متن‌ها و پروژه‌ها را ویرایش کنید (فایل‌ها در README معرفی شده‌اند).
-2. `npm run package:site`
-3. `raminomrani-site.tar.gz` را روی سرور بفرستید و دوباره `sudo bash setup-server.sh` را اجرا کنید. سایت در چند ثانیه عوض می‌شود.
+2. `npm run package:site` بزنید. این دستور `release/raminomrani-site.tar.gz` را دوباره می‌سازد. بعد commit و push کنید.
+3. روی سرور بزنید: `sudo bash /root/raminomrani-site/setup-server.sh --update`. سایت در چند ثانیه عوض می‌شود.
 
 </div>

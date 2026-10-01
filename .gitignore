@@ -5,5 +5,4 @@ dist
 .vite
 dist-ssr
 site
-raminomrani-site/
-raminomrani-site.tar.gz
+/raminomrani-site/

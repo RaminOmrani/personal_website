@@ -2,13 +2,16 @@
 # Puts raminomrani.ir on an Ubuntu/Debian VPS: Nginx, the site files and free HTTPS.
 # Run it from the folder you extracted (it contains site/ and raminomrani.ir.conf):
 #
-#   sudo bash setup-server.sh            first install, and every later update
+#   sudo bash setup-server.sh            install what is in this folder (first install, or an update)
+#   sudo bash setup-server.sh --update   download the newest package from GitHub and install it
 #   sudo bash setup-server.sh --https    only (re)try the HTTPS certificate
 #
 # Safe to run again: later runs replace the site files and keep the Nginx/HTTPS setup.
 set -euo pipefail
 
 DOMAIN=raminomrani.ir
+# the newest build, committed to the repository's default branch by `npm run package:site`
+PACKAGE_URL=${PACKAGE_URL:-https://raw.githubusercontent.com/RaminOmrani/personal_website/HEAD/release/raminomrani-site.tar.gz}
 ROOT=/var/www/$DOMAIN
 CONF=/etc/nginx/sites-available/$DOMAIN.conf
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -74,6 +77,18 @@ https() {
     warn "certbot could not get a certificate. Send Claude the lines above."
   fi
 }
+
+if [ "${1:-}" = "--update" ]; then
+  say "Downloading the newest site from GitHub"
+  command -v curl >/dev/null || { apt-get update -y -q && apt-get install -y -q curl; }
+  tmp=$(mktemp -d)
+  curl -fL --retry 3 --progress-bar -o "$tmp/site.tar.gz" "$PACKAGE_URL" ||
+    fail "Could not download $PACKAGE_URL (is GitHub reachable from this server?). Upload the package by hand instead."
+  tar -xzf "$tmp/site.tar.gz" -C "$tmp"
+  ok "Downloaded"
+  # run the freshly downloaded script, so improvements to it apply too
+  exec bash "$tmp/raminomrani-site/setup-server.sh"
+fi
 
 if [ "${1:-}" = "--https" ]; then
   https

@@ -6,9 +6,10 @@
 //   /app/    the installable app (app/), when it exists
 // Usage: node scripts/build-site.mjs              (runs npm ci + build in every project)
 //        node scripts/build-site.mjs --no-install   (skip npm ci when node_modules are fresh)
-//        node scripts/build-site.mjs --package      (also make raminomrani-site.tar.gz for the VPS)
+//        node scripts/build-site.mjs --package      (also make release/raminomrani-site.tar.gz for the VPS;
+//                                                    commit and push it, then on the server: setup-server.sh --update)
 import { execSync } from 'node:child_process';
-import { cpSync, existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
@@ -49,7 +50,8 @@ if (process.argv.includes('--package')) {
   cpSync(out, resolve(pkg, 'site'), { recursive: true });
   cpSync(resolve(root, 'deploy/setup-server.sh'), resolve(pkg, 'setup-server.sh'));
   cpSync(resolve(root, 'deploy/nginx/raminomrani.ir.conf'), resolve(pkg, 'raminomrani.ir.conf'));
-  execSync('tar -czf raminomrani-site.tar.gz raminomrani-site', { cwd: root, stdio: 'inherit' });
+  mkdirSync(resolve(root, 'release'), { recursive: true });
+  execSync('tar -czf release/raminomrani-site.tar.gz raminomrani-site', { cwd: root, stdio: 'inherit' });
   rmSync(pkg, { recursive: true, force: true });
-  console.log(`✓ package ready: ${resolve(root, 'raminomrani-site.tar.gz')}`);
+  console.log(`✓ package ready: ${resolve(root, 'release/raminomrani-site.tar.gz')}`);
 }
