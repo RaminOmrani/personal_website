@@ -31,6 +31,13 @@
         if (lang === 'en') document.title = 'Ramin Omrani · Websites & apps';
       })(document.documentElement);
     </script>
+    <script>
+      // The service worker is registered right away, not after "load": store packagers (PWABuilder)
+      // test from abroad, where the full load can outlast their wait. Update handling is in src/lib/pwa.ts.
+      if ('%PROD%' === 'true' && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () {});
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
