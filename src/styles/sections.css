@@ -1759,6 +1759,25 @@ html:lang(fa) .contact-title {
   color: var(--fg-dim);
 }
 
+.footer-seal {
+  display: block;
+  padding: 6px;
+  border-radius: 14px;
+  background: #fff;
+  transition: transform 0.16s ease-out;
+}
+
+.footer-seal:active {
+  transform: scale(0.97);
+}
+
+.footer-seal img {
+  display: block;
+  width: 66px;
+  height: 72px;
+  object-fit: contain;
+}
+
 .footer-mark {
   display: flex;
   justify-content: center;

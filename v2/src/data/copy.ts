@@ -384,4 +384,5 @@ export const footer = {
   rights: l('همهٔ پروژه‌ها با اجازهٔ کارفرما نمایش داده شده‌اند.', 'All projects are shown with the client’s permission.'),
   links: l('لینک‌های پایین صفحه', 'Footer links'),
   versions: l('نسخه‌های دیگر سایت', 'Other versions of this site'),
+  enamad: l('نماد اعتماد الکترونیکی', 'Enamad e-trust seal'),
 };

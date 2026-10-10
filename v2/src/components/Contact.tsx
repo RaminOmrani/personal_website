@@ -195,6 +195,22 @@ export function Footer() {
             <Icon name="github" />
           </a>
         </div>
+        {/* Enamad (enamad.ir) trust seal: keep the link and image exactly as Enamad issued them */}
+        <a
+          className="footer-seal"
+          referrerPolicy="origin"
+          target="_blank"
+          href="https://trustseal.enamad.ir/?id=8117770&Code=9EiztP6QldcKM73OthDdMisT3J4LgfOk"
+          aria-label={t(footer.enamad)}
+        >
+          <img
+            referrerPolicy="origin"
+            src="https://trustseal.enamad.ir/logo.aspx?id=8117770&Code=9EiztP6QldcKM73OthDdMisT3J4LgfOk"
+            alt=""
+            style={{ cursor: 'pointer' }}
+            {...{ code: '9EiztP6QldcKM73OthDdMisT3J4LgfOk' }}
+          />
+        </a>
         <div className="footer-bottom">
           <p className="footer-copy">
             © {copyrightYear(lang)} {name}. {t(footer.rights)}

@@ -526,6 +526,29 @@
       .contact a:hover {
         color: var(--fg);
       }
+      /* Enamad trust seal on a white tile; a fixed box so the footer doesn't jump when it loads */
+      .seal {
+        display: flex;
+        flex-basis: 100%;
+        justify-content: center;
+        margin-top: 6px;
+      }
+      .contact .seal a {
+        display: block;
+        padding: 6px;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 0 0 1px var(--line);
+        transition: transform 160ms var(--ease-out);
+      }
+      .contact .seal a:active {
+        transform: scale(0.97);
+      }
+      .seal img {
+        width: 66px;
+        height: 72px;
+        object-fit: contain;
+      }
 
       /* entrance: the cards rise in one after another */
       html.js .intro,
@@ -872,6 +895,8 @@
       <a href="https://wa.me/989365743458" target="_blank" rel="noopener" data-t="wa">واتس‌اپ: ۰۹۳۶ ۵۷۴ ۳۴۵۸</a>
       <a href="https://t.me/Daneshjoo_AI" target="_blank" rel="noopener" dir="ltr">Telegram @Daneshjoo_AI</a>
       <a href="privacy/" data-t="privacy" data-privacy>حریم خصوصی</a>
+      <!-- Enamad (enamad.ir) trust seal: keep this code exactly as Enamad issued it -->
+      <div class="seal"><a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=8117770&Code=9EiztP6QldcKM73OthDdMisT3J4LgfOk'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=8117770&Code=9EiztP6QldcKM73OthDdMisT3J4LgfOk' alt='' style='cursor:pointer' code='9EiztP6QldcKM73OthDdMisT3J4LgfOk'></a></div>
     </footer>
 
     <script>

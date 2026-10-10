@@ -632,6 +632,7 @@ export const ui = {
   rights: l('تمام حقوق محفوظ است.', 'All rights reserved.'),
   madeIn: l('طراحی و توسعه با عشق در مشهد', 'Designed & built with love in Mashhad'),
   versions: l('نسخه‌های دیگر سایت', 'Other versions of this site'),
+  enamad: l('نماد اعتماد الکترونیکی', 'Enamad e-trust seal'),
   sample: l('نمونه', 'Sample'),
   socials: l('شبکه‌های اجتماعی', 'Socials'),
   chooseSection: l('بخش‌ها', 'Sections'),

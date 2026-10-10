@@ -374,6 +374,11 @@ function contactSection(lang: Lang, idx: number): string {
 </section>`;
 }
 
+/** Enamad (enamad.ir) trust seal; the link and image are Enamad's code, only the label is ours. */
+function enamadSeal(lang: Lang): string {
+  return `<a class="footer-seal" referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=8117770&Code=9EiztP6QldcKM73OthDdMisT3J4LgfOk' aria-label="${esc(t(ui.enamad, lang))}"><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=8117770&Code=9EiztP6QldcKM73OthDdMisT3J4LgfOk' alt='' style='cursor:pointer' code='9EiztP6QldcKM73OthDdMisT3J4LgfOk'></a>`;
+}
+
 function footer(lang: Lang, o: RenderOptions): string {
   const mark = lang === 'fa' ? `<span class="ch ch--word">${esc(t(site.name, lang))}</span>` : chars(t(site.name, lang).toUpperCase());
   return `
@@ -381,6 +386,7 @@ function footer(lang: Lang, o: RenderOptions): string {
   <div class="footer-top">
     <a class="round-btn round-btn--lg" href="#top" data-magnetic aria-label="${esc(t(ui.backTop, lang))}">${icons.arrowUp}</a>
     <ul class="footer-links">${site.socials.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.label)}</a></li>`).join('')}</ul>
+    ${enamadSeal(lang)}
   </div>
   <p class="footer-mark" aria-hidden="true" data-footer-mark>${mark}</p>
   <div class="footer-bottom">

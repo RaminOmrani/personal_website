@@ -406,6 +406,7 @@ const src = {
     footerLinks: l('لینک‌های پایین صفحه', 'Footer links'),
     rights: l('همهٔ پروژه‌ها با اجازهٔ کارفرما نمایش داده شده‌اند.', 'All projects are shown with their clients’ permission.'),
     versions: l('نسخه‌های دیگر سایت', 'Other versions of this site'),
+    enamad: l('نماد اعتماد الکترونیکی', 'Enamad e-trust seal'),
   },
 
   /** Words inside a project's story. */

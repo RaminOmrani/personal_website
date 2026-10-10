@@ -2641,6 +2641,28 @@ button.tab:active {
   font-size: 13.5px;
 }
 
+/* Enamad trust seal on a white tile; a fixed box so the footer doesn't jump when it loads */
+.footer .footer-seal {
+  display: block;
+  width: fit-content;
+  padding: 6px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--line);
+  transition: transform 160ms ease-out;
+}
+
+.footer .footer-seal:active {
+  transform: scale(0.97);
+}
+
+.footer-seal img {
+  display: block;
+  width: 66px;
+  height: 72px;
+  object-fit: contain;
+}
+
 .footer .footer-versions {
   color: var(--ink-3);
   font-size: 13.5px;
