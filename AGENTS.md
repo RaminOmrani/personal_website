@@ -21,6 +21,7 @@ Last updated: 2026-11-08.
 6. **Keep the Enamad code on the homepage exactly as issued** (`chooser/index.html`: the `<meta name="enamad">` tag and the trust-seal `<a><img>` in the footer), and keep `chooser/14167236.txt`.
 7. **After any change to the site, rebuild and commit the release package** (§5). The server installs from that file.
 8. **The VPS runs other people's sites too.** Only touch raminomrani.ir's own files and Nginx config.
+9. **Keep this file current.** When something here changes (a task is done, the server or DNS changes, a decision is made), update the relevant section and the date at the top in the same commit.
 
 ---
 
